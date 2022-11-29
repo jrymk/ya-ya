@@ -1,9 +1,15 @@
-#ifndef _UTILITIES_H_
-#define _UTILITIES_H_
+#ifndef _UTILITIES_HPP_
+#define _UTILITIES_HPP_
 #include <chrono>
 #include <queue>
 #include <sstream>
 #include <iomanip>
+#include "graphics.hpp"
+
+struct coord {
+    double x;
+    double y;
+};
 
 std::string toString(int a) {
     std::stringstream ss;
@@ -21,8 +27,6 @@ std::string toString(double a, const int digits = -1) {
 
 class FramerateCounter {
     std::queue<std::chrono::steady_clock::time_point> frametimes;
-
-
 public:
     /// @brief inserts a new frame (update frame counter) and returns framerate
     /// @return framerate
