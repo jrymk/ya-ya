@@ -2,9 +2,9 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1280, 720), L"鴨鴨");
+    sf::RenderWindow window(sf::VideoMode(1600, 900), L"鴨鴨");
     sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    shape.setFillColor(sf::Color::Red);
 
     while (window.isOpen())
     {
