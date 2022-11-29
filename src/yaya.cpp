@@ -11,13 +11,15 @@
  */
 
 int main() {
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 4;
     sf::RenderWindow window;
-    window.create(sf::VideoMode(1600, 900), L"Ya-Ya!");
+    window.create(sf::VideoMode(1600, 900), L"Ya-Ya!", sf::Style::Default, settings);
     window.setVerticalSyncEnabled(true);
     
     Graphics::setRenderWindow(window);
-    Graphics::loadFont(0, "CascadiaCode.ttf");
-
+    Graphics::loadFont(0, "yourStar.ttf");
+    Graphics::loadFont(1, "CascadiaCode.ttf");
     FramerateCounter fc;
 
     while (window.isOpen()) {
@@ -41,13 +43,13 @@ int main() {
                     if (!graphicsIsFullscreen) {
                         graphicsIsFullscreen = true;
                         window.close();
-                        window.create(sf::VideoMode::getFullscreenModes()[0], L"Ya-Ya!", sf::Style::Fullscreen);
+                        window.create(sf::VideoMode::getFullscreenModes()[0], L"Ya-Ya!", sf::Style::Fullscreen, settings);
                         window.setVerticalSyncEnabled(true);
                     }
                     else {
                         graphicsIsFullscreen = false;
                         window.close();
-                        window.create(sf::VideoMode(1600, 900), L"Ya-Ya!");
+                        window.create(sf::VideoMode(1600, 900), L"Ya-Ya!", sf::Style::Default, settings);
                         window.setVerticalSyncEnabled(true);
                     }
                     debug << "Toggled fullscreen: " << graphicsIsFullscreen << "\n";
@@ -63,9 +65,12 @@ int main() {
 
         UIRect rectWindow(sf::FloatRect(0., 0., window.getView().getSize().x, window.getView().getSize().y));
 
+        Graphics::setFont(1);
         Graphics::drawText(toString(fc.getFramerate()) + "", sf::Color::White, 24, rectWindow * UIVec(.0, .0) + UIVec(10, 30), 0.);
-
+        Graphics::setFont(0);
         Graphics::drawText("The quick 123 gg", sf::Color::White, 48, rectWindow * UIVec(.5, .5) + UIVec(0, 0), 0.5);
+
+        Graphics::drawLine(sf::Color::White, 4, rectWindow * UIVec(.5, .5), UIVec(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y));
 
         renderDebugOutput(window);
         window.display();

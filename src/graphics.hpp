@@ -3,8 +3,10 @@
 
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include <SFML/Graphics.hpp>
 #include "debugger.hpp"
+#define PI 3.14159265359
 
 bool graphicsIsFullscreen = false;
 
@@ -16,7 +18,13 @@ struct UIVec { // pixel space
     UIVec operator+(const UIVec& r) {return {x + r.x, y + r.y};}
     UIVec operator-(const UIVec& r) {return {x - r.x, y - r.y};}
     UIVec operator*(const UIVec& r) {return {x * r.x, y * r.y};}
+    UIVec operator*(const float r) {return {x * r, y * r};}
+    UIVec operator/(const float r) {return {x / r, y / r};}
     sf::Vector2f getVec2f() {return sf::Vector2f(x, y);}
+    UIVec min(const UIVec& r) {return {std::min(x, r.x), std::min(y, r.y)};}
+    UIVec max(const UIVec& r) {return {std::max(x, r.x), std::max(y, r.y)};}
+    float len(const UIVec& r) {return std::sqrt( float((x - r.x) * (x - r.x) + (y - r.y) * (y - r.y)) );}
+    float angle(const UIVec& r) {return std::acos(float(r.x - x) / len(r)) * ((r.y - y >= 0) ? float(1) : float(-1));}
 };
 
 struct UIRect {
@@ -65,34 +73,50 @@ public:
             selectedFont = idx;
     }
 
-    static void drawText(const std::string& str, const sf::Color& color, int size, UIVec pos, float align = 0.) {
+    static void fillRect(const sf::Color& fillColor, UIVec pos1, UIVec pos2) {
+        sf::RectangleShape rect;
+        rect.setPosition(pos1.min(pos2).getVec2f());
+        rect.setSize(((pos1.max(pos2)) - (pos2.max(pos2))).getVec2f());
+        rect.setFillColor(fillColor);
+        window->draw(rect);
+    }
+
+    static void drawRect(const sf::Color& strokeColor, float strokeWidth, UIVec pos1, UIVec pos2) {
+        sf::RectangleShape rect;
+        rect.setPosition(pos1.min(pos2).getVec2f());
+        rect.setSize(((pos1.max(pos2)) - (pos1.min(pos2))).getVec2f());
+        rect.setFillColor(sf::Color::Transparent);
+        rect.setOutlineColor(strokeColor);
+        rect.setOutlineThickness(-strokeWidth); // positive: grow inwards
+        window->draw(rect);
+    }
+
+    static void drawLine(const sf::Color& strokeColor, float strokeWidth, UIVec pos1, UIVec pos2) {
+        sf::RectangleShape rect;
+        UIVec delta = (pos2 - pos1) / pos1.len(pos2) * strokeWidth * 0.5;
+        rect.setPosition((pos1 + UIVec(delta.y, -delta.x)).getVec2f());
+        rect.setSize(sf::Vector2f(pos1.len(pos2), strokeWidth));
+        // debug << pos1.angle(pos2) << "\n";
+        rect.setRotation(pos1.angle(pos2) / 3.14159265359 * 180);
+        rect.setFillColor(strokeColor);
+        window->draw(rect);
+    }
+
+    static void drawText(const std::string& str, const sf::Color& fillColor, int size, UIVec pos, float align = 0.) {
         sf::Text text;
         text.setPosition(0, 0);
         text.setFont(fonts[selectedFont]);
         text.setString(str);
         text.setCharacterSize(size);
-        text.setFillColor(color);
+        text.setFillColor(fillColor);
         sf::FloatRect bounds = text.getLocalBounds();
         text.setPosition((pos + UIVec(bounds.width * -align, -size)).getVec2f());
 
         if (debug_showWireframe) {
             // magenta rectangle: actual bounds
-            sf::RectangleShape brect;
-            brect.setPosition((pos + UIVec(bounds.width * -align, -size + bounds.top)).getVec2f());
-            brect.setSize(sf::Vector2f(bounds.width, bounds.height));
-            brect.setFillColor(sf::Color::Transparent);
-            brect.setOutlineColor(sf::Color::Magenta);
-            brect.setOutlineThickness(1);
-            window->draw(brect);
-
+            drawRect(sf::Color::Magenta, 1, pos + UIVec(bounds.width * -align, -size + bounds.top), pos + UIVec(bounds.width * -align, -size + bounds.top) + UIVec(bounds.width, bounds.height));
             // cyan rectangle: baseline(input y coord) and size for reference
-            sf::RectangleShape baseline;
-            baseline.setPosition((pos + UIVec(bounds.width * -align, -size)).getVec2f());
-            baseline.setSize(sf::Vector2f(bounds.width, size));
-            baseline.setFillColor(sf::Color::Transparent);
-            baseline.setOutlineColor(sf::Color::Cyan);
-            baseline.setOutlineThickness(1);
-            window->draw(baseline);
+            drawRect(sf::Color::Cyan, 1, pos + UIVec(bounds.width * -align, -size), pos + UIVec(bounds.width * -align, -size) + UIVec(bounds.width, size));
         }
 
         window->draw(text);
