@@ -65,12 +65,12 @@ public:
             float height = std::max(std::min(graphHeight * (val - graphMin) / (graphMax - graphMin), graphHeight), (float)0);
             rect.setPosition(right - width, y + graphHeight - height);
             rect.setSize(sf::Vector2f(width, height));
-            rect.setFillColor(sf::Color::White);
+            rect.setFillColor(sf::Color(255, 255, 255, 100));
             window.draw(rect);
         }
 
         sf::RectangleShape graphFrame;
-        graphFrame.setPosition(window.getView().getSize().x - 210, y);
+        graphFrame.setPosition(window.getView().getSize().x - graphWidth - 10, y);
         graphFrame.setSize(sf::Vector2f(graphWidth, graphHeight));
         graphFrame.setFillColor(sf::Color::Transparent);
         graphFrame.setOutlineColor(sf::Color::Yellow);

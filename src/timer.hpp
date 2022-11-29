@@ -24,12 +24,16 @@ public:
         return std::chrono::duration_cast<std::chrono::microseconds>(lastUpdate - temp).count();
     }
 
-    int getTotalElapsedMicrosSinceStart() {
+    int microsSinceStart() {
         return std::chrono::duration_cast<std::chrono::microseconds>(lastUpdate - eventStart).count();
     }
 
-    int getTotalElapsedMicrosSinceEnd() {
+    int microsSinceEnd() {
         return std::chrono::duration_cast<std::chrono::microseconds>(lastUpdate - eventEnd).count();
+    }
+
+    int microsEvent() {
+        return std::chrono::duration_cast<std::chrono::microseconds>(eventEnd - eventStart).count();
     }
 
     void startEvent() {

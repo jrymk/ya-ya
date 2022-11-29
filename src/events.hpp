@@ -9,6 +9,7 @@
 int mouseWheelPosition = 0;
 
 Timer rightArrowButton;
+Timer leftArrowButton;
 
 void handleEvents(sf::RenderWindow& window) {
     sf::Event event;
@@ -30,6 +31,9 @@ void handleEvents(sf::RenderWindow& window) {
             if (event.key.code == sf::Keyboard::F2) {
                 for (int i = 0; i < debugGraphs.size(); i++)
                     debugGraphs[i].resetRange();
+            }
+            if (event.key.code == sf::Keyboard::F3) {
+                debugStream.str("");
             }
             if (event.key.code == sf::Keyboard::F11) {
                 if (!graphicsIsFullscreen) {
@@ -55,6 +59,9 @@ void handleEvents(sf::RenderWindow& window) {
             if (event.key.code == sf::Keyboard::Right) {
                 rightArrowButton.startEvent();
             }
+            if (event.key.code == sf::Keyboard::Left) {
+                leftArrowButton.startEvent();
+            }
         }
         if (event.type == sf::Event::KeyReleased) {
             if (event.key.code == sf::Keyboard::F1) {
@@ -62,6 +69,9 @@ void handleEvents(sf::RenderWindow& window) {
             }
             if (event.key.code == sf::Keyboard::Right) {
                 rightArrowButton.endEvent();
+            }
+            if (event.key.code == sf::Keyboard::Left) {
+                leftArrowButton.endEvent();
             }
         }
         if (event.type == sf::Event::MouseWheelMoved) {
