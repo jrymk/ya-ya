@@ -51,6 +51,10 @@ class Graphics {
     inline static std::vector<bool> isFontValid;
 
 public:
+    static const sf::RenderWindow* getRenderWindow() {
+        return window;
+    }
+
     static void setRenderWindow(sf::RenderWindow& _window) {
         window = &_window;
     }

@@ -2,6 +2,7 @@
 #define _ENTITY_HPP_
 
 #include "utilities.hpp"
+#include "camera.hpp"
 
 /// @brief Renderer and motion control for entities
 class Entity {

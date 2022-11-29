@@ -3,11 +3,13 @@
 #include "entity.hpp"
 #include "graphics.hpp"
 #include "debugger.hpp"
+#include "events.hpp"
 
 /**
  * Key definitions
  * F1: show wireframe
- * 
+ * F2: reset graph min max
+ * F11: toggle fullscreen
  */
 
 int main() {
@@ -15,64 +17,65 @@ int main() {
     settings.antialiasingLevel = 4;
     sf::RenderWindow window;
     window.create(sf::VideoMode(1600, 900), L"Ya-Ya!", sf::Style::Default, settings);
+    window.setKeyRepeatEnabled(false);
     window.setVerticalSyncEnabled(true);
-    
     Graphics::setRenderWindow(window);
     Graphics::loadFont(0, "yourStar.ttf");
     Graphics::loadFont(1, "CascadiaCode.ttf");
     FramerateCounter fc;
 
+    debugGraphs.push_back(DebugGraph("frametime", 200, 150, 1000));
+    debugGraphs.push_back(DebugGraph("mouse wheel", 200, 150, 2500));
+    // debugGraphs.push_back(DebugGraph(200, 150));
+
+    Camera cam;
+
+    double mrSquarePos = 0;
+
     while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::Resized) {
-                debug << "Resized to " << event.size.width << "*" << event.size.height << "\n";
-                window.setSize(sf::Vector2u(event.size.width, event.size.height));
-                sf::View view = window.getView();
-                view.setSize(sf::Vector2f(event.size.width, event.size.height));
-                view.setCenter(sf::Vector2f(event.size.width / 2., event.size.height / 2.));
-                window.setView(view);
-            }
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::F1) {
-                    debug_showWireframe = true;
-                }
-                if (event.key.code == sf::Keyboard::F11) {
-                    if (!graphicsIsFullscreen) {
-                        graphicsIsFullscreen = true;
-                        window.close();
-                        window.create(sf::VideoMode::getFullscreenModes()[0], L"Ya-Ya!", sf::Style::Fullscreen, settings);
-                        window.setVerticalSyncEnabled(true);
-                    }
-                    else {
-                        graphicsIsFullscreen = false;
-                        window.close();
-                        window.create(sf::VideoMode(1600, 900), L"Ya-Ya!", sf::Style::Default, settings);
-                        window.setVerticalSyncEnabled(true);
-                    }
-                    debug << "Toggled fullscreen: " << graphicsIsFullscreen << "\n";
-                }
-            }
-            if (event.type == sf::Event::KeyReleased) {
-                if (event.key.code == sf::Keyboard::F1) {
-                    debug_showWireframe = false;
-                }
-            }
-        }
+        handleEvents(window);
         window.clear();
 
         UIRect rectWindow(sf::FloatRect(0., 0., window.getView().getSize().x, window.getView().getSize().y));
 
         Graphics::setFont(1);
-        Graphics::drawText(toString(fc.getFramerate()) + "", sf::Color::White, 24, rectWindow * UIVec(.0, .0) + UIVec(10, 30), 0.);
-        Graphics::setFont(0);
-        Graphics::drawText("The quick 123 gg", sf::Color::White, 48, rectWindow * UIVec(.5, .5) + UIVec(0, 0), 0.5);
+        Graphics::drawText(toString(fc.getFramerateAndUpdate()) + "", sf::Color::White, 24, rectWindow * UIVec(.0, .0) + UIVec(10, 30), 0.);
+        debugGraphs[0].newGraphEntry(fc.getFrametimeMs());
+        // Graphics::setFont(0);
+        // Graphics::drawText("The quick 123 gg", sf::Color::White, 48, rectWindow * UIVec(.5, .5) + UIVec(0, 0), 0.5);
 
-        Graphics::drawLine(sf::Color::White, 4, rectWindow * UIVec(.5, .5), UIVec(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y));
+        cam.setViewport(rectWindow);
+        cam.printCameraInfo();
+        Graphics::drawRect(sf::Color::White, 2, cam.getScreenPos({mrSquarePos, 0.}), cam.getScreenPos({mrSquarePos + 5.,5.}));
+        Graphics::drawText(toString(mrSquarePos, 3), sf::Color::White, 16, cam.getScreenPos({mrSquarePos + 5 ,5.}) + UIVec(0, -5.), 1.);
+        
+        // if (rightArrowButton.isStarted) {
+        //     if (rightArrowButton.updatesSinceStart == 0)
+        //         rightArrowButton.getElapsedMicrosAndUpdate(); // discard
+        //     else {
+        //         int elapsed = rightArrowButton.getElapsedMicrosAndUpdate();
+        //         // debug << (double)rightArrowButton.getElapsedMicrosAndUpdate() / (double)100000. * 1. << "\n";
+        //         mrSquarePos += (double)elapsed / (double)1000000. * std::min(200000, rightArrowButton.getTotalElapsedMicrosSinceStart()) / 10000.; // 1 unit per second
 
-        renderDebugOutput(window);
+        //         debugGraphs[0].newGraphEntry((double)elapsed / (double)1000000. * std::min(200000, rightArrowButton.getTotalElapsedMicrosSinceStart()) / 10000.);
+        //     }
+        // }
+        // else {
+        //     if (rightArrowButton.updatesSinceEnd == 0)
+        //         rightArrowButton.getElapsedMicrosAndUpdate(); // discard
+        //     else if (rightArrowButton.getTotalElapsedMicrosSinceEnd() < 100000) {
+        //         int elapsed = rightArrowButton.getElapsedMicrosAndUpdate();
+        //         // debug << (double)rightArrowButton.getElapsedMicrosAndUpdate() / (double)100000. * 1. << "\n";
+        //         mrSquarePos += (double)elapsed / (double)1000000. * std::min(200000, rightArrowButton.getTotalElapsedMicrosSinceStart()) / 10000.; // 1 unit per second
+
+        //         debugGraphs[0].newGraphEntry((double)elapsed / (double)1000000. * std::min(200000, (100000 - rightArrowButton.getTotalElapsedMicrosSinceEnd())) / 10000.);
+        //     }
+        // }
+
+        // Graphics::drawLine(sf::Color::White, 4, rectWindow * UIVec(.5, .5), UIVec(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y));
+        debugGraphs[1].newGraphEntry(mouseWheelPosition);
+
+        renderDebugOverlay(window);
         window.display();
     }
 
