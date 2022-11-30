@@ -65,7 +65,7 @@ public:
             float height = std::max(std::min(graphHeight * (val - graphMin) / (graphMax - graphMin), graphHeight), (float)0);
             rect.setPosition(right - width, y + graphHeight - height);
             rect.setSize(sf::Vector2f(width, height));
-            rect.setFillColor(sf::Color(255, 255, 255, 100));
+            rect.setFillColor(sf::Color(255, 255, 255, 200));
             window.draw(rect);
         }
 
@@ -100,7 +100,7 @@ public:
             ss.str("");
             ss << graph.back().second;
             text.setString(ss.str());
-            text.setPosition(window.getView().getSize().x - 70, y - 18);
+            text.setPosition(window.getView().getSize().x - 100, y - 18);
             window.draw(text);
         }
 

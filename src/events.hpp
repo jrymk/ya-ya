@@ -10,7 +10,7 @@ int mouseWheelPosition = 0;
 
 Timer rightArrowButton;
 Timer leftArrowButton;
-
+bool updatePhysics = false;
 void handleEvents(sf::RenderWindow& window) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -57,10 +57,11 @@ void handleEvents(sf::RenderWindow& window) {
                 debug << "Toggled fullscreen: " << graphicsIsFullscreen << "\n";
             }
             if (event.key.code == sf::Keyboard::Right) {
-                rightArrowButton.startEvent();
             }
             if (event.key.code == sf::Keyboard::Left) {
-                leftArrowButton.startEvent();
+            }
+            if (event.key.code == sf::Keyboard::P) {
+                updatePhysics = true;
             }
         }
         if (event.type == sf::Event::KeyReleased) {
@@ -68,10 +69,8 @@ void handleEvents(sf::RenderWindow& window) {
                 debug_showWireframe = false;
             }
             if (event.key.code == sf::Keyboard::Right) {
-                rightArrowButton.endEvent();
             }
             if (event.key.code == sf::Keyboard::Left) {
-                leftArrowButton.endEvent();
             }
         }
         if (event.type == sf::Event::MouseWheelMoved) {

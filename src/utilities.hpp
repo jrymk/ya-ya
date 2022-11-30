@@ -7,8 +7,8 @@
 #include "graphics.hpp"
 
 struct coord {
-    double x;
-    double y;
+    double x = 0.;
+    double y = 0.;
     coord() {};
     coord(double x, double y) {this->x = x; this->y = y;}
     coord operator+(const coord& r) {return {x + r.x, y + r.y};}
@@ -18,6 +18,7 @@ struct coord {
     coord operator/(const double r) {return {x / r, y / r};}
     coord min(const coord& r) {return {std::min(x, r.x), std::min(y, r.y)};}
     coord max(const coord& r) {return {std::max(x, r.x), std::max(y, r.y)};}
+    double len() {return std::sqrt( double(x * x + y * y) );}
     double len(const coord& r) {return std::sqrt( double((x - r.x) * (x - r.x) + (y - r.y) * (y - r.y)) );}
     double angle(const coord& r) {return std::acos(double(r.x - x) / len(r)) * ((r.y - y >= 0) ? double(1) : double(-1));}
 };

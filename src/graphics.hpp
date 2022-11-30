@@ -80,7 +80,7 @@ public:
     static void fillRect(const sf::Color& fillColor, UIVec pos1, UIVec pos2) {
         sf::RectangleShape rect;
         rect.setPosition(pos1.min(pos2).getVec2f());
-        rect.setSize(((pos1.max(pos2)) - (pos2.max(pos2))).getVec2f());
+        rect.setSize(((pos1.max(pos2)) - (pos1.min(pos2))).getVec2f());
         rect.setFillColor(fillColor);
         window->draw(rect);
     }
