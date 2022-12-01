@@ -34,7 +34,7 @@ int main() {
 
     while (window.isOpen()) {
         handleEvents(window);
-        window.clear();
+        window.clear(sf::Color(129, 214, 131));
 
         UIRect rectWindow(sf::FloatRect(0., 0., window.getView().getSize().x, window.getView().getSize().y));
 
@@ -45,17 +45,28 @@ int main() {
         Camera::setCenter(Camera::getCenter() + (player.position - Camera::getCenter()) * 0.15);
         Camera::printCameraInfo();
 
-        for (int x = int(Camera::getCenter().x - 100) / 5 * 5; x <= int(Camera::getCenter().x + 100) / 5 * 5; x+=5) {
-            for (int y = int(Camera::getCenter().y - 40) / 5 * 5; y <= int(Camera::getCenter().y + 40) / 5 * 5; y+=5) {
-                Graphics::drawRect(sf::Color(90, 90, 90), 2, Camera::getScreenPos({x, y}), Camera::getScreenPos({x + 0.01, y + 0.01}));
-            }
-        }
+        // const int inc = 1;
+        // for (int x = int(Camera::getCenter().x - 100 / inc) / inc * inc; x <= int(Camera::getCenter().x + 100 / inc) / inc * inc; x+=inc) {
+        //     for (int y = int(Camera::getCenter().y - 40 / inc) / inc * inc; y <= int(Camera::getCenter().y + 40 / inc) / inc * inc; y+=inc) {
+        //         Graphics::drawRect(sf::Color(90, 90, 90), 2, Camera::getScreenPos({x, y}), Camera::getScreenPos({x + 0.01, y + 0.01}));
+        //     }
+        // }
 
-        sf::VertexArray tiles(sf::PrimitiveType::Quads, 4);
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 1.)).getVec2f(), sf::Vector2f(0, 90.5)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 1.)).getVec2f(), sf::Vector2f(384, 0)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 0.)).getVec2f(), sf::Vector2f(512, 271.5)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 0.)).getVec2f(), sf::Vector2f(128, 362)));
+        sf::VertexArray tiles(sf::PrimitiveType::Quads, 0);
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 1.)).getVec2f(), sf::Vector2f(0 + 128 * 4, 90.5 + 90.5 * 2)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 1.)).getVec2f(), sf::Vector2f(384 + 128 * 4, 0 + 90.5 * 2)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 0.)).getVec2f(), sf::Vector2f(512 + 128 * 4, 271.5 + 90.5 * 2)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 0.)).getVec2f(), sf::Vector2f(128 + 128 * 4, 362 + 90.5 * 2)));
+
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 2.)).getVec2f(), sf::Vector2f(0, 90.5)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 2.)).getVec2f(), sf::Vector2f(384, 0)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 1.)).getVec2f(), sf::Vector2f(512, 271.5)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 1.)).getVec2f(), sf::Vector2f(128, 362)));
+
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 1.)).getVec2f(), sf::Vector2f(0 + 128, 90.5 + 90.5 * 3)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 1.)).getVec2f(), sf::Vector2f(384 + 128, 0 + 90.5 * 3)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 0.)).getVec2f(), sf::Vector2f(512 + 128, 271.5 + 90.5 * 3)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 0.)).getVec2f(), sf::Vector2f(128 + 128, 362 + 90.5 * 3)));
 
         window.draw(tiles, &tilemap);
 

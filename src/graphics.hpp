@@ -15,6 +15,7 @@ struct UIVec { // pixel space
     float y = 0.;
     UIVec() {};
     UIVec(float x, float y) {this->x = x; this->y = y;}
+    UIVec(sf::Vector2f v2) {this->x = v2.x; this->y = v2.y;}
     UIVec operator+(const UIVec& r) {return {x + r.x, y + r.y};}
     UIVec operator-(const UIVec& r) {return {x - r.x, y - r.y};}
     UIVec operator*(const UIVec& r) {return {x * r.x, y * r.y};}
@@ -97,10 +98,9 @@ public:
 
     static void drawLine(const sf::Color& strokeColor, float strokeWidth, UIVec pos1, UIVec pos2) {
         sf::RectangleShape rect;
-        UIVec delta = (pos2 - pos1) / pos1.len(pos2) * strokeWidth * 0.5;
-        rect.setPosition((pos1 + UIVec(delta.y, -delta.x)).getVec2f());
         rect.setSize(sf::Vector2f(pos1.len(pos2), strokeWidth));
-        // debug << pos1.angle(pos2) << "\n";
+        rect.setOrigin(pos1.len(pos2) / 2., strokeWidth / 2.);
+        rect.setPosition(((pos1 + pos2) / 2.).getVec2f());
         rect.setRotation(pos1.angle(pos2) / 3.14159265359 * 180);
         rect.setFillColor(strokeColor);
         window->draw(rect);
