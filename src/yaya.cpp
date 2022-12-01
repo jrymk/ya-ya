@@ -25,16 +25,12 @@ int main() {
     Graphics::loadFont(1, "CascadiaCode.ttf");
     FramerateCounter fc;
 
-    debugGraphs.push_back(DebugGraph("camera", 300, 150, 1500));
-    debugGraphs.push_back(DebugGraph("force", 300, 150, 1500));
-    debugGraphs.push_back(DebugGraph("acceleration", 300, 150, 1500));
-    debugGraphs.push_back(DebugGraph("velocity", 300, 150, 1500));
-    debugGraphs.push_back(DebugGraph("position", 300, 150, 1500));
-    // debugGraphs.push_back(DebugGraph(200, 150));
-
     Entity player;
 
-    std::deque<std::pair<std::chrono::steady_clock::time_point, coord>> trail;
+    sf::Texture tilemap;
+    if (!tilemap.loadFromFile("tilemap.png"))
+        debug << "failed to load tilemap.png";
+    tilemap.setSmooth(true);
 
     while (window.isOpen()) {
         handleEvents(window);
@@ -44,8 +40,6 @@ int main() {
 
         Graphics::setFont(1);
         Graphics::drawText(toString(fc.getFramerateAndUpdate()) + "", sf::Color::White, 24, rectWindow * UIVec(.0, .0) + UIVec(10, 30), 0.);
-        // Graphics::setFont(0);
-        // Graphics::drawText("The quick 123 gg", sf::Color::White, 48, rectWindow * UIVec(.5, .5) + UIVec(0, 0), 0.5);
 
         Camera::setViewport(rectWindow);
         Camera::setCenter(Camera::getCenter() + (player.position - Camera::getCenter()) * 0.15);
@@ -57,48 +51,16 @@ int main() {
             }
         }
 
-        // Graphics::drawRect(sf::Color::White, 2, Camera::getScreenPos({mrSquarePos, 0.}), Camera::getScreenPos({mrSquarePos + 3.,3.}));
-        // Graphics::drawText(toString(mrSquarePos, 3), sf::Color::White, 16, Camera::getScreenPos({mrSquarePos + 5 ,5.}) + UIVec(0, -5.), 1.);
+        sf::VertexArray tiles(sf::PrimitiveType::Quads, 4);
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 1.)).getVec2f(), sf::Vector2f(0, 90.5)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 1.)).getVec2f(), sf::Vector2f(384, 0)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 0.)).getVec2f(), sf::Vector2f(512, 271.5)));
+        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 0.)).getVec2f(), sf::Vector2f(128, 362)));
 
-        player.force.x = 0.;
-        player.force.y = 0.;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            player.force.x += 0.90225 * 25;
-            player.force.y += -0.37593 * 25;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            player.force.x += -0.90225 * 25;
-            player.force.y += 0.37593 * 25;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            player.force.x += 0.75187 * 25;
-            player.force.y += 1.35338 * 25;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            player.force.x += -0.75187 * 25;
-            player.force.y += -1.35338 * 25;
-        }
+        window.draw(tiles, &tilemap);
 
 
-        // debugGraphs[1].newGraphEntry(mrSquarePos);
-        // if ((player.position - Camera::getCenter()).len() > 10)
-
-        debugGraphs[0].newGraphEntry(Camera::getCenter().x);
-        debugGraphs[1].newGraphEntry(player.force.len());
-        debugGraphs[2].newGraphEntry(player.acceleration.len());
-        debugGraphs[3].newGraphEntry(player.velocity.len());
-        debugGraphs[4].newGraphEntry(player.position.x);
-
-        player.updatePhysics();
-        // Graphics::drawLine(sf::Color::White, 4, rectWindow * UIVec(.5, .5), UIVec(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y));
-        // (mouseWheelPosition);
-        trail.push_back(std::make_pair(std::chrono::steady_clock::now(), player.position));
-        while (!trail.empty() && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - trail.front().first).count() >= 5000)
-            trail.pop_front();
-        for (int i = 0; i < trail.size(); i++)
-            Graphics::drawRect(sf::Color(100, 0, 150), 2, Camera::getScreenPos(trail[i].second), Camera::getScreenPos(trail[i].second + coord(0.01, 0.01)));
-
-        player.render();
+        // player.render();
 
         renderDebugOverlay(window);
         window.display();

@@ -8,7 +8,7 @@
 class Camera {
     inline static UIRect viewport;
     inline static coord center;
-    inline static double zoom = 100.; // the span of the camera, in sqrt(w*h) coord space
+    inline static double zoom = 10.; // the span of the camera, in sqrt(w*h) coord space
 
 public:
     static void setViewport(UIRect vp) { // set the viewport for the camera
@@ -27,8 +27,8 @@ public:
     static UIVec getScreenPos(coord loc) {
         double zoomRatio = std::sqrt(viewport.size.x * viewport.size.y) / zoom;
         return viewport.pos + viewport.size * UIVec(.5, .5) + 
-            UIVec(((loc.x - center.x) * 0.9 - (loc.y - center.y) * 0.5) * zoomRatio, 
-                  (-(loc.x - center.x) * 0.25 - (loc.y - center.y) * 0.6) * zoomRatio);
+            UIVec(((loc.x - center.x) * 3.84 - (loc.y - center.y) * 1.28) * zoomRatio, 
+                  (-(loc.x - center.x) * 0.905 - (loc.y - center.y) * 2.715) * zoomRatio);
         // return viewport.pos + viewport.size * UIVec(.5, .5) + 
         //     UIVec((loc.x - center.x) * zoomRatio, 
         //           (center.y - loc.y) * zoomRatio);
