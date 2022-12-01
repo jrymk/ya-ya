@@ -9,6 +9,20 @@ class Timer {
     int tickElapsed = 0;
 
 public:
+    inline static std::chrono::steady_clock::time_point globalStart;
+    
+    static void setGlobalStartTimepoint() {
+        globalStart = std::chrono::steady_clock::now();
+    }
+
+    static int getElapsedMs(std::chrono::steady_clock::time_point tp) {
+        return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - tp).count();
+    }
+    
+    static int getElapsedUs(std::chrono::steady_clock::time_point tp) {
+        return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - tp).count();
+    }
+
     int getTickElapsed() {
         return tickElapsed;
     }
