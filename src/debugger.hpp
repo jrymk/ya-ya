@@ -12,8 +12,6 @@ std::stringstream debugStream;
 bool fontLoaded = false;
 sf::Font debuggerFont;
 
-bool debug_showWireframe = false;
-
 class DebugGraph {
     std::string name;
     float graphWidth;
@@ -127,6 +125,8 @@ void renderDebugOverlay(sf::RenderWindow& window) {
     text.setFillColor(sf::Color::Red);
     sf::FloatRect bounds = text.getGlobalBounds();
     text.setPosition(6, window.getView().getSize().y - bounds.height + bounds.top - 20);
+    text.setOutlineColor(sf::Color::Black);
+    text.setOutlineThickness(2.);
     window.draw(text);
 
     sf::Text coord;
@@ -139,6 +139,8 @@ void renderDebugOverlay(sf::RenderWindow& window) {
     coord.setFillColor(sf::Color::Green);
     sf::FloatRect boundsCoord = coord.getGlobalBounds();
     coord.setPosition(6, window.getView().getSize().y - boundsCoord.height + boundsCoord.top - 12);
+    coord.setOutlineColor(sf::Color::Black);
+    coord.setOutlineThickness(2.);
     window.draw(coord);
 
     float y = 25;

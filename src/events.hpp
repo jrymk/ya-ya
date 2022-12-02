@@ -26,7 +26,8 @@ void handleEvents(sf::RenderWindow& window) {
         }
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::F1) {
-                debug_showWireframe = true;
+                Graphics::showWireframe = !Graphics::showWireframe;
+                debug << "Toggled wireframe: " << Graphics::showWireframe << "\n";
             }
             if (event.key.code == sf::Keyboard::F2) {
                 for (int i = 0; i < debugGraphs.size(); i++)
@@ -34,6 +35,10 @@ void handleEvents(sf::RenderWindow& window) {
             }
             if (event.key.code == sf::Keyboard::F3) {
                 debugStream.str("");
+            }
+            if (event.key.code == sf::Keyboard::F4) {
+                Graphics::debugOutOfSight = !Graphics::debugOutOfSight;
+                debug << "Toggled debug out of sight: " << Graphics::debugOutOfSight << "\n";
             }
             if (event.key.code == sf::Keyboard::F11) {
                 if (!graphicsIsFullscreen) {
@@ -65,9 +70,6 @@ void handleEvents(sf::RenderWindow& window) {
             }
         }
         if (event.type == sf::Event::KeyReleased) {
-            if (event.key.code == sf::Keyboard::F1) {
-                debug_showWireframe = false;
-            }
             if (event.key.code == sf::Keyboard::Right) {
             }
             if (event.key.code == sf::Keyboard::Left) {

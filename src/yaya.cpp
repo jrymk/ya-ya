@@ -7,9 +7,10 @@
 
 /**
  * Key definitions
- * F1: show wireframe
+ * F1: toggle wireframe
  * F2: reset graph min max
  * F3: clear debug output
+ * F4: toggle debug out of sight
  * F11: toggle fullscreen
  */
 
@@ -26,7 +27,35 @@ int main() {
     Graphics::loadFont(1, "CascadiaCode.ttf");
     FramerateCounter fc;
 
-    Entity player;
+    Entity ducky;
+
+    ducky.getModelQuads().push_back(
+        Graphics::Quad(
+            0.9,
+            UIVec(0., 1.), sf::Vector2f(0 + 128 * 4, 90.5 + 90.5 * 2), 
+            UIVec(1., 1.), sf::Vector2f(384 + 128 * 4, 0 + 90.5 * 2), 
+            UIVec(1., 0.), sf::Vector2f(512 + 128 * 4, 271.5 + 90.5 * 2),
+            UIVec(0., 0.), sf::Vector2f(128 + 128 * 4, 362 + 90.5 * 2)
+        )
+    );
+    ducky.getModelQuads().push_back(
+        Graphics::Quad(
+            0.9,
+            UIVec(0., 2.), sf::Vector2f(0, 90.5),
+            UIVec(1., 2.), sf::Vector2f(384, 0),
+            UIVec(1., 1.), sf::Vector2f(512, 271.5),
+            UIVec(0., 1.), sf::Vector2f(128, 362)
+        )
+    );
+    ducky.getModelQuads().push_back(
+        Graphics::Quad(
+            0.9,
+            UIVec(0., 1.), sf::Vector2f(0 + 128, 90.5 + 90.5 * 3),
+            UIVec(1., 1.), sf::Vector2f(384 + 128, 0 + 90.5 * 3),
+            UIVec(1., 0.), sf::Vector2f(512 + 128, 271.5 + 90.5 * 3),
+            UIVec(0., 0.), sf::Vector2f(128 + 128, 362 + 90.5 * 3)
+        )
+    );
 
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("tilemap.png"))
@@ -41,52 +70,50 @@ int main() {
 
         UIRect rectWindow(sf::FloatRect(0., 0., window.getView().getSize().x, window.getView().getSize().y));
 
-        Graphics::setFont(1);
-        Graphics::drawText(toString(fc.getFramerateAndUpdate()) + "", sf::Color::White, 24, rectWindow * UIVec(.0, .0) + UIVec(10, 30), 0.);
+        
+        Camera::setZoom(std::pow(2, 5. + 2. * std::cos((float)Timer::getElapsedMs(Timer::globalStart) / 9200. * 6.28)));
+        Camera::setCenter(coord(
+            2. * std::cos((float)Timer::getElapsedMs(Timer::globalStart) / 4200. * 6.28),
+            2. * std::sin((float)Timer::getElapsedMs(Timer::globalStart) / 5900. * 6.28)
+        ));
 
-        Camera::setViewport(rectWindow);
-        Camera::setCenter(Camera::getCenter() + (player.position - Camera::getCenter()) * 0.15);
-        Camera::printCameraInfo();
-
-        sf::VertexArray tiles(sf::PrimitiveType::Quads, 0);
+        Graphics::clearQuadsArray();
 
         for (int x = int(Camera::getCenter().x - 40); x <= int(Camera::getCenter().x + 40); x+=1) {
             for (int y = int(Camera::getCenter().y - 30) / 2 * 2; y <= int(Camera::getCenter().y + 30); y+=1) {
-                tiles.append(sf::Vertex(Camera::getScreenPos(coord(x, y)).getVec2f(), sf::Color::Red, sf::Vector2f(0, 90.5)));
-                tiles.append(sf::Vertex(Camera::getScreenPos(coord(x + 1., y)).getVec2f(), sf::Color::Yellow, sf::Vector2f(384, 0)));
-                tiles.append(sf::Vertex(Camera::getScreenPos(coord(x + 1., y - 1.)).getVec2f(), sf::Color::Blue, sf::Vector2f(512, 271.5)));
-                tiles.append(sf::Vertex(Camera::getScreenPos(coord(x, y - 1.)).getVec2f(), sf::Color::Green, sf::Vector2f(128, 362)));
-
-                tiles.append(sf::Vertex(Camera::getScreenPos(coord(x, y + 1.)).getVec2f(), sf::Color::Green, sf::Vector2f(0 + 128, 90.5 + 90.5 * 3)));
-                tiles.append(sf::Vertex(Camera::getScreenPos(coord(x + 1., y + 1.)).getVec2f(), sf::Color::Blue, sf::Vector2f(384 + 128, 0 + 90.5 * 3)));
-                tiles.append(sf::Vertex(Camera::getScreenPos(coord(x + 1., y)).getVec2f(), sf::Color::Yellow, sf::Vector2f(512 + 128, 271.5 + 90.5 * 3)));
-                tiles.append(sf::Vertex(Camera::getScreenPos(coord(x, y)).getVec2f(), sf::Color::Red, sf::Vector2f(128 + 128, 362 + 90.5 * 3)));
+                Model model;
+                model.getModelQuads().push_back(
+                    Graphics::Quad(
+                        0.2,
+                        Camera::getScreenPos(coord(x, y)), sf::Vector2f(0, 90.5), sf::Color::Red,
+                        Camera::getScreenPos(coord(x + 1, y)), sf::Vector2f(384, 0), sf::Color::Yellow,
+                        Camera::getScreenPos(coord(x + 1, y - 1.)), sf::Vector2f(512, 271.5), sf::Color::Blue,
+                        Camera::getScreenPos(coord(x, y- 1.)), sf::Vector2f(128, 362), sf::Color::Green
+                    )
+                );
+                model.getModelQuads().push_back(
+                    Graphics::Quad(
+                        0.2,
+                        Camera::getScreenPos(coord(x, y+ 1.)), sf::Vector2f(0 + 128, 90.5 + 90.5 * 3), sf::Color::Green,
+                        Camera::getScreenPos(coord(x + 1, y + 1.)), sf::Vector2f(384 + 128, 0 + 90.5 * 3), sf::Color::Blue,
+                        Camera::getScreenPos(coord(x + 1, y)), sf::Vector2f(512 + 128, 271.5 + 90.5 * 3), sf::Color::Yellow,
+                        Camera::getScreenPos(coord(x, y)), sf::Vector2f(128 + 128, 362 + 90.5 * 3), sf::Color::Red
+                    )
+                );
+                model.pushModel();
             }
         }
 
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 1.)).getVec2f(), sf::Vector2f(0 + 128 * 4, 90.5 + 90.5 * 2)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 1.)).getVec2f(), sf::Vector2f(384 + 128 * 4, 0 + 90.5 * 2)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 0.)).getVec2f(), sf::Vector2f(512 + 128 * 4, 271.5 + 90.5 * 2)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 0.)).getVec2f(), sf::Vector2f(128 + 128 * 4, 362 + 90.5 * 2)));
+        ducky.pushModel();
 
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 2.)).getVec2f(), sf::Vector2f(0, 90.5)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 2.)).getVec2f(), sf::Vector2f(384, 0)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 1.)).getVec2f(), sf::Vector2f(512, 271.5)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 1.)).getVec2f(), sf::Vector2f(128, 362)));
+        Graphics::renderModels(window, tilemap);
 
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 1.)).getVec2f(), sf::Vector2f(0 + 128, 90.5 + 90.5 * 3)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 1.)).getVec2f(), sf::Vector2f(384 + 128, 0 + 90.5 * 3)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(1., 0.)).getVec2f(), sf::Vector2f(512 + 128, 271.5 + 90.5 * 3)));
-        tiles.append(sf::Vertex(Camera::getScreenPos(coord(0., 0.)).getVec2f(), sf::Vector2f(128 + 128, 362 + 90.5 * 3)));
+        Graphics::setFont(1);
+        Graphics::drawText(toString(fc.getFramerateAndUpdate()) + "", sf::Color::White, 24, rectWindow * UIVec(.0, .0) + UIVec(10, 30), 0., sf::Color::Black, 4.);
 
-        window.draw(tiles, &tilemap);
-
-        Camera::setZoom(std::pow(2, 5. + 2. * std::cos((float)Timer::getElapsedMs(Timer::globalStart) / 7400. * 6.28)));
-        Camera::setCenter(coord(
-            2. * std::cos((float)Timer::getElapsedMs(Timer::globalStart) / 2100. * 6.28),
-            2. * std::sin((float)Timer::getElapsedMs(Timer::globalStart) / 3200. * 6.28)
-        ));
-        // player.render();
+        Camera::setViewport(rectWindow);
+        Camera::setCenter(Camera::getCenter() + (ducky.position - Camera::getCenter()) * 0.15);
+        Camera::printCameraInfo();
 
         renderDebugOverlay(window);
         window.display();

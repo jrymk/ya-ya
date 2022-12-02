@@ -6,10 +6,10 @@
 #include "camera.hpp"
 #include "timer.hpp"
 
-#define OUT_OF_SIGHT 100
+#define OUT_OF_SIGHT 500
 
 /// @brief Renderer and motion control for entities
-class Entity {
+class Entity: public Model {
 public:
     coord force;
     double mass = .1;
@@ -21,15 +21,20 @@ public:
     double maxVelocity = 25.;
     Timer physicsTimer;
 
-    void render() {
+    void pushModel() override {
         UIVec pos = Camera::getScreenPos(position);
         if (pos.x < -OUT_OF_SIGHT || pos.x > Camera::getViewport().size.x + OUT_OF_SIGHT
          || pos.y < -OUT_OF_SIGHT || pos.y > Camera::getViewport().size.y + OUT_OF_SIGHT) {
-            // debug << "out of sight\n";
-            // no render for you
+            return;
         }
         else {
-            Graphics::fillRect(sf::Color::Yellow, pos - UIVec(5., 5.), pos + UIVec(5., 5.));
+            for (auto quad : Model::quads) {
+                quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) + position);
+                quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + position);
+                quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + position);
+                quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) + position);
+                Graphics::insertQuad(quad);
+            }
         }
     }
 
