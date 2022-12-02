@@ -49,6 +49,14 @@ public:
     }
 
     float drawGraph(sf::RenderWindow& window, float y) {
+        sf::RectangleShape graphFrame;
+        graphFrame.setPosition(window.getView().getSize().x - graphWidth - 10, y);
+        graphFrame.setSize(sf::Vector2f(graphWidth, graphHeight));
+        graphFrame.setFillColor(sf::Color(0, 0, 0, 100));
+        graphFrame.setOutlineColor(sf::Color::Yellow);
+        graphFrame.setOutlineThickness(-2); // positive: grow inwards
+        window.draw(graphFrame);
+        
         while (!graph.empty() && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - graph.front().first).count() >= timeSpan)
             graph.pop_front();
 
@@ -67,12 +75,7 @@ public:
             window.draw(rect);
         }
 
-        sf::RectangleShape graphFrame;
-        graphFrame.setPosition(window.getView().getSize().x - graphWidth - 10, y);
-        graphFrame.setSize(sf::Vector2f(graphWidth, graphHeight));
         graphFrame.setFillColor(sf::Color::Transparent);
-        graphFrame.setOutlineColor(sf::Color::Yellow);
-        graphFrame.setOutlineThickness(-2); // positive: grow inwards
         window.draw(graphFrame);
     
         sf::Text text;

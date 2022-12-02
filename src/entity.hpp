@@ -9,7 +9,7 @@
 #define OUT_OF_SIGHT 500
 
 /// @brief Renderer and motion control for entities
-class Entity: public Model {
+class Entity {
 public:
     coord force;
     double mass = .1;
@@ -21,14 +21,16 @@ public:
     double maxVelocity = 25.;
     Timer physicsTimer;
 
-    void pushModel() override {
+    std::vector<Graphics::Quad> model;
+
+    void pushQuads() {
         UIVec pos = Camera::getScreenPos(position);
         if (pos.x < -OUT_OF_SIGHT || pos.x > Camera::getViewport().size.x + OUT_OF_SIGHT
          || pos.y < -OUT_OF_SIGHT || pos.y > Camera::getViewport().size.y + OUT_OF_SIGHT) {
             return;
         }
         else {
-            for (auto quad : Model::quads) {
+            for (auto quad : model) {
                 quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) + position);
                 quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + position);
                 quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + position);

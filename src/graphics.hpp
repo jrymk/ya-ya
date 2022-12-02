@@ -87,6 +87,7 @@ private:
 public:
     inline static bool showWireframe = false;
     inline static bool debugOutOfSight = false;
+    inline static int outOfSightQuads = 0;
 
     static const sf::RenderWindow* getRenderWindow() {
         return window;
@@ -142,7 +143,7 @@ public:
         window->draw(rect);
     }
 
-    static void drawText(const std::string& str, const sf::Color& fillColor, int size, UIVec pos, float align = 0., const sf::Color& outlineColor = sf::Color::Black, float outlineStrokeWidth = 2.) {
+    static void drawText(const std::string& str, const sf::Color& fillColor, int size, UIVec pos, float align = 0., const sf::Color& outlineColor = sf::Color::Black, float outlineStrokeWidth = 0.) {
         sf::Text text;
         text.setPosition(0, 0);
         text.setFont(fonts[selectedFont]);
@@ -239,25 +240,26 @@ public:
         quadsArray.push_back(quad);
     }
 
-    static void renderModels(sf::RenderWindow& window, sf::Texture& texture) {
+    static void renderQuads(sf::RenderWindow& window, sf::Texture& texture) {
         vertexArray.clear();
         vertexArray.setPrimitiveType(sf::PrimitiveType::Quads);
         wireframeVertexArray.clear();
         wireframeVertexArray.setPrimitiveType(sf::PrimitiveType::Lines);
 
         std::sort(quadsArray.begin(), quadsArray.end());
+        outOfSightQuads = 0;
 
         for (auto& quad : quadsArray) {
-            if (debugOutOfSight) {
-                if ((quad.v0.x < 0 || quad.v0.x > window.getView().getSize().x ||
-                    quad.v0.y < 0 || quad.v0.y > window.getView().getSize().y) &&
-                    (quad.v1.x < 0 || quad.v1.x > window.getView().getSize().x ||
-                    quad.v1.y < 0 || quad.v1.y > window.getView().getSize().y) &&
-                    (quad.v2.x < 0 || quad.v2.x > window.getView().getSize().x ||
-                    quad.v2.y < 0 || quad.v2.y > window.getView().getSize().y) &&
-                    (quad.v3.x < 0 || quad.v3.x > window.getView().getSize().x ||
-                    quad.v3.y < 0 || quad.v3.y > window.getView().getSize().y)) {
+            if ((quad.v0.x < 0 || quad.v0.x > window.getView().getSize().x ||
+                quad.v0.y < 0 || quad.v0.y > window.getView().getSize().y) &&
+                (quad.v1.x < 0 || quad.v1.x > window.getView().getSize().x ||
+                quad.v1.y < 0 || quad.v1.y > window.getView().getSize().y) &&
+                (quad.v2.x < 0 || quad.v2.x > window.getView().getSize().x ||
+                quad.v2.y < 0 || quad.v2.y > window.getView().getSize().y) &&
+                (quad.v3.x < 0 || quad.v3.x > window.getView().getSize().x ||
+                quad.v3.y < 0 || quad.v3.y > window.getView().getSize().y)) {
                     
+                if (debugOutOfSight) {
                     UIVec center = (quad.v0 + quad.v1 + quad.v2 + quad.v3) / 4.;
                     center.x = std::min(std::max(center.x, (float)5.), window.getView().getSize().x - (float)5.);
                     center.y = std::min(std::max(center.y, (float)5.), window.getView().getSize().y - (float)5.);
@@ -267,13 +269,15 @@ public:
                                     center + UIVec(0., -3.),
                                     sf::Color::Yellow);
                 }
+                outOfSightQuads++;
+            }
+            else {
+                vertexArray.append(sf::Vertex(quad.v0.getVec2f(), quad.c0, quad.t0));
+                vertexArray.append(sf::Vertex(quad.v1.getVec2f(), quad.c1, quad.t1));
+                vertexArray.append(sf::Vertex(quad.v2.getVec2f(), quad.c2, quad.t2));
+                vertexArray.append(sf::Vertex(quad.v3.getVec2f(), quad.c3, quad.t3));
             }
 
-            vertexArray.append(sf::Vertex(quad.v0.getVec2f(), quad.c0, quad.t0));
-            vertexArray.append(sf::Vertex(quad.v1.getVec2f(), quad.c1, quad.t1));
-            vertexArray.append(sf::Vertex(quad.v2.getVec2f(), quad.c2, quad.t2));
-            vertexArray.append(sf::Vertex(quad.v3.getVec2f(), quad.c3, quad.t3));
-            
             if (showWireframe)
                 appendWireframe(quad.v0, quad.v1, quad.v2, quad.v3);
         }
@@ -282,21 +286,10 @@ public:
         if (showWireframe)
             window.draw(wireframeVertexArray);
     }
-};
 
-class Model {
-protected:
-    std::vector<Graphics::Quad> quads;
-
-public:
-    std::vector<Graphics::Quad>& getModelQuads() {
-        return quads;
+    static int getQuadCount() {
+        return vertexArray.getVertexCount() / 4;
     }
-
-    virtual void pushModel() {
-        for (auto& quad : Model::quads)
-            Graphics::insertQuad(quad);
-    };
 };
 
 #endif
