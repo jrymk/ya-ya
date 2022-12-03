@@ -4,6 +4,8 @@
 #include <queue>
 #include <sstream>
 #include <iomanip>
+#include <time.h>
+#include <cstdlib>
 #include "graphics.hpp"
 
 std::string toString(int a) {
@@ -44,5 +46,14 @@ public:
         prevFrame = std::chrono::steady_clock::now();
     }
 };
+
+double getRand() {
+    // srand(time(0));
+    return (double)rand() / RAND_MAX;
+}
+
+double subtractAngle(double l, double r) {
+    return l + r + 2 * PI - int((l + r + 2 * PI) / 2. / PI) * 2. * PI - PI;
+}
 
 #endif

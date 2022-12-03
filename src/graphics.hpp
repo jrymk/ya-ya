@@ -83,14 +83,15 @@ private:
     inline static std::vector<Quad> quadsArray; 
     inline static sf::VertexArray vertexArray;
     inline static sf::VertexArray wireframeVertexArray;
+    inline static sf::VertexArray userWireframeVertexArray;
 
 public:
     inline static bool showWireframe = false;
     inline static bool debugOutOfSight = false;
     inline static int outOfSightQuads = 0;
 
-    static const sf::RenderWindow* getRenderWindow() {
-        return window;
+    static sf::RenderWindow& getRenderWindow() {
+        return *window;
     }
 
     static void setRenderWindow(sf::RenderWindow& _window) {
@@ -184,43 +185,43 @@ public:
     }
 
 private:
-    static void appendWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color& color = sf::Color::White) {
-        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., 1.), sf::Color::Black));
+    static void appendWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color& color = sf::Color::Black, const sf::Color& bgcolor = sf::Color::White) {
+        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
 
-        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., -1.), sf::Color::Black));
+        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
 
-        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., 1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., 1.), sf::Color::Black));
+        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
 
-        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., -1.), sf::Color::Black));
-        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., -1.), sf::Color::Black));
-        
+        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+
         wireframeVertexArray.append(sf::Vertex(v0.getVec2f(), color));
         wireframeVertexArray.append(sf::Vertex(v1.getVec2f(), color));
         wireframeVertexArray.append(sf::Vertex(v1.getVec2f(), color));
@@ -240,7 +241,54 @@ public:
         quadsArray.push_back(quad);
     }
 
-    static void renderQuads(sf::RenderWindow& window, sf::Texture& texture) {
+    static void insertUserWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color& color = sf::Color::Black, const sf::Color& bgcolor = sf::Color::White) {
+        userWireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
+
+        userWireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., -1.), bgcolor));
+
+        userWireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., 1.), bgcolor));
+
+        userWireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v2.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v3.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+        userWireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(-1., -1.), bgcolor));
+
+        userWireframeVertexArray.append(sf::Vertex(v0.getVec2f(), color));
+        userWireframeVertexArray.append(sf::Vertex(v1.getVec2f(), color));
+        userWireframeVertexArray.append(sf::Vertex(v1.getVec2f(), color));
+        userWireframeVertexArray.append(sf::Vertex(v2.getVec2f(), color));
+        userWireframeVertexArray.append(sf::Vertex(v2.getVec2f(), color));
+        userWireframeVertexArray.append(sf::Vertex(v3.getVec2f(), color));
+        userWireframeVertexArray.append(sf::Vertex(v3.getVec2f(), color));
+        userWireframeVertexArray.append(sf::Vertex(v0.getVec2f(), color));
+    }
+
+    static void renderQuads(sf::RenderWindow& window, sf::Texture& texture, UIRect viewport) {
         vertexArray.clear();
         vertexArray.setPrimitiveType(sf::PrimitiveType::Quads);
         wireframeVertexArray.clear();
@@ -250,24 +298,24 @@ public:
         outOfSightQuads = 0;
 
         for (auto& quad : quadsArray) {
-            if ((quad.v0.x < 0 || quad.v0.x > window.getView().getSize().x ||
-                quad.v0.y < 0 || quad.v0.y > window.getView().getSize().y) &&
-                (quad.v1.x < 0 || quad.v1.x > window.getView().getSize().x ||
-                quad.v1.y < 0 || quad.v1.y > window.getView().getSize().y) &&
-                (quad.v2.x < 0 || quad.v2.x > window.getView().getSize().x ||
-                quad.v2.y < 0 || quad.v2.y > window.getView().getSize().y) &&
-                (quad.v3.x < 0 || quad.v3.x > window.getView().getSize().x ||
-                quad.v3.y < 0 || quad.v3.y > window.getView().getSize().y)) {
+            if ((quad.v0.x < viewport.pos.x || quad.v0.x > (viewport.pos.x + viewport.size.x) ||
+                quad.v0.y < viewport.pos.y || quad.v0.y > (viewport.pos.y + viewport.size.y)) &&
+                (quad.v1.x < viewport.pos.x || quad.v1.x > (viewport.pos.x + viewport.size.x) ||
+                quad.v1.y < viewport.pos.y || quad.v1.y > (viewport.pos.y + viewport.size.y)) &&
+                (quad.v2.x < viewport.pos.x || quad.v2.x > (viewport.pos.x + viewport.size.x) ||
+                quad.v2.y < viewport.pos.y || quad.v2.y > (viewport.pos.y + viewport.size.y)) &&
+                (quad.v3.x < viewport.pos.x || quad.v3.x > (viewport.pos.x + viewport.size.x) ||
+                quad.v3.y < viewport.pos.y || quad.v3.y > (viewport.pos.y + viewport.size.y))) {
                     
                 if (debugOutOfSight) {
                     UIVec center = (quad.v0 + quad.v1 + quad.v2 + quad.v3) / 4.;
-                    center.x = std::min(std::max(center.x, (float)5.), window.getView().getSize().x - (float)5.);
-                    center.y = std::min(std::max(center.y, (float)5.), window.getView().getSize().y - (float)5.);
+                    center.x = std::min(std::max(center.x, (float)5.), viewport.size.x - (float)5.);
+                    center.y = std::min(std::max(center.y, (float)5.), viewport.size.y - (float)5.);
                     appendWireframe(center + UIVec(3., 0.),
                                     center + UIVec(0., 3.),
                                     center + UIVec(-3., 0.),
                                     center + UIVec(0., -3.),
-                                    sf::Color::Yellow);
+                                    sf::Color::Yellow, sf::Color::Black);
                 }
                 outOfSightQuads++;
             }
@@ -279,12 +327,18 @@ public:
             }
 
             if (showWireframe)
-                appendWireframe(quad.v0, quad.v1, quad.v2, quad.v3);
+                appendWireframe(quad.v0, quad.v1, quad.v2, quad.v3, sf::Color::Black, sf::Color::Transparent);
         }
 
         window.draw(vertexArray, &texture);
-        if (showWireframe)
+
+        if (showWireframe) {
+            for (int i = 0; i < userWireframeVertexArray.getVertexCount(); i++)
+                wireframeVertexArray.append(userWireframeVertexArray[i]);
             window.draw(wireframeVertexArray);
+        }
+
+        userWireframeVertexArray.clear();
     }
 
     static int getQuadCount() {

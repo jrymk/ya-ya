@@ -5,32 +5,35 @@
 #include "debugger.hpp"
 
 class Timer {
-    std::chrono::steady_clock::time_point lastTick;
-    int tickElapsed = 0;
+    inline static std::chrono::steady_clock::time_point globalStart = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point tp;
 
 public:
-    inline static std::chrono::steady_clock::time_point globalStart;
-    
-    static void setGlobalStartTimepoint() {
-        globalStart = std::chrono::steady_clock::now();
+    Timer() { tp = std::chrono::steady_clock::now(); }
+    Timer(std::chrono::steady_clock::time_point tp): tp(tp) {}
+
+    static Timer getNow() {
+        return Timer(std::chrono::steady_clock::now());
     }
 
-    static int getElapsedMs(std::chrono::steady_clock::time_point tp) {
-        return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - tp).count();
-    }
-    
-    static int getElapsedUs(std::chrono::steady_clock::time_point tp) {
-        return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - tp).count();
+    static Timer getGlobalStart() {
+        return globalStart;
     }
 
-    int getTickElapsed() {
-        return tickElapsed;
+    double elapsed(Timer start = std::chrono::steady_clock::now()) {
+        return std::chrono::duration<double>(start.tp - tp).count();
     }
 
-    void tick() {
-        std::chrono::steady_clock::time_point temp = lastTick;
-        lastTick = std::chrono::steady_clock::now();
-        tickElapsed = std::chrono::duration_cast<std::chrono::microseconds>(lastTick - temp).count();
+    Timer operator+(double seconds) const {
+        return Timer(tp + std::chrono::steady_clock::duration(std::chrono::microseconds((int)(seconds * 1000000))));
+    }
+
+    void increment(double seconds) {
+        tp += std::chrono::steady_clock::duration(std::chrono::microseconds((int)(seconds * 1000000)));
+    }
+
+    bool operator<(const Timer& rhs) const {
+        return (tp < rhs.tp);
     }
 };
 

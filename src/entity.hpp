@@ -11,17 +11,19 @@
 /// @brief Renderer and motion control for entities
 class Entity {
 public:
-    coord force;
-    double mass = .1;
-    double staticFrictionMaxForce = 14.;
-    double kineticFrictionForce = 12.;
-    coord acceleration;
-    coord velocity;
+    Timer entityTimer;
+    double lastUpdate = -1.;
+    double elapsedSecs = 0.;
+    
     coord position;
-    double maxVelocity = 25.;
-    Timer physicsTimer;
+    double velocity = 0.;
+    coord slideVelocity;
+    double heading = 0.;
+    double headingRotationSpeed = 0.;
 
     std::vector<Graphics::Quad> model;
+
+    virtual void initModel() {}
 
     void pushQuads() {
         UIVec pos = Camera::getScreenPos(position);
@@ -35,41 +37,41 @@ public:
                 quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + position);
                 quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + position);
                 quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) + position);
+                quad.zDepth += (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
                 Graphics::insertQuad(quad);
+
+                if (Graphics::showWireframe) {
+                    Graphics::insertUserWireframe(
+                        Camera::getScreenPos(position),
+                        Camera::getScreenPos(position),
+                        Camera::getScreenPos(position) + Camera::getAngleVector(0.3, heading),
+                        Camera::getScreenPos(position) + Camera::getAngleVector(0.3, heading),
+                        sf::Color::Yellow, sf::Color::Black
+                    );
+                    Graphics::insertUserWireframe(
+                        Camera::getScreenPos(position) + UIVec(5., 0.),
+                        Camera::getScreenPos(position) + UIVec(0., 5.),
+                        Camera::getScreenPos(position) + UIVec(-5., 0.),
+                        Camera::getScreenPos(position) + UIVec(0., -5.),
+                        sf::Color::Magenta, sf::Color::Black
+                    );
+                }
             }
         }
     }
 
-    void updatePhysics() {
-        physicsTimer.tick();
-
-        acceleration = force / mass;
-        if (velocity.len() > 1e-1) { // moving -> kinetic friction
-            if (acceleration.len() < kineticFrictionForce / mass) 
-                acceleration = acceleration - (velocity / velocity.len() * kineticFrictionForce / mass);
-            else 
-                acceleration = acceleration - (acceleration / acceleration.len() * kineticFrictionForce / mass);
+    void updateTimer() {
+        double thisUpdate = entityTimer.elapsed();
+        if (lastUpdate >= 0) {
+            elapsedSecs = thisUpdate - lastUpdate;
         }
-        else { // not moving -> clear acceration or subtract acceleration
-            if (acceleration.len() < staticFrictionMaxForce / mass)
-                acceleration = coord(0, 0);
-            else 
-                acceleration = acceleration - (acceleration / acceleration.len() * staticFrictionMaxForce / mass);
-        }
-        velocity = velocity + (acceleration * ((double)physicsTimer.getTickElapsed() / 1e6));
-        // due to time accuracies, we assume static friction kicks in when velocity switch sides
-        if (velocity.x * (velocity - (acceleration * ((double)physicsTimer.getTickElapsed() / 1e6))).x < 0)
-            velocity.x = 0;
-        if (velocity.y * (velocity - (acceleration * ((double)physicsTimer.getTickElapsed() / 1e6))).y < 0)
-            velocity.y = 0;
+        lastUpdate = thisUpdate;
+    }
 
-        if (velocity.len() < 1e-1)
-            velocity = coord(0, 0);
-        if (velocity.len() > maxVelocity)
-            velocity = velocity * (maxVelocity / velocity.len());
-        
-        position = position + velocity * ((double)physicsTimer.getTickElapsed() / 1e6);
-        force = coord(0, 0);
+    virtual void update() {
+        updateTimer();
+
+
     }
 
 };

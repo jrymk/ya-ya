@@ -43,7 +43,7 @@ public:
 
     static void setCenter(coord c) { center = c; }
     static coord getCenter() { return center; }
-    static void setZoom(double z) { zoom = z; updateScale(); }
+    static void setZoom(double z) { zoom = z; updateScale(); }  
     static double getZoom() { return zoom; }
 
     static sf::Transform getTransform() {
@@ -64,11 +64,18 @@ public:
     static coord getCoord(UIVec pos) {
         return center + coord(getTransform().getInverse().transformPoint((pos - (viewport.pos + viewport.size * UIVec(.5, .5))).getVec2f()));
     }
+
+    static coord getMouseCoord(sf::RenderWindow& renderWindow) {
+        return center + coord(getTransform().getInverse().transformPoint((UIVec(sf::Mouse::getPosition(renderWindow).x, sf::Mouse::getPosition(renderWindow).y) - (viewport.pos + viewport.size * UIVec(.5, .5))).getVec2f()));
+    }
+
+    static UIVec getAngleVector(float len, double angle) {
+        return UIVec(getTransform().transformPoint(sf::Vector2f(std::cos(angle), std::sin(angle)))) * len;
+    }
     
-    static void printCameraInfo() {
+    static void printCameraInfo(sf::RenderWindow& renderWindow) {
         Graphics::setFont(1);
-        coord c = getCoord(UIVec(sf::Mouse::getPosition(*Graphics::getRenderWindow()).x, sf::Mouse::getPosition(*Graphics::getRenderWindow()).y));
-        Graphics::drawText("(" + toString(c.x, 3) + ", " + toString(c.y, 3) + ")", sf::Color::Green, 16, viewport.pos + viewport.size - UIVec(5, 10), 1.);
+        Graphics::drawText("(" + toString(getMouseCoord(renderWindow).x, 3) + ", " + toString(getMouseCoord(renderWindow).y, 3) + ")", sf::Color::Green, 16, viewport.pos + viewport.size - UIVec(5, 10), 1.);
     }
 };
 
