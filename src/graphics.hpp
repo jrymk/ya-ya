@@ -61,6 +61,7 @@ public:
         sf::Color c1 = sf::Color::White;
         sf::Color c2 = sf::Color::White;
         sf::Color c3 = sf::Color::White;
+        float zPosScale = 1.;
 
         Quad() {}
         Quad(float zDepth, UIVec v0, sf::Vector2f t0, UIVec v1, sf::Vector2f t1, UIVec v2, sf::Vector2f t2, UIVec v3, sf::Vector2f t3)

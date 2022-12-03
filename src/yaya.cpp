@@ -39,11 +39,13 @@ int main() {
     Player* player = new Player();
     game.entities.push_back(player);
 
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
+    for (int i = 0; i < 20; i++) {
+        for (int j = 0; j < 20; j++) {
+            if (i >= 9 && i <= 11 && j >= 9 && j <= 11)
+                continue;
             Duck* duck = new Duck();
-            duck->position.x = i - 5;
-            duck->position.y = j - 5;
+            duck->position.x = float(i - 10) / 2;
+            duck->position.y = float(j - 10) / 2;
             game.entities.push_back(duck);
             game.ducks.push_back(duck);
         }
@@ -109,12 +111,16 @@ int main() {
         for (auto duck : game.ducks) {
             if (duck)
             if (Camera::getMouseCoord(window).len(duck->position) < .6) {
-                duck->heading = Camera::getMouseCoord(window).angle(duck->position);
-                duck->velocity = 2. / Camera::getMouseCoord(window).len(duck->position);
+                // duck->heading = Camera::getMouseCoord(window).angle(duck->position);
+                // duck->velocity = 2. / Camera::getMouseCoord(window).len(duck->position);
+                if (duck->zPosition == 0.)
+                    duck->zVelocity = .2;
             }
             else if (player->position.len(duck->position) < .6) {
                 duck->heading = player->position.angle(duck->position);
                 duck->velocity = 2. / player->position.len(duck->position);
+                if (duck->zPosition == 0.)
+                    duck->zVelocity = .2;
             }
             else {
                 // duck->heading = 0.;
@@ -125,9 +131,11 @@ int main() {
             for (auto ducl : game.ducks) {
                 if (duck == ducl)
                     continue;
-                if ((ducl->position.len(duck->position) < .5 && duck->velocity < 0.01) || (ducl->position.len(duck->position) < .4)) {
+                if ((ducl->position.len(duck->position) < .4 && duck->velocity < 0.01) || (ducl->position.len(duck->position) < .3)) {
                     duck->heading = ducl->position.angle(duck->position);
                     duck->velocity = 2. / ducl->position.len(duck->position);
+                    if (duck->zPosition == 0.)
+                    duck->zVelocity = .2;
                 }
                 else {
                     // duck->heading = 0.;
@@ -135,6 +143,8 @@ int main() {
                 }
             }
         }
+
+        player->heading = player->position.angle(Camera::getMouseCoord(window));
         
         game.update();
         game.render();

@@ -45,6 +45,7 @@ public:
     static coord getCenter() { return center; }
     static void setZoom(double z) { zoom = z; updateScale(); }  
     static double getZoom() { return zoom; }
+    static double getScale() { updateScale(); return scale; }
 
     static sf::Transform getTransform() {
         updateScale();
