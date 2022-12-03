@@ -11,24 +11,6 @@ class Duck : public Entity {
 private:
 
 public:
-    // void runActions() {
-    //     std::sort(actions.begin(), actions.end());
-    //     std::vector<Action> insertActionEntity;
-    //     for (int i = actions.size() - 1; i >= 0; i--) {
-    //         if (actions[i].time.elapsed() >= 0) { // started
-    //             runAction(actions[i], insertActionEntity, insertActionGlobal);
-    //             actions[i].deleteFlag = true;
-    //         }
-    //     }
-    //     for (auto& action : insertActionEntity)
-    //         actions.push_back(action); // rerun next round
-    //     std::sort(actions.begin(), actions.end());
-    //     for (int i = actions.size() - 1; i >= 0; i--) {
-    //         if (actions[i].deleteFlag)
-    //             actions.resize(i);
-    //     }
-    // }
-
     void runAction(Action& action, std::vector<Action>& insertActionEntity, std::vector<Action>& insertActionGlobal) override {
         std::stringstream ss(action.action); 
         std::string function;
@@ -61,11 +43,11 @@ public:
                     headingRotationSpeed = 0.;
                 }
                 else {
-                    insertActionEntity.push_back(Entity::Action(Timer::getNow() + 0.2 * std::sqrt(position.len(target)), "duckwalk_to_until " + toString(target.x) + " " + toString(target.y)));
+                    insertActionEntity.push_back(Action(Timer::getNow() + 0.2 * std::sqrt(position.len(target)), "duckwalk_to_until " + toString(target.x) + " " + toString(target.y)));
                 }
             }
             if (function == "lay_egg") {
-                insertActionGlobal.push_back(Entity::Action(Timer::getNow(), "lay_egg " + toString(position.x) + " " + toString(position.y)));
+                insertActionGlobal.push_back(Action(Timer::getNow(), "lay_egg " + toString(position.x) + " " + toString(position.y)));
             }
         }
     }

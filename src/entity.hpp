@@ -5,6 +5,7 @@
 #include "graphics.hpp"
 #include "camera.hpp"
 #include "timer.hpp"
+#include "action.hpp"
 
 #define OUT_OF_SIGHT 500
 #define GRAVITY -1.
@@ -25,27 +26,6 @@ public:
     double headingRotationSpeed = 0.;
     
     std::vector<Graphics::Quad> model;
-
-
-    class Action {
-    public:
-        bool deleteFlag = false;
-        Timer time;
-        std::string action; // is this a good idea?
-        bool rerun = false;
-
-        Action() {}
-        Action(const Timer& time, const std::string& action)
-        : time(time), action(action) {
-        }
-
-        bool operator<(const Action& rhs) {
-            if (deleteFlag != rhs.deleteFlag)
-                return rhs.deleteFlag;
-            return !(time < rhs.time);
-        }
-
-    };
 
     std::vector<Action> actions;
 

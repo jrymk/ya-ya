@@ -5,33 +5,12 @@
 
 class Egg : public Entity {
 public:
-    // void runActions() {
-    //     std::sort(actions.begin(), actions.end());
-    //     std::vector<EggAction> insertActions;
-    //     for (int i = actions.size() - 1; i >= 0; i--) {
-    //         if (actions[i].actionBeginTime.elapsed() >= 0) { // started
-    //             runAction(actions[i], insertActions);
-    //             if (actions[i].rerun) 
-    //                 insertActions.push_back(actions[i]);
-    //             actions[i].deleteFlag = true;
-    //         }
-    //     }
-
-    //     for (auto& action : insertActions)
-    //         insertAction(action.actionBeginTime, action.action);
-    //     std::sort(actions.begin(), actions.end());
-    //     for (int i = actions.size() - 1; i >= 0; i--) {
-    //         if (actions[i].deleteFlag)
-    //             actions.resize(i);
-    //     }
-    // }
-
     void runAction(Action& action, std::vector<Action>& insertActionEntity, std::vector<Action>& insertActionGlobal) override {
         std::stringstream ss(action.action); 
         std::string function;
         while (ss >> function) {
             if (function == "hatch") {
-                insertActionGlobal.push_back(Entity::Action(Timer::getNow(), "hatch " + toString(position.x) + " " + toString(position.y)));
+                insertActionGlobal.push_back(Action(Timer::getNow(), "hatch " + toString(position.x) + " " + toString(position.y)));
                 
                 // delete this;
 

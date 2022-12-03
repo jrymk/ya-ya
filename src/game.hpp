@@ -1,23 +1,23 @@
 #ifndef _GAME_HPP_
 #define _GAME_HPP_
 
+#include <map>
 #include "entity.hpp"
 #include "duck.hpp"
 #include "objects.hpp"
 
-
 class Game {
 public:
-    std::vector<Entity*> entities;
-    std::vector<Duck*> ducks;
-    std::vector<Entity::Action> globalActions;
+    std::map<std::string, Entity*> entities;
+    std::map<std::string, Duck*> ducks;
+    std::vector<Action> globalActions;
 
     void update() {
-        std::vector<Entity::Action> insertActionGlobal;
+        std::vector<Action> insertActionGlobal;
 
         for (auto& entity : entities) {
-            entity->runActions(insertActionGlobal);
-            entity->update();
+            entity.second->runActions(insertActionGlobal);
+            entity.second->update();
         }
 
         std::sort(globalActions.begin(), globalActions.end());
@@ -37,7 +37,7 @@ public:
         }
     }
 
-    virtual void runAction(Entity::Action& action, std::vector<Entity::Action>& insertActionGlobal) {
+    virtual void runAction(Action& action, std::vector<Action>& insertActionGlobal) {
         std::stringstream ss(action.action); 
         std::string function;
         while (ss >> function) {
@@ -46,28 +46,28 @@ public:
                 ss >> position.x >> position.y;
                 Egg* egg = new Egg();
                 egg->position = position;
-                egg->actions.push_back(Entity::Action(Timer::getNow(), "hop"));
-                egg->actions.push_back(Entity::Action(Timer::getNow() + getRand() * 5., "hatch"));
-                entities.push_back(egg);
+                egg->actions.push_back(Action(Timer::getNow(), "hop"));
+                egg->actions.push_back(Action(Timer::getNow() + getRand() * 5., "hatch"));
+                entities.insert({"egg:" + toString(position.x), egg});
             }
             if (function == "hatch") {
                 coord position;
                 ss >> position.x >> position.y;
                 Duck* duck = new Duck();
                 duck->position = position;
-                duck->actions.push_back(Entity::Action(Timer::getNow(), "hop"));
-                // duck->actions.push_back(Entity::Action(Timer::getNow() + getRand() * 5., "lay_egg"));
-                duck->actions.push_back(Entity::Action(Timer::getNow() + 1., "duckwalk_to_until " + toString(position.x + 3. * (getRand() - 0.5)) + " " + toString(position.y + 3. * (getRand() - 0.5))));
+                duck->actions.push_back(Action(Timer::getNow(), "hop"));
+                // duck->actions.push_back(Action(Timer::getNow() + getRand() * 5., "lay_egg"));
+                duck->actions.push_back(Action(Timer::getNow() + 1., "duckwalk_to_until " + toString(position.x + 3. * (getRand() - 0.5)) + " " + toString(position.y + 3. * (getRand() - 0.5))));
 
-                entities.push_back(duck);
-                ducks.push_back(duck);
+                entities.insert({"duck:" + toString(position.x), duck});
+                ducks.insert({"duck:" + toString(position.x), duck});
             }
         }
     }
 
     void render() {
         for (auto entity : entities) {
-            entity->pushQuads();
+            entity.second->pushQuads();
         }
     }
 

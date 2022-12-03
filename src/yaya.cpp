@@ -38,7 +38,7 @@ int main() {
 
     
     Player* player = new Player();
-    game.entities.push_back(player);
+    game.entities.insert({"player:player", player});
 
     // for (int i = 0; i < 20; i++) {
     //     for (int j = 0; j < 20; j++) {
@@ -55,29 +55,29 @@ int main() {
         Duck* duck = new Duck();
         duck->position.x = 2.;
         duck->position.y = 2.;
-        game.entities.push_back(duck);
-        game.ducks.push_back(duck);
+        game.entities.insert({"duck:0", duck});
+        game.ducks.insert({"duck:0", duck});
     }
     {
         Duck* duck = new Duck();
         duck->position.x = 2.;
         duck->position.y = -2.;
-        game.entities.push_back(duck);
-        game.ducks.push_back(duck);
+        game.entities.insert({"duck:1", duck});
+        game.ducks.insert({"duck:1", duck});
     }
     {
         Duck* duck = new Duck();
         duck->position.x = -2.;
         duck->position.y = -2.;
-        game.entities.push_back(duck);
-        game.ducks.push_back(duck);
+        game.entities.insert({"duck:2", duck});
+        game.ducks.insert({"duck:2", duck});
     }
     {
         Duck* duck = new Duck();
         duck->position.x = -2.;
         duck->position.y = 2.;
-        game.entities.push_back(duck);
-        game.ducks.push_back(duck);
+        game.entities.insert({"duck:3", duck});
+        game.ducks.insert({"duck:3", duck});
     }
     
     sf::Texture tilemap;
@@ -119,8 +119,8 @@ int main() {
                 }
                 if (event.key.code == sf::Keyboard::F5) {
                     for (auto duck : game.ducks) {
-                        if (duck->actions.empty()) {
-                            duck->actions.push_back(Entity::Action(Timer::getNow() + (getRand() * 5.), "lay_egg"));
+                        if (duck.second->actions.empty()) {
+                            duck.second->actions.push_back(Action(Timer::getNow() + (getRand() * 5.), "lay_egg"));
                         }
                     }
                     debug << "Lay eggs\n";
@@ -166,7 +166,7 @@ int main() {
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Button::Left) {
                     for (auto duck : game.ducks) 
-                        duck->actions.push_back(Entity::Action(Timer::getNow(), "duckwalk_to_until " + toString(Camera::getMouseCoord(window).x + (getRand() - .5)) + " " + toString(Camera::getMouseCoord(window).y + (getRand() - .5))));
+                        duck.second->actions.push_back(Action(Timer::getNow(), "duckwalk_to_until " + toString(Camera::getMouseCoord(window).x + (getRand() - .5)) + " " + toString(Camera::getMouseCoord(window).y + (getRand() - .5))));
                 }
 
             }
