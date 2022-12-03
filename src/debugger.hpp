@@ -124,11 +124,11 @@ void renderDebugOverlay(sf::RenderWindow& window) {
     text.setPosition(0, 0);
     text.setFont(debuggerFont);
     text.setString(debugStream.str());
-    text.setCharacterSize(16);
+    text.setCharacterSize(12);
     text.setFillColor(sf::Color::Red);
     sf::FloatRect bounds = text.getGlobalBounds();
     text.setPosition(6, window.getView().getSize().y - bounds.height + bounds.top - 20);
-    text.setOutlineColor(sf::Color::Black);
+    text.setOutlineColor(sf::Color(255, 255, 255, 150));
     text.setOutlineThickness(2.);
     window.draw(text);
 

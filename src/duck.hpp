@@ -2,14 +2,74 @@
 #define _DUCK_HPP_
 
 #include <vector>
+#include <sstream>
 #include <cmath>
 #include "entity.hpp"
 #include "timer.hpp"
 
-class Duck: public Entity {
+class Duck : public Entity {
 private:
 
 public:
+    // void runActions() {
+    //     std::sort(actions.begin(), actions.end());
+    //     std::vector<Action> insertActionEntity;
+    //     for (int i = actions.size() - 1; i >= 0; i--) {
+    //         if (actions[i].time.elapsed() >= 0) { // started
+    //             runAction(actions[i], insertActionEntity, insertActionGlobal);
+    //             actions[i].deleteFlag = true;
+    //         }
+    //     }
+    //     for (auto& action : insertActionEntity)
+    //         actions.push_back(action); // rerun next round
+    //     std::sort(actions.begin(), actions.end());
+    //     for (int i = actions.size() - 1; i >= 0; i--) {
+    //         if (actions[i].deleteFlag)
+    //             actions.resize(i);
+    //     }
+    // }
+
+    void runAction(Action& action, std::vector<Action>& insertActionEntity, std::vector<Action>& insertActionGlobal) override {
+        std::stringstream ss(action.action); 
+        std::string function;
+        while (ss >> function) {
+            if (function == "rerun")
+                action.rerun = true;
+            if (function == "hop") {
+                if (zPosition == 0.)
+                    zVelocity = .2;
+            }
+            if (function == "duckwalk_to_until") {
+                coord target;
+                ss >> target.x >> target.y;
+
+                if (position.len(target) > 2.) {
+                    coord randTarget = target + coord((getRand() * 2. - 1.), (getRand() * 2. - 1.));
+                    if (std::abs(subtractAngle(heading, randTarget.angle(position))) > 1)
+                        heading = position.angle(randTarget) + .2 * (getRand() * .4 - .2);
+                    headingRotationSpeed = -0.2 * subtractAngle(heading, position.angle(randTarget)) + (getRand() * .1 - .05);
+                    velocity = 4. + (getRand() * 2. - 1.);
+                    
+                }
+                else {
+                    heading = position.angle(target);
+                    velocity = 3. + (getRand() * 2. - 1.);
+                }
+
+                if (position.len(target) < .1) {
+                    velocity = 0.;
+                    headingRotationSpeed = 0.;
+                }
+                else {
+                    insertActionEntity.push_back(Entity::Action(Timer::getNow() + 0.2 * std::sqrt(position.len(target)), "duckwalk_to_until " + toString(target.x) + " " + toString(target.y)));
+                }
+            }
+            if (function == "lay_egg") {
+                insertActionGlobal.push_back(Entity::Action(Timer::getNow(), "lay_egg " + toString(position.x) + " " + toString(position.y)));
+            }
+        }
+    }
+
     void initModel() override {
         model.push_back(
             Graphics::Quad(

@@ -14,6 +14,7 @@
  * F2: reset graph min max
  * F3: clear debug output
  * F4: toggle debug out of sight
+ * F5: lay eggs
  * F11: toggle fullscreen
  */
 
@@ -39,18 +40,45 @@ int main() {
     Player* player = new Player();
     game.entities.push_back(player);
 
-    for (int i = 0; i < 20; i++) {
-        for (int j = 0; j < 20; j++) {
-            if (i >= 9 && i <= 11 && j >= 9 && j <= 11)
-                continue;
-            Duck* duck = new Duck();
-            duck->position.x = float(i - 10) / 2;
-            duck->position.y = float(j - 10) / 2;
-            game.entities.push_back(duck);
-            game.ducks.push_back(duck);
-        }
+    // for (int i = 0; i < 20; i++) {
+    //     for (int j = 0; j < 20; j++) {
+    //         if (i >= 9 && i <= 11 && j >= 9 && j <= 11)
+    //             continue;
+    //         Duck* duck = new Duck();
+    //         duck->position.x = float(i - 10);
+    //         duck->position.y = float(j - 10);
+    //         game.entities.push_back(duck);
+    //         game.ducks.push_back(duck);
+    //     }
+    // }
+    {
+        Duck* duck = new Duck();
+        duck->position.x = 2.;
+        duck->position.y = 2.;
+        game.entities.push_back(duck);
+        game.ducks.push_back(duck);
     }
-    
+    {
+        Duck* duck = new Duck();
+        duck->position.x = 2.;
+        duck->position.y = -2.;
+        game.entities.push_back(duck);
+        game.ducks.push_back(duck);
+    }
+    {
+        Duck* duck = new Duck();
+        duck->position.x = -2.;
+        duck->position.y = -2.;
+        game.entities.push_back(duck);
+        game.ducks.push_back(duck);
+    }
+    {
+        Duck* duck = new Duck();
+        duck->position.x = -2.;
+        duck->position.y = 2.;
+        game.entities.push_back(duck);
+        game.ducks.push_back(duck);
+    }
     
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("tilemap.png"))
@@ -61,7 +89,90 @@ int main() {
 
 
     while (window.isOpen()) {
-        handleEvents(window);
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+            if (event.type == sf::Event::Resized) {
+                debug << "Resized to " << event.size.width << "*" << event.size.height << "\n";
+                window.setSize(sf::Vector2u(event.size.width, event.size.height));
+                sf::View view = window.getView();
+                view.setSize(sf::Vector2f(event.size.width, event.size.height));
+                view.setCenter(sf::Vector2f(event.size.width / 2., event.size.height / 2.));
+                window.setView(view);
+            }
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::F1) {
+                    Graphics::showWireframe = !Graphics::showWireframe;
+                    debug << "Toggled wireframe: " << Graphics::showWireframe << "\n";
+                }
+                if (event.key.code == sf::Keyboard::F2) {
+                    for (int i = 0; i < debugGraphs.size(); i++)
+                        debugGraphs[i].resetRange();
+                }
+                if (event.key.code == sf::Keyboard::F3) {
+                    debugStream.str("");
+                }
+                if (event.key.code == sf::Keyboard::F4) {
+                    Graphics::debugOutOfSight = !Graphics::debugOutOfSight;
+                    debug << "Toggled debug out of sight: " << Graphics::debugOutOfSight << "\n";
+                }
+                if (event.key.code == sf::Keyboard::F5) {
+                    for (auto duck : game.ducks) {
+                        if (duck->actions.empty()) {
+                            duck->actions.push_back(Entity::Action(Timer::getNow() + (getRand() * 5.), "lay_egg"));
+                        }
+                    }
+                    debug << "Lay eggs\n";
+                }
+                if (event.key.code == sf::Keyboard::F11) {
+                    if (!graphicsIsFullscreen) {
+                        graphicsIsFullscreen = true;
+                        window.close();
+                        sf::ContextSettings settings;
+                        settings.antialiasingLevel = 4;
+                        window.create(sf::VideoMode::getFullscreenModes()[0], L"Ya-Ya!", sf::Style::Fullscreen, settings);
+                        window.setVerticalSyncEnabled(true);
+                        window.setKeyRepeatEnabled(false);
+                    }
+                    else {
+                        graphicsIsFullscreen = false;
+                        window.close();
+                        sf::ContextSettings settings;
+                        settings.antialiasingLevel = 4;
+                        window.create(sf::VideoMode(1600, 900), L"Ya-Ya!", sf::Style::Default, settings);
+                        window.setVerticalSyncEnabled(true);
+                        window.setKeyRepeatEnabled(false);
+                    }
+                    debug << "Toggled fullscreen: " << graphicsIsFullscreen << "\n";
+                }
+                if (event.key.code == sf::Keyboard::Right) {
+                }
+                if (event.key.code == sf::Keyboard::Left) {
+                }
+                if (event.key.code == sf::Keyboard::P) {
+                    updatePhysics = true;
+                }
+            }
+            if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::Right) {
+                }
+                if (event.key.code == sf::Keyboard::Left) {
+                }
+            }
+            if (event.type == sf::Event::MouseWheelMoved) {
+                mouseWheelPosition += event.mouseWheel.delta;
+            }
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.mouseButton.button == sf::Mouse::Button::Left) {
+                    for (auto duck : game.ducks) 
+                        duck->actions.push_back(Entity::Action(Timer::getNow(), "duckwalk_to_until " + toString(Camera::getMouseCoord(window).x + (getRand() - .5)) + " " + toString(Camera::getMouseCoord(window).y + (getRand() - .5))));
+                }
+
+            }
+        }
+
+        // handleEvents(window);
         window.clear(sf::Color(129, 214, 131));
 
         UIRect rectWindow(sf::FloatRect(window.getView().getSize().x / 8., window.getView().getSize().y / 8., window.getView().getSize().x / 4. * 3., window.getView().getSize().y / 4. * 3.));
@@ -108,41 +219,41 @@ int main() {
         debugGraphs[1].newGraphEntry(player->slideVelocity.x);
         debugGraphs[2].newGraphEntry(player->slideVelocity.y);
 
-        for (auto duck : game.ducks) {
-            if (duck)
-            if (Camera::getMouseCoord(window).len(duck->position) < .6) {
-                // duck->heading = Camera::getMouseCoord(window).angle(duck->position);
-                // duck->velocity = 2. / Camera::getMouseCoord(window).len(duck->position);
-                if (duck->zPosition == 0.)
-                    duck->zVelocity = .2;
-            }
-            else if (player->position.len(duck->position) < .6) {
-                duck->heading = player->position.angle(duck->position);
-                duck->velocity = 2. / player->position.len(duck->position);
-                if (duck->zPosition == 0.)
-                    duck->zVelocity = .2;
-            }
-            else {
-                // duck->heading = 0.;
-                duck->velocity = duck->velocity * 0.9;
-            }
-        }
-        for (auto duck : game.ducks) {
-            for (auto ducl : game.ducks) {
-                if (duck == ducl)
-                    continue;
-                if ((ducl->position.len(duck->position) < .4 && duck->velocity < 0.01) || (ducl->position.len(duck->position) < .3)) {
-                    duck->heading = ducl->position.angle(duck->position);
-                    duck->velocity = 2. / ducl->position.len(duck->position);
-                    if (duck->zPosition == 0.)
-                    duck->zVelocity = .2;
-                }
-                else {
-                    // duck->heading = 0.;
-                    // duck->velocity = duck->velocity * 0.99;
-                }
-            }
-        }
+        // for (auto duck : game.ducks) {
+        //     if (Camera::getMouseCoord(window).len(duck->position) < .6) {
+        //         // duck->heading = Camera::getMouseCoord(window).angle(duck->position);
+        //         // duck->velocity = 2. / Camera::getMouseCoord(window).len(duck->position);
+        //         if (duck->zPosition == 0.) {
+        //             duck->insertAction(Timer::getNow(), "duckwalk_to_until 0 0");
+        //         }
+        //         //     duck->zVelocity = .2;
+        //     }
+        //     else if (player->position.len(duck->position) < .6) {
+        //         duck->heading = player->position.angle(duck->position);
+        //         duck->velocity = 2. / player->position.len(duck->position);
+        //         // if (duck->zPosition == 0.)
+        //         //     duck->zVelocity = .2;
+        //     }
+        //     else {
+        //         // duck->heading = 0.;
+        //         duck->velocity = duck->velocity * 0.9;
+        //     }
+        // }
+        // for (auto duck : game.ducks) {
+        //     for (auto ducl : game.ducks) {
+        //         if (duck == ducl)
+        //             continue;
+        //         if ((ducl->position.len(duck->position) < .4 && duck->velocity < 0.01) || (ducl->position.len(duck->position) < .3)) {
+        //             duck->heading = ducl->position.angle(duck->position);
+        //             duck->velocity = 2. / ducl->position.len(duck->position);
+        //         }
+        //         else {
+        //             duck->heading = 0.;
+        //             // duck->velocity = duck->velocity * 0.99;
+        //         }
+        //     }
+        // }
+
 
         player->heading = player->position.angle(Camera::getMouseCoord(window));
         

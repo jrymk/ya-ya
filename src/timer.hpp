@@ -10,6 +10,7 @@ class Timer {
 
 public:
     Timer() { tp = std::chrono::steady_clock::now(); }
+    Timer(const Timer& timer) { tp = timer.tp; }
     Timer(std::chrono::steady_clock::time_point tp): tp(tp) {}
 
     static Timer getNow() {
