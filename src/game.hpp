@@ -1,10 +1,12 @@
 #ifndef _GAME_HPP_
 #define _GAME_HPP_
 
+#include <fstream>
 #include <map>
 #include "entity.hpp"
 #include "duck.hpp"
 #include "objects.hpp"
+#include "serialization.hpp"
 
 class Game {
 public:
@@ -71,6 +73,28 @@ public:
         }
     }
 
+    static constexpr char* defaultFilePath = "..\\output\\saveFile.dat";
+    void save() {
+        std::ofstream fout(defaultFilePath);
+        if(!fout.is_open()) std::cerr << "file saving failed";
+
+        fout << Serialization::serialize<std::map<std::string, Duck*> >(ducks);
+        if(fout.bad()) std::cerr << "file saving failed";
+        fout.close();
+    }
+
+    void load(const char* filepath = defaultFilePath) {
+        std::ifstream fin(filepath);
+        if(!fin.is_open()) std::cerr << "file loading failed";
+
+        std::string str;
+        fin >> str;
+        if(fin.bad()) std::cerr << "file loading failed";
+        Serialization::unserialize<std::map<std::string, Duck*> >(ducks, str);
+        for(auto& p : ducks) entities.insert(p);
+
+        fin.close();
+    }
 };
 
 #endif

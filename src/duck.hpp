@@ -6,6 +6,7 @@
 #include <cmath>
 #include "entity.hpp"
 #include "timer.hpp"
+#include "serialization.hpp"
 
 class Duck : public Entity {
 private:
@@ -102,6 +103,9 @@ public:
             zVelocity = 0.;
     }
 
+    constexpr static auto properties = std::make_tuple(
+        SaveUtilities::property(&Duck::position, "Dk.ps")
+    );
 };
 
 #endif

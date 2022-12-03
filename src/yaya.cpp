@@ -35,10 +35,9 @@ int main() {
     debugGraphs.push_back(DebugGraph("Velocity Y", 200, 150, 10000));
 
     Game game;
-
     
     Player* player = new Player();
-    game.entities.insert({"player:player", player});
+    game.entities.insert({"player(player)", player});
 
     // for (int i = 0; i < 20; i++) {
     //     for (int j = 0; j < 20; j++) {
@@ -51,34 +50,35 @@ int main() {
     //         game.ducks.push_back(duck);
     //     }
     // }
-    {
+    /*{
         Duck* duck = new Duck();
         duck->position.x = 2.;
         duck->position.y = 2.;
-        game.entities.insert({"duck:0", duck});
-        game.ducks.insert({"duck:0", duck});
+        game.entities.insert({"duck(0)", duck});
+        game.ducks.insert({"duck(0)", duck});
     }
     {
         Duck* duck = new Duck();
         duck->position.x = 2.;
         duck->position.y = -2.;
-        game.entities.insert({"duck:1", duck});
-        game.ducks.insert({"duck:1", duck});
+        game.entities.insert({"duck(1)", duck});
+        game.ducks.insert({"duck(1)", duck});
     }
     {
         Duck* duck = new Duck();
         duck->position.x = -2.;
         duck->position.y = -2.;
-        game.entities.insert({"duck:2", duck});
-        game.ducks.insert({"duck:2", duck});
+        game.entities.insert({"duck(2)", duck});
+        game.ducks.insert({"duck(2)", duck});
     }
     {
         Duck* duck = new Duck();
         duck->position.x = -2.;
         duck->position.y = 2.;
-        game.entities.insert({"duck:3", duck});
-        game.ducks.insert({"duck:3", duck});
-    }
+        game.entities.insert({"duck(3)", duck});
+        game.ducks.insert({"duck(3)", duck});
+    }*/
+    game.load();
     
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("tilemap.png"))
@@ -278,6 +278,7 @@ int main() {
         renderDebugOverlay(window);
         window.display();
     }
+    game.save();
 
     return 0;
 }

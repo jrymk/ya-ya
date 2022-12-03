@@ -3,6 +3,7 @@
 
 #include "utilities.hpp"
 #include "graphics.hpp"
+#include "serialization.hpp"
 
 struct coord {
     double x = 0.;
@@ -20,6 +21,11 @@ struct coord {
     double len() {return std::sqrt( double(x * x + y * y) );}
     double len(const coord& r) {return std::sqrt( double((x - r.x) * (x - r.x) + (y - r.y) * (y - r.y)) );}
     double angle(const coord& r) {return std::acos(double(r.x - x) / len(r)) * ((r.y - y >= 0) ? double(1) : double(-1));}
+
+    constexpr static auto properties = std::make_tuple(
+        SaveUtilities::property(&coord::x, "cd.x"),
+        SaveUtilities::property(&coord::y, "cd.y")
+    );
 };
 
 /// @brief handles mapping between different coordinate spaces

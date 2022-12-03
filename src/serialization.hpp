@@ -279,8 +279,6 @@ namespace Serialization{
     }
     /* END unserialize */
 }
-#endif
-
 
 template<typename T>
 std::string rserialize(const T& obj){
@@ -290,3 +288,4 @@ template<typename T>
 void runserialize(T& obj, const std::string& str){
     Serialization::unserialize<T>(obj, str);
 }
+#endif
