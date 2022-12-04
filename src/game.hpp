@@ -73,7 +73,7 @@ public:
         }
     }
 
-    static constexpr char* defaultFilePath = "..\\output\\saveFile.dat";
+    static constexpr const char* defaultFilePath = "..\\output\\saveFile.dat";
     void save() {
         std::ofstream fout(defaultFilePath);
         if(!fout.is_open()) std::cerr << "file saving failed";
