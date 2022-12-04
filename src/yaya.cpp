@@ -269,7 +269,7 @@ int main() {
                 if (e.first == f.first)
                     continue;
 
-                if (e.second->position.len(f.second->position) < .4) {
+                if (e.second->position.len(f.second->position) < .3) {
                     game.pushAction("game", Timer::getNow(), "process_collision " + e.first + " " + f.first);
                 }
             }

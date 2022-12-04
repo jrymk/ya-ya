@@ -63,9 +63,10 @@ public:
                 double distance;
                 ss >> velocity.x >> velocity.y >> distance;
                 position = position + velocity / velocity.len() * std::min(velocity.len() * elapsedSecs, distance);
-                distance -= (velocity / elapsedSecs).len();
+                distance -= velocity.len() * elapsedSecs;
+                velocity = velocity / velocity.len() * std::max(distance / 0.5, velocity.len() - 0.05 * elapsedSecs); // deccelerate
                 if (distance > 0.)
-                    followUpActions.push_back(Action("slide_velocity_distance", Timer::getNow(), "slide_velocity_distance " + toStr(velocity.x) + " " + toStr(velocity.y) + " " + toStr(distance)));
+                    followUpActions.push_back(Action(id, Timer::getNow(), "slide_velocity_distance " + toStr(velocity.x) + " " + toStr(velocity.y) + " " + toStr(distance)));
             }
         }
     }
@@ -106,9 +107,7 @@ public:
         initModel();
     }
 
-    void update() override {
-        updateTimer();
-
+    void customUpdate() override {
         heading += headingRotationSpeed * elapsedSecs;
         position.x += velocity * std::cos(heading) * elapsedSecs;
         position.y += velocity * std::sin(heading) * elapsedSecs;

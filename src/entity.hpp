@@ -6,6 +6,7 @@
 #include "camera.hpp"
 #include "timer.hpp"
 #include "action.hpp"
+#include <deque>
 
 #define OUT_OF_SIGHT 500
 #define GRAVITY -1.
@@ -21,6 +22,7 @@ public:
     double elapsedSecs = 0.;
 
     coord position;
+    std::deque<std::pair<Timer, coord>> historyPosition;
     double zPosition = 0.;
     double velocity = 0.;
     double zVelocity = 0.;
@@ -72,12 +74,18 @@ public:
         lastUpdate = thisUpdate;
     }
 
-    virtual void update() {
+    void update() {
         updateTimer();
-
-
+        historyPosition.push_front({Timer::getNow(), position});
+        while (!historyPosition.empty() && historyPosition.front().first.elapsed() >= 1.0)
+            historyPosition.pop_back();
+        
+        customUpdate();
     }
 
+    virtual void customUpdate() {
+
+    }
 };
 
 #endif

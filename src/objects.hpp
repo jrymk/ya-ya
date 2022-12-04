@@ -38,9 +38,7 @@ public:
         initModel();
     }
 
-    void update() override {
-        updateTimer();
-
+    void customUpdate() override {
         heading += headingRotationSpeed * elapsedSecs;
         position.x += velocity * std::cos(heading) * elapsedSecs;
         position.y += velocity * std::sin(heading) * elapsedSecs;
