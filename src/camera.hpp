@@ -32,7 +32,7 @@ struct coord {
 class Camera {
     inline static UIRect viewport;
     inline static coord center;
-    inline static double zoom = 32.; // the span of the camera, in sqrt(w*h) coord space
+    inline static double zoom = 64.; // the span of the camera, in sqrt(w*h) coord space
     inline static double scale = 1.;
 
     static void updateScale() { scale = std::sqrt(viewport.size.x * viewport.size.y) / zoom; }

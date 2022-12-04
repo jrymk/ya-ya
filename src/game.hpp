@@ -133,8 +133,10 @@ public:
             debug << "Entity insertion failed because name is undefined";
             return;
         }
-        if (entities.find(entity->id) == entities.end())
+        if (entities.find(entity->id) == entities.end()) {
             entities.insert({entity->id, entity});
+            pushAction(entity->id, Timer::getNow(), "init");
+        }
         else {
             debug << "Entity insertion failed because name \"" << entity->id << "\" is already taken";
             return;

@@ -57,32 +57,28 @@ int main() {
         duck->id = game.newId("duck");
         duck->position.x = 2.;
         duck->position.y = 2.;
-        game.entities.insert({duck->id, duck});
-        game.ducks.insert({duck->id, duck});
+        game.insertEntity(duck);
     }
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
         duck->position.x = 2.;
         duck->position.y = -2.;
-        game.entities.insert({duck->id, duck});
-        game.ducks.insert({duck->id, duck});
+        game.insertEntity(duck);
     }
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
         duck->position.x = -2.;
         duck->position.y = -2.;
-        game.entities.insert({duck->id, duck});
-        game.ducks.insert({duck->id, duck});
+        game.insertEntity(duck);
     }
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
         duck->position.x = -2.;
         duck->position.y = 2.;
-        game.entities.insert({duck->id, duck});
-        game.ducks.insert({duck->id, duck});
+        game.insertEntity(duck);
     }
 
     // game.load();

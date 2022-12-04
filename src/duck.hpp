@@ -16,6 +16,13 @@ public:
         std::stringstream ss(action.action); 
         std::string function;
         while (ss >> function) {
+            if (function == "init") {
+                followUpActions.push_back(Action(id, Timer::getNow() + 10. + getRand() * 40., "wander_loop"));
+            }
+            if (function == "wander_loop") {
+                followUpActions.push_back(Action(id, Timer::getNow() + 10. + getRand() * 40., "wander_loop"));
+                followUpActions.push_back(Action(id, Timer::getNow(), "duckwalk_to_until " + toStr(position.x + getRand() * 5.) + " " + toStr(position.y + getRand() * 5.)));
+            }
             if (function == "hop") {
                 if (zPosition == 0.)
                     zVelocity = .2;
@@ -30,7 +37,6 @@ public:
                         heading = position.angle(randTarget) + .2 * (getRand() * .4 - .2);
                     headingRotationSpeed = -0.2 * subtractAngle(heading, position.angle(randTarget)) + (getRand() * .1 - .05);
                     velocity = 4. + (getRand() * 2. - 1.);
-                    
                 }
                 else {
                     heading = position.angle(target);
@@ -68,6 +74,7 @@ public:
                 if (distance > 0.)
                     followUpActions.push_back(Action(id, Timer::getNow(), "slide_velocity_distance " + toStr(velocity.x) + " " + toStr(velocity.y) + " " + toStr(distance)));
             }
+
         }
     }
 
