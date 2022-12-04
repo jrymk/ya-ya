@@ -9,17 +9,20 @@
 #include "serialization.hpp"
 
 class Game {
-    std::vector<Action> actionList;
 
 public:
+    std::vector<Action> actionList;
+    double updateTime;
     std::map<std::string, Duck*> ducks;
     std::map<std::string, Entity*> entities;
     
     void update() {
+        Timer updateTimer;
         for (auto& entity : entities)
             entity.second->update();
 
         runActions();
+        updateTime = updateTimer.elapsed();
     }
 
     void runActions() {
@@ -27,8 +30,11 @@ public:
 
         std::sort(actionList.begin(), actionList.end());
         for (int i = actionList.size() - 1; i >= 0; i--) {
-            if (actionList[i].time.elapsed() >= 0) { // started
+            if (actionList[i].time.elapsed() >= 0 && !actionList[i].ranFlag) { // started
                 runAction(actionList[i], followUpActions);
+                actionList[i].ranFlag = true;
+            }
+            if (actionList[i].time.elapsed() >= 0.) {
                 actionList[i].deleteFlag = true;
             }
         }
@@ -61,7 +67,7 @@ public:
                 coord position;
                 ss >> position.x >> position.y;
                 Egg* egg = new Egg();
-                egg->id = "[egg]" + toStr(rand());
+                egg->id = "egg$" + makeId();
                 egg->position = position;
                 pushAction(egg->id, Timer::getNow(), "hop");
                 pushAction(egg->id, Timer::getNow() + getRand() * 10., "hatch");
@@ -71,7 +77,7 @@ public:
                 coord position;
                 ss >> position.x >> position.y;
                 Duck* duck = new Duck();
-                duck->id = "[duck]" + toStr(rand());
+                duck->id = "duck$" + makeName();
                 duck->position = position;
                 pushAction(duck->id, Timer::getNow(), "hop");
                 // duck->actions.push_back(Action(Timer::getNow() + getRand() * 5., "lay_egg"));
@@ -80,11 +86,57 @@ public:
                 entities.insert({duck->id, duck});
                 ducks.insert({duck->id, duck});
             }
+            if (function == "process_collision") {
+                std::string eid, fid;
+                ss >> eid >> fid;
+                Entity* e = findEntity(eid);
+                Entity* f = findEntity(fid);
+                if (!e || !f)
+                    return;
+                coord delta = f->position - e->position;
+                coord move = delta / delta.len() / delta.len();
+                pushAction(e->id, Timer::getNow(), "slide_velocity_distance " + toStr(-move.x) + " " + toStr(-move.y) + " 0.2");
+                pushAction(f->id, Timer::getNow(), "slide_velocity_distance " + toStr(move.x) + " " + toStr(move.y) + " 0.2");
+            }
         }
+    }
+
+    Entity* findEntity(std::string id) {
+        auto result = entities.find(id);
+        if (result == entities.end()) {
+            debug << "Find entity failed when tring to find \"" << id << "\"";
+            return nullptr;
+        }
+        return result->second;
     }
 
     void pushAction(std::string id, Timer timer, std::string action) {
         actionList.push_back(Action(id, timer, action));
+    }
+
+    std::string newId(const std::string& type) {
+        std::string id;
+        if (type == "duck")
+            id = type + "$" + makeName();
+        else 
+            id = type + "$" + makeId();
+        if (entities.find(id) == entities.end())
+            return id;
+        else
+            return newId(type);
+    }
+
+    void insertEntity(Entity* entity) {
+        if (entity->id == "undefined") {
+            debug << "Entity insertion failed because name is undefined";
+            return;
+        }
+        if (entities.find(entity->id) == entities.end())
+            entities.insert({entity->id, entity});
+        else {
+            debug << "Entity insertion failed because name \"" << entity->id << "\" is already taken";
+            return;
+        }
     }
 
     void render() {
@@ -93,9 +145,18 @@ public:
         }
 
         std::stringstream ss;
-        for (auto a : actionList) {
-            ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << a.time.elapsed() << "s  " << std::left << std::setw(20) << a.id << "  " << a.action << "\n";
+        for (int i = actionList.size() - 1; i >= 0; i--) {
+            ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << actionList[i].time.elapsed() << "s  " << std::left << std::setw(20) << actionList[i].id << "  " << actionList[i].action << "\n";
+            if (i <= int(actionList.size()) - 101) {
+                ss << "... (truncated)\n";
+                break;
+            }
         }
+
+        for (auto entity : entities) {
+            Graphics::drawText(entity.first, sf::Color::Black, 14, Camera::getScreenPos(entity.second->position) + UIVec(0., 30.), .5, sf::Color(255, 255, 255, 100), 3.);
+        }
+
         Graphics::drawText(ss.str(), sf::Color::Cyan, 12, UIVec(2., 55.), 0., sf::Color(0, 0, 0, 100), 2.);
     }
 

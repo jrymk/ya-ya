@@ -19,6 +19,7 @@
  */
 
 int main() {
+    srand(time(0));
     sf::ContextSettings settings;
     settings.antialiasingLevel = 4;
     sf::RenderWindow window;
@@ -30,14 +31,15 @@ int main() {
     Graphics::loadFont(1, "CascadiaCode.ttf");
     FramerateCounter fc;
 
-    debugGraphs.push_back(DebugGraph("Quads", 200, 150, 10000));
-    debugGraphs.push_back(DebugGraph("Velocity X", 200, 150, 10000));
-    debugGraphs.push_back(DebugGraph("Velocity Y", 200, 150, 10000));
+    debugGraphs.push_back(DebugGraph("entities", 200, 150, 10000));
+    debugGraphs.push_back(DebugGraph("actions", 200, 150, 10000));
+    debugGraphs.push_back(DebugGraph("quads", 200, 150, 10000));
+    debugGraphs.push_back(DebugGraph("update time", 200, 150, 10000));
 
     Game game;
     
     Player* player = new Player();
-    game.entities.insert({"[player]player", player});
+    game.entities.insert({"player$kung", player});
 
     // for (int i = 0; i < 20; i++) {
     //     for (int j = 0; j < 20; j++) {
@@ -52,35 +54,35 @@ int main() {
     // }
     {
         Duck* duck = new Duck();
-        duck->id = "[duck]0";
+        duck->id = game.newId("duck");
         duck->position.x = 2.;
         duck->position.y = 2.;
-        game.entities.insert({"[duck]0", duck});
-        game.ducks.insert({"[duck]0", duck});
+        game.entities.insert({duck->id, duck});
+        game.ducks.insert({duck->id, duck});
     }
     {
         Duck* duck = new Duck();
-        duck->id = "[duck]1";
+        duck->id = game.newId("duck");
         duck->position.x = 2.;
         duck->position.y = -2.;
-        game.entities.insert({"[duck]1", duck});
-        game.ducks.insert({"[duck]1", duck});
+        game.entities.insert({duck->id, duck});
+        game.ducks.insert({duck->id, duck});
     }
     {
         Duck* duck = new Duck();
-        duck->id = "[duck]2";
+        duck->id = game.newId("duck");
         duck->position.x = -2.;
         duck->position.y = -2.;
-        game.entities.insert({"[duck]2", duck});
-        game.ducks.insert({"[duck]2", duck});
+        game.entities.insert({duck->id, duck});
+        game.ducks.insert({duck->id, duck});
     }
     {
         Duck* duck = new Duck();
-        duck->id = "[duck]3";
+        duck->id = game.newId("duck");
         duck->position.x = -2.;
         duck->position.y = 2.;
-        game.entities.insert({"[duck]3", duck});
-        game.ducks.insert({"[duck]3", duck});
+        game.entities.insert({duck->id, duck});
+        game.ducks.insert({duck->id, duck});
     }
 
     // game.load();
@@ -227,8 +229,6 @@ int main() {
             player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())) / coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).len() * 4.;
         else 
             player->slideVelocity = coord();
-        debugGraphs[1].newGraphEntry(player->slideVelocity.x);
-        debugGraphs[2].newGraphEntry(player->slideVelocity.y);
 
         // for (auto duck : game.ducks) {
         //     if (Camera::getMouseCoord(window).len(duck->position) < .6) {
@@ -250,20 +250,30 @@ int main() {
         //         duck->velocity = duck->velocity * 0.9;
         //     }
         // }
-        // for (auto duck : game.ducks) {
-        //     for (auto ducl : game.ducks) {
-        //         if (duck == ducl)
-        //             continue;
-        //         if ((ducl->position.len(duck->position) < .4 && duck->velocity < 0.01) || (ducl->position.len(duck->position) < .3)) {
-        //             duck->heading = ducl->position.angle(duck->position);
-        //             duck->velocity = 2. / ducl->position.len(duck->position);
-        //         }
-        //         else {
-        //             duck->heading = 0.;
-        //             // duck->velocity = duck->velocity * 0.99;
-        //         }
-        //     }
-        // }
+        for (auto e : game.entities) {
+            auto eid = splitId(e.first);
+            if (eid.first != "duck" && eid.first != "player")
+                continue;
+            
+            // if (player->position.len(e.second->position) < .6) {
+            //     e.second->heading = player->position.angle(e.second->position);
+            //     e.second->velocity = 2. / player->position.len(e.second->position);
+            //     // if (duck->zPosition == 0.)
+            //     //     duck->zVelocity = .2;
+            // }
+
+            for (auto f : game.entities) {
+                auto fid = splitId(f.first);
+                if (fid.first != "duck")
+                    continue;
+                if (e.first == f.first)
+                    continue;
+
+                if (e.second->position.len(f.second->position) < .4) {
+                    game.pushAction("game", Timer::getNow(), "process_collision " + e.first + " " + f.first);
+                }
+            }
+        }
 
 
         player->heading = player->position.angle(Camera::getMouseCoord(window));
@@ -273,7 +283,10 @@ int main() {
 
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
         
-        debugGraphs[0].newGraphEntry(Graphics::getQuadCount());
+        debugGraphs[0].newGraphEntry(game.entities.size());
+        debugGraphs[1].newGraphEntry(game.actionList.size());
+        debugGraphs[2].newGraphEntry(Graphics::getQuadCount());
+        debugGraphs[3].newGraphEntry(game.updateTime);
 
         Graphics::setFont(1);
         Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::White, 24, UIVec(10, 30), 0., sf::Color::Black, 4.);

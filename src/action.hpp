@@ -7,6 +7,7 @@
 
 class Action {
 public:
+    bool ranFlag = false;
     bool deleteFlag = false;
     Timer time;
     std::string id;

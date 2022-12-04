@@ -37,7 +37,7 @@ public:
                     velocity = 3. + (getRand() * 2. - 1.);
                 }
 
-                if (position.len(target) < .1) {
+                if (position.len(target) < .7) {
                     velocity = 0.;
                     headingRotationSpeed = 0.;
                 }
@@ -47,6 +47,25 @@ public:
             }
             if (function == "lay_egg") {
                 followUpActions.push_back(Action("game", Timer::getNow(), "lay_egg " + toStr(position.x) + " " + toStr(position.y)));
+            }
+            if (function == "slide_instant") {
+                coord delta;
+                ss >> delta.x >> delta.y;
+                position = position + delta;
+            }
+            if (function == "slide_velocity") {
+                coord velocity;
+                ss >> velocity.x >> velocity.y;
+                position = position + velocity / elapsedSecs;
+            }
+            if (function == "slide_velocity_distance") {
+                coord velocity;
+                double distance;
+                ss >> velocity.x >> velocity.y >> distance;
+                position = position + velocity / velocity.len() * std::min(velocity.len() * elapsedSecs, distance);
+                distance -= (velocity / elapsedSecs).len();
+                if (distance > 0.)
+                    followUpActions.push_back(Action("slide_velocity_distance", Timer::getNow(), "slide_velocity_distance " + toStr(velocity.x) + " " + toStr(velocity.y) + " " + toStr(distance)));
             }
         }
     }

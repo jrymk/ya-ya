@@ -13,7 +13,7 @@
 /// @brief Renderer and motion control for entities
 class Entity {
 public:
-    std::string id;
+    std::string id = "undefined";
     std::string type = "entity";
 
     Timer entityTimer;

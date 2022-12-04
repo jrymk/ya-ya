@@ -7,6 +7,7 @@
 #include <time.h>
 #include <cstdlib>
 #include "graphics.hpp"
+#include "names.hpp"
 
 #define prm(a) " " + toStr(a)
 
@@ -29,10 +30,10 @@ std::string toStr(double a, const int digits = -1) {
 // }
 
 std::pair<std::string, std::string> splitId(std::string id) {
-    auto rbrckt = id.find(']');
-    if (rbrckt == id.npos || id.length() < 3)
+    auto rbrckt = id.find('$');
+    if (rbrckt == id.npos || id.length() < 2)
         return std::make_pair("", id);
-    return std::make_pair(id.substr(1, rbrckt - 1), id.substr(rbrckt + 1));
+    return std::make_pair(id.substr(0, rbrckt), id.substr(rbrckt + 1));
 }
 
 class FramerateCounter {
@@ -67,6 +68,18 @@ double getRand() {
 
 double subtractAngle(double l, double r) {
     return l + r + 2 * PI - int((l + r + 2 * PI) / 2. / PI) * 2. * PI - PI;
+}
+
+std::string makeId() {
+    constexpr const char* charset = "0123456789ABCDEF";
+    std::string s;
+    for (int i = 0; i < 8; i++)
+        s += charset[int(getRand() * 65536) % 16];
+    return s;
+}
+
+std::string makeName() {
+    return namesList[int(getRand() * 18239.)];
 }
 
 #endif
