@@ -82,7 +82,7 @@ public:
     
     static void printCameraInfo(sf::RenderWindow& renderWindow) {
         Graphics::setFont(1);
-        Graphics::drawText("(" + toString(getMouseCoord(renderWindow).x, 3) + ", " + toString(getMouseCoord(renderWindow).y, 3) + ")", sf::Color::Green, 16, viewport.pos + viewport.size - UIVec(5, 10), 1.);
+        Graphics::drawText("(" + toStr(getMouseCoord(renderWindow).x, 3) + ", " + toStr(getMouseCoord(renderWindow).y, 3) + ")", sf::Color::Green, 16, viewport.pos + viewport.size - UIVec(5, 10), 1.);
     }
 };
 

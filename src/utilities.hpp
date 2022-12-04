@@ -8,18 +8,31 @@
 #include <cstdlib>
 #include "graphics.hpp"
 
-std::string toString(int a) {
+#define prm(a) " " + toStr(a)
+
+std::string toStr(int a) {
     std::stringstream ss;
     ss << a;
     return ss.str();
 }
 
-std::string toString(double a, const int digits = -1) {
+std::string toStr(double a, const int digits = -1) {
     std::stringstream ss;
     if (digits >= 0)
         ss << std::fixed << std::setw(8) << std::setprecision(digits);
     ss << a;
     return ss.str();
+}
+
+// std::string toStr(coord c) {
+//     return toStr(c.x) + " " + toStr(c.y);
+// }
+
+std::pair<std::string, std::string> splitId(std::string id) {
+    auto rbrckt = id.find(']');
+    if (rbrckt == id.npos || id.length() < 3)
+        return std::make_pair("", id);
+    return std::make_pair(id.substr(1, rbrckt - 1), id.substr(rbrckt + 1));
 }
 
 class FramerateCounter {

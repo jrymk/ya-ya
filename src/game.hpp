@@ -9,37 +9,51 @@
 #include "serialization.hpp"
 
 class Game {
+    std::vector<Action> actionList;
+
 public:
-    std::map<std::string, Entity*> entities;
     std::map<std::string, Duck*> ducks;
-    std::vector<Action> globalActions;
-
+    std::map<std::string, Entity*> entities;
+    
     void update() {
-        std::vector<Action> insertActionGlobal;
-
-        for (auto& entity : entities) {
-            entity.second->runActions(insertActionGlobal);
+        for (auto& entity : entities)
             entity.second->update();
-        }
 
-        std::sort(globalActions.begin(), globalActions.end());
-        for (int i = globalActions.size() - 1; i >= 0; i--) {
-            if (globalActions[i].time.elapsed() >= 0) { // started
-                runAction(globalActions[i], insertActionGlobal);
-                globalActions[i].deleteFlag = true;
+        runActions();
+    }
+
+    void runActions() {
+        std::vector<Action> followUpActions;
+
+        std::sort(actionList.begin(), actionList.end());
+        for (int i = actionList.size() - 1; i >= 0; i--) {
+            if (actionList[i].time.elapsed() >= 0) { // started
+                runAction(actionList[i], followUpActions);
+                actionList[i].deleteFlag = true;
             }
         }
-        for (auto& action : insertActionGlobal) {
-            globalActions.push_back(action); // rerun next round
-        }
-        std::sort(globalActions.begin(), globalActions.end());
-        for (int i = globalActions.size() - 1; i >= 0; i--) {
-            if (globalActions[i].deleteFlag)
-                globalActions.resize(i);
+        for (auto& action : followUpActions)
+            actionList.push_back(action); // will run next update
+
+        std::sort(actionList.begin(), actionList.end());
+        for (int i = actionList.size() - 1; i >= 0; i--) {
+            if (actionList[i].deleteFlag)
+                actionList.resize(i);
         }
     }
 
-    virtual void runAction(Action& action, std::vector<Action>& insertActionGlobal) {
+    virtual void runAction(Action& action, std::vector<Action>& followUpActions) {
+        if (action.id != "game") {
+            std::map<std::string, Entity*>::iterator result = entities.find(action.id);
+            if (result == entities.end()) {
+                debug << "Attempt to find entity " << action.id << " failed";
+                // umm... now what?
+                return;
+            }
+            result->second->runAction(action, followUpActions);
+            return;
+        }
+        // global actions
         std::stringstream ss(action.action); 
         std::string function;
         while (ss >> function) {
@@ -47,38 +61,50 @@ public:
                 coord position;
                 ss >> position.x >> position.y;
                 Egg* egg = new Egg();
+                egg->id = "[egg]" + toStr(rand());
                 egg->position = position;
-                egg->actions.push_back(Action(Timer::getNow(), "hop"));
-                egg->actions.push_back(Action(Timer::getNow() + getRand() * 5., "hatch"));
-                entities.insert({"egg:" + toString(position.x), egg});
+                pushAction(egg->id, Timer::getNow(), "hop");
+                pushAction(egg->id, Timer::getNow() + getRand() * 10., "hatch");
+                entities.insert({egg->id, egg});
             }
             if (function == "hatch") {
                 coord position;
                 ss >> position.x >> position.y;
                 Duck* duck = new Duck();
+                duck->id = "[duck]" + toStr(rand());
                 duck->position = position;
-                duck->actions.push_back(Action(Timer::getNow(), "hop"));
+                pushAction(duck->id, Timer::getNow(), "hop");
                 // duck->actions.push_back(Action(Timer::getNow() + getRand() * 5., "lay_egg"));
-                duck->actions.push_back(Action(Timer::getNow() + 1., "duckwalk_to_until " + toString(position.x + 3. * (getRand() - 0.5)) + " " + toString(position.y + 3. * (getRand() - 0.5))));
+                pushAction(duck->id, Timer::getNow() + .5, "duckwalk_to_until " + toStr(position.x + 3. * (getRand() - 0.5)) + " " + toStr(position.y + 3. * (getRand() - 0.5)));
 
-                entities.insert({"duck:" + toString(position.x), duck});
-                ducks.insert({"duck:" + toString(position.x), duck});
+                entities.insert({duck->id, duck});
+                ducks.insert({duck->id, duck});
             }
         }
+    }
+
+    void pushAction(std::string id, Timer timer, std::string action) {
+        actionList.push_back(Action(id, timer, action));
     }
 
     void render() {
         for (auto entity : entities) {
             entity.second->pushQuads();
         }
+
+        std::stringstream ss;
+        for (auto a : actionList) {
+            ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << a.time.elapsed() << "s  " << std::left << std::setw(20) << a.id << "  " << a.action << "\n";
+        }
+        Graphics::drawText(ss.str(), sf::Color::Cyan, 12, UIVec(2., 55.), 0., sf::Color(0, 0, 0, 100), 2.);
     }
 
-    static constexpr const char* defaultFilePath = "..\\output\\saveFile.dat";
+    static constexpr const char* defaultFilePath = ".\\save.ya";
     void save() {
         std::ofstream fout(defaultFilePath);
         if(!fout.is_open()) std::cerr << "file saving failed";
 
-        fout << Serialization::serialize<std::map<std::string, Duck*> >(ducks);
+        fout << Serialization::serialize<std::map<std::string, Duck*>>(ducks);
         if(fout.bad()) std::cerr << "file saving failed";
         fout.close();
     }
@@ -90,7 +116,7 @@ public:
         std::string str;
         fin >> str;
         if(fin.bad()) std::cerr << "file loading failed";
-        Serialization::unserialize<std::map<std::string, Duck*> >(ducks, str);
+        Serialization::deserialize<std::map<std::string, Duck*>>(ducks, str);
         for(auto& p : ducks) entities.insert(p);
 
         fin.close();

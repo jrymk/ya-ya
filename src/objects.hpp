@@ -5,12 +5,12 @@
 
 class Egg : public Entity {
 public:
-    void runAction(Action& action, std::vector<Action>& insertActionEntity, std::vector<Action>& insertActionGlobal) override {
+    void runAction(Action& action, std::vector<Action>& followUpActions) override {
         std::stringstream ss(action.action); 
         std::string function;
         while (ss >> function) {
             if (function == "hatch") {
-                insertActionGlobal.push_back(Action(Timer::getNow(), "hatch " + toString(position.x) + " " + toString(position.y)));
+                followUpActions.push_back(Action("game", Timer::getNow(), "hatch " + toStr(position.x) + " " + toStr(position.y)));
                 
                 // delete this;
 

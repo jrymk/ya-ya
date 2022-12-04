@@ -37,7 +37,7 @@ int main() {
     Game game;
     
     Player* player = new Player();
-    game.entities.insert({"player(player)", player});
+    game.entities.insert({"[player]player", player});
 
     // for (int i = 0; i < 20; i++) {
     //     for (int j = 0; j < 20; j++) {
@@ -50,35 +50,40 @@ int main() {
     //         game.ducks.push_back(duck);
     //     }
     // }
-    /*{
+    {
         Duck* duck = new Duck();
+        duck->id = "[duck]0";
         duck->position.x = 2.;
         duck->position.y = 2.;
-        game.entities.insert({"duck(0)", duck});
-        game.ducks.insert({"duck(0)", duck});
+        game.entities.insert({"[duck]0", duck});
+        game.ducks.insert({"[duck]0", duck});
     }
     {
         Duck* duck = new Duck();
+        duck->id = "[duck]1";
         duck->position.x = 2.;
         duck->position.y = -2.;
-        game.entities.insert({"duck(1)", duck});
-        game.ducks.insert({"duck(1)", duck});
+        game.entities.insert({"[duck]1", duck});
+        game.ducks.insert({"[duck]1", duck});
     }
     {
         Duck* duck = new Duck();
+        duck->id = "[duck]2";
         duck->position.x = -2.;
         duck->position.y = -2.;
-        game.entities.insert({"duck(2)", duck});
-        game.ducks.insert({"duck(2)", duck});
+        game.entities.insert({"[duck]2", duck});
+        game.ducks.insert({"[duck]2", duck});
     }
     {
         Duck* duck = new Duck();
+        duck->id = "[duck]3";
         duck->position.x = -2.;
         duck->position.y = 2.;
-        game.entities.insert({"duck(3)", duck});
-        game.ducks.insert({"duck(3)", duck});
-    }*/
-    game.load();
+        game.entities.insert({"[duck]3", duck});
+        game.ducks.insert({"[duck]3", duck});
+    }
+
+    // game.load();
     
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("tilemap.png"))
@@ -118,10 +123,10 @@ int main() {
                     debug << "Toggled debug out of sight: " << Graphics::debugOutOfSight << "\n";
                 }
                 if (event.key.code == sf::Keyboard::F5) {
-                    for (auto duck : game.ducks) {
-                        if (duck.second->actions.empty()) {
-                            duck.second->actions.push_back(Action(Timer::getNow() + (getRand() * 5.), "lay_egg"));
-                        }
+                    for (auto duck : game.entities) {
+                        auto split = splitId(duck.first);
+                        if (split.first == "duck")
+                            game.pushAction(duck.first, Timer::getNow() + (getRand() * 10.), "lay_egg");
                     }
                     debug << "Lay eggs\n";
                 }
@@ -165,8 +170,13 @@ int main() {
             }
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Button::Left) {
-                    for (auto duck : game.ducks) 
-                        duck.second->actions.push_back(Action(Timer::getNow(), "duckwalk_to_until " + toString(Camera::getMouseCoord(window).x + (getRand() - .5)) + " " + toString(Camera::getMouseCoord(window).y + (getRand() - .5))));
+                    for (auto duck : game.entities) {
+                        auto split = splitId(duck.first);
+                        if (split.first == "duck")
+                            game.pushAction(duck.first, Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord(window).x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord(window).y + (getRand() - .5)));
+                    }
+                    // for (auto duck : game.ducks) 
+                    //     duck.second->actions.push_back(Action(Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord(window).x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord(window).y + (getRand() - .5))));
                 }
 
             }
@@ -266,14 +276,14 @@ int main() {
         debugGraphs[0].newGraphEntry(Graphics::getQuadCount());
 
         Graphics::setFont(1);
-        Graphics::drawText(toString(fc.getFramerateAndUpdate()) + "fps", sf::Color::White, 24, UIVec(10, 30), 0., sf::Color::Black, 4.);
+        Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::White, 24, UIVec(10, 30), 0., sf::Color::Black, 4.);
 
         Camera::setCenter(Camera::getCenter() + (player->position - Camera::getCenter()) * 0.08);
 
         Camera::printCameraInfo(window);
 
         Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
-        Graphics::drawText("[viewport] rectWindow (" + toString(rectWindow.size.x) + "x" + toString(rectWindow.size.y) + ") @ " + toString(rectWindow.pos.x) + ", " + toString(rectWindow.pos.y), 
+        Graphics::drawText("[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y), 
             sf::Color::White, 16, rectWindow.pos + UIVec(0, -10), 0., sf::Color::Black, 1.);
 
         renderDebugOverlay(window);

@@ -17,8 +17,8 @@
     3. NO ",:;[]{}" symbols in property ID (2nd arg)
     4. serialize usage:
         string = Serialization::serialize<Class><object>    (!!! Class cannot be omitted !!!)
-    5. unserialize usage:
-        Serialization::unserialize<Class>(object, string)   */
+    5. deserialize usage:
+        Serialization::deserialize<Class>(object, string)   */
 
 /// @brief tools for serialization
 namespace SaveUtilities{
@@ -43,7 +43,7 @@ namespace SaveUtilities{
 template<typename T>
 std::string rserialize(const T& obj);  // recursive serialize helper
 template<typename T>
-void runserialize(T& obj, const std::string& str);  // recursive unserialize helper
+void runserialize(T& obj, const std::string& str);  // recursive deserialize helper
 
 /// @brief converting objects and vectors to string, vice versa
 namespace Serialization{
@@ -132,9 +132,9 @@ namespace Serialization{
     }
     /* END serialize*/
 
-    /* BEGIN unserialize */
+    /* BEGIN deserialize */
     template<typename T>
-    void unserialize(T& obj, const std::string& str){
+    void deserialize(T& obj, const std::string& str){
         constexpr auto propertyCnt = std::tuple_size<decltype(T::properties)>::value;
         SaveUtilities::forSequence(std::make_index_sequence<propertyCnt>{}, [&](auto i){
             constexpr auto property = std::get<i>(T::properties);
@@ -147,7 +147,7 @@ namespace Serialization{
     }
     
     template<typename T, typename U, typename A>  // vector<object>
-    void unserialize(std::vector<U, A>& obj, const std::string& str){
+    void deserialize(std::vector<U, A>& obj, const std::string& str){
         int sizeTagStart = str.find("<VecSize>"),
             sizeTagEnd = str.find("</VecSize>");
         int vecSize = std::stoi(str.substr(sizeTagStart + 9, sizeTagEnd - sizeTagStart - 9)),
@@ -171,7 +171,7 @@ namespace Serialization{
     }
 
     template<typename T, typename U, typename A>  // vector<object*>
-    void unserialize(std::vector<U*, A>& obj, const std::string& str){
+    void deserialize(std::vector<U*, A>& obj, const std::string& str){
         int sizeTagStart = str.find("<VecSize>"),
             sizeTagEnd = str.find("</VecSize>");
         int vecSize = std::stoi(str.substr(sizeTagStart + 9, sizeTagEnd - sizeTagStart - 9)),
@@ -196,7 +196,7 @@ namespace Serialization{
     }
     
     template<typename T, typename K, typename V, typename C, typename A>  // map<key, object>
-    void unserialize(std::map<K, V, C, A>& obj, const std::string& str){
+    void deserialize(std::map<K, V, C, A>& obj, const std::string& str){
         int sizeTagStart = str.find("<MapSize>"),
             sizeTagEnd = str.find("</MapSize>");
         int mapSize = std::stoi(str.substr(sizeTagStart + 9, sizeTagEnd - sizeTagStart - 9)),
@@ -229,7 +229,7 @@ namespace Serialization{
     }
 
     template<typename T, typename K, typename V, typename C, typename A>  // map<key, object*>
-    void unserialize(std::map<K, V*, C, A>& obj, const std::string& str){
+    void deserialize(std::map<K, V*, C, A>& obj, const std::string& str){
         int sizeTagStart = str.find("<MapSize>"),
             sizeTagEnd = str.find("</MapSize>");
         int mapSize = std::stoi(str.substr(sizeTagStart + 9, sizeTagEnd - sizeTagStart - 9)),
@@ -262,22 +262,22 @@ namespace Serialization{
     }
     
     template<>
-    void unserialize(int& val, const std::string& data){
+    void deserialize(int& val, const std::string& data){
         val = std::stoi(data);
     }
     template<>
-    void unserialize(float& val, const std::string& data){
+    void deserialize(float& val, const std::string& data){
         val = std::stof(data);
     }
     template<>
-    void unserialize(double& val, const std::string& data){
+    void deserialize(double& val, const std::string& data){
         val = std::stod(data);
     }
     template<>
-    void unserialize(std::string& str, const std::string& data){
+    void deserialize(std::string& str, const std::string& data){
         str = data;
     }
-    /* END unserialize */
+    /* END deserialize */
 }
 
 template<typename T>
@@ -286,6 +286,6 @@ std::string rserialize(const T& obj){
 }
 template<typename T>
 void runserialize(T& obj, const std::string& str){
-    Serialization::unserialize<T>(obj, str);
+    Serialization::deserialize<T>(obj, str);
 }
 #endif

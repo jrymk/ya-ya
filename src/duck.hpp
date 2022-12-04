@@ -12,12 +12,10 @@ class Duck : public Entity {
 private:
 
 public:
-    void runAction(Action& action, std::vector<Action>& insertActionEntity, std::vector<Action>& insertActionGlobal) override {
+    void runAction(Action& action, std::vector<Action>& followUpActions) override {
         std::stringstream ss(action.action); 
         std::string function;
         while (ss >> function) {
-            if (function == "rerun")
-                action.rerun = true;
             if (function == "hop") {
                 if (zPosition == 0.)
                     zVelocity = .2;
@@ -44,11 +42,11 @@ public:
                     headingRotationSpeed = 0.;
                 }
                 else {
-                    insertActionEntity.push_back(Action(Timer::getNow() + 0.2 * std::sqrt(position.len(target)), "duckwalk_to_until " + toString(target.x) + " " + toString(target.y)));
+                    followUpActions.push_back(Action(id, Timer::getNow() + 0.2 * std::sqrt(position.len(target)), "duckwalk_to_until " + toStr(target.x) + " " + toStr(target.y)));
                 }
             }
             if (function == "lay_egg") {
-                insertActionGlobal.push_back(Action(Timer::getNow(), "lay_egg " + toString(position.x) + " " + toString(position.y)));
+                followUpActions.push_back(Action("game", Timer::getNow(), "lay_egg " + toStr(position.x) + " " + toStr(position.y)));
             }
         }
     }
@@ -85,6 +83,7 @@ public:
     }
 
     Duck() {
+        type = "duck";
         initModel();
     }
 
