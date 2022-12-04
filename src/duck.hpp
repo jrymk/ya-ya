@@ -17,11 +17,21 @@ public:
         std::string function;
         while (ss >> function) {
             if (function == "init") {
-                followUpActions.push_back(Action(id, Timer::getNow() + 10. + getRand() * 40., "wander_loop"));
+                followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 25., "loop_wander"));
+                followUpActions.push_back(Action(id, Timer::getNow() + 10. + getRand() * 40., "loop_lay_eggs"));
+                followUpActions.push_back(Action(id, Timer::getNow() + 20. + getRand() * 100., "death"));
             }
-            if (function == "wander_loop") {
-                followUpActions.push_back(Action(id, Timer::getNow() + 10. + getRand() * 40., "wander_loop"));
-                followUpActions.push_back(Action(id, Timer::getNow(), "duckwalk_to_until " + toStr(position.x + getRand() * 5.) + " " + toStr(position.y + getRand() * 5.)));
+            if (function == "loop_wander") {
+                followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 25., "loop_wander"));
+                followUpActions.push_back(Action(id, Timer::getNow(), "duckwalk_to_until " + toStr(position.x + getRand() * 3.) + " " + toStr(position.y + getRand() * 3.)));
+            }
+            if (function == "loop_lay_eggs") {
+                followUpActions.push_back(Action(id, Timer::getNow() + 30. + getRand() * 60., "loop_lay_eggs"));
+                followUpActions.push_back(Action(id, Timer::getNow(), "lay_egg"));
+            }
+            if (function == "death") {
+                zVelocity = .5;
+                followUpActions.push_back(Action("global", Timer::getNow() + 1., "destroy " + id));
             }
             if (function == "hop") {
                 if (zPosition == 0.)
@@ -52,7 +62,7 @@ public:
                 }
             }
             if (function == "lay_egg") {
-                followUpActions.push_back(Action("game", Timer::getNow(), "lay_egg " + toStr(position.x) + " " + toStr(position.y)));
+                followUpActions.push_back(Action("global", Timer::getNow(), "lay_egg " + toStr(position.x) + " " + toStr(position.y)));
             }
             if (function == "slide_instant") {
                 coord delta;

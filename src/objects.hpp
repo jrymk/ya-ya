@@ -9,8 +9,11 @@ public:
         std::stringstream ss(action.action); 
         std::string function;
         while (ss >> function) {
+            if (function == "init") {
+            }
             if (function == "hatch") {
-                followUpActions.push_back(Action("game", Timer::getNow(), "hatch " + toStr(position.x) + " " + toStr(position.y)));
+                followUpActions.push_back(Action("global", Timer::getNow(), "hatch " + toStr(position.x) + " " + toStr(position.y)));
+                followUpActions.push_back(Action("global", Timer::getNow() + 1., "destroy " + id));
                 
                 // delete this;
 

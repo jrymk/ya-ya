@@ -49,7 +49,7 @@ public:
     }
 
     virtual void runAction(Action& action, std::vector<Action>& followUpActions) {
-        if (action.id != "game") {
+        if (action.id != "global") {
             std::map<std::string, Entity*>::iterator result = entities.find(action.id);
             if (result == entities.end()) {
                 debug << "Attempt to find entity " << action.id << " failed";
@@ -62,29 +62,34 @@ public:
         // global actions
         std::stringstream ss(action.action); 
         std::string function;
-        while (ss >> function) {
+        if (ss >> function) {
             if (function == "lay_egg") {
                 coord position;
                 ss >> position.x >> position.y;
                 Egg* egg = new Egg();
-                egg->id = "egg$" + makeId();
-                egg->position = position;
+                egg->id = newId("egg");
+                egg->position = position + coord(0.01 * (getRand() - .5), 0.01 * (getRand() - .5));
                 pushAction(egg->id, Timer::getNow(), "hop");
                 pushAction(egg->id, Timer::getNow() + getRand() * 10., "hatch");
-                entities.insert({egg->id, egg});
+                insertEntity(egg);
             }
             if (function == "hatch") {
+                if (getRand() > .2)
+                    return;
                 coord position;
                 ss >> position.x >> position.y;
                 Duck* duck = new Duck();
-                duck->id = "duck$" + makeName();
-                duck->position = position;
+                duck->id = newId("duck");
+                duck->position = position + coord(0.05 * (getRand() - .5), 0.05 * (getRand() - .5));
                 pushAction(duck->id, Timer::getNow(), "hop");
                 // duck->actions.push_back(Action(Timer::getNow() + getRand() * 5., "lay_egg"));
                 pushAction(duck->id, Timer::getNow() + .5, "duckwalk_to_until " + toStr(position.x + 3. * (getRand() - 0.5)) + " " + toStr(position.y + 3. * (getRand() - 0.5)));
-
-                entities.insert({duck->id, duck});
-                ducks.insert({duck->id, duck});
+                insertEntity(duck);
+            }
+            if (function == "destroy") {
+                std::string id;
+                ss >> id;
+                destroyEntity(id);
             }
             if (function == "process_collision") {
                 std::string eid, fid;
@@ -106,7 +111,7 @@ public:
     Entity* findEntity(std::string id) {
         auto result = entities.find(id);
         if (result == entities.end()) {
-            debug << "Find entity failed when tring to find \"" << id << "\"";
+            debug << "Find entity failed when tring to find \"" << id << "\"\n";
             return nullptr;
         }
         return result->second;
@@ -119,9 +124,9 @@ public:
     std::string newId(const std::string& type) {
         std::string id;
         if (type == "duck")
-            id = type + "$" + makeName();
+            id = type + "$" + randomName();
         else 
-            id = type + "$" + makeId();
+            id = type + "$" + randomId();
         if (entities.find(id) == entities.end())
             return id;
         else
@@ -130,7 +135,7 @@ public:
 
     void insertEntity(Entity* entity) {
         if (entity->id == "undefined") {
-            debug << "Entity insertion failed because name is undefined";
+            debug << "Entity insertion failed because name is undefined\n";
             return;
         }
         if (entities.find(entity->id) == entities.end()) {
@@ -138,9 +143,19 @@ public:
             pushAction(entity->id, Timer::getNow(), "init");
         }
         else {
-            debug << "Entity insertion failed because name \"" << entity->id << "\" is already taken";
+            debug << "Entity insertion failed because name \"" << entity->id << "\" is already taken\n";
             return;
         }
+    }
+
+    void destroyEntity(std::string id) {
+        auto result = entities.find(id);
+        if (result == entities.end()) {
+            debug << "Find entity failed when tring to find \"" << id << "\"\n";
+            return;
+        }
+        delete result->second;
+        entities.erase(result);
     }
 
     void render() {

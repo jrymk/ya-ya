@@ -70,15 +70,15 @@ double subtractAngle(double l, double r) {
     return l + r + 2 * PI - int((l + r + 2 * PI) / 2. / PI) * 2. * PI - PI;
 }
 
-std::string makeId() {
-    constexpr const char* charset = "0123456789ABCDEF";
+std::string randomId() {
+    constexpr const char* charset = "0123456789abcdef";
     std::string s;
     for (int i = 0; i < 8; i++)
         s += charset[int(getRand() * 65536) % 16];
     return s;
 }
 
-std::string makeName() {
+std::string randomName() {
     return namesList[int(getRand() * 18239.)];
 }
 

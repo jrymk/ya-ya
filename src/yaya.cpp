@@ -266,7 +266,7 @@ int main() {
                     continue;
 
                 if (e.second->position.len(f.second->position) < .3) {
-                    game.pushAction("game", Timer::getNow(), "process_collision " + e.first + " " + f.first);
+                    game.pushAction("global", Timer::getNow(), "process_collision " + e.first + " " + f.first);
                 }
             }
         }
