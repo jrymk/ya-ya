@@ -15,17 +15,18 @@
  * F3: clear debug output
  * F4: toggle debug out of sight
  * F5: lay eggs
+ * F6: toggle action list
  * F11: toggle fullscreen
  */
 
 int main() {
-    srand(time(0));
     sf::ContextSettings settings;
     settings.antialiasingLevel = 4;
     sf::RenderWindow window;
     window.create(sf::VideoMode(1600, 1200), L"Ya-Ya!", sf::Style::Default, settings);
     window.setKeyRepeatEnabled(false);
     window.setVerticalSyncEnabled(true);
+    Camera::tieRenderWindow(window);
     Graphics::setRenderWindow(window);
     Graphics::loadFont(0, "yourStar.ttf");
     Graphics::loadFont(1, "CascadiaCode.ttf");
@@ -35,6 +36,7 @@ int main() {
     debugGraphs.push_back(DebugGraph("actions", 200, 150, 10000));
     debugGraphs.push_back(DebugGraph("quads", 200, 150, 10000));
     debugGraphs.push_back(DebugGraph("update time", 200, 150, 10000));
+    debugGraphs.push_back(DebugGraph("entities(long)", 200, 150, 1000000));
 
     Game game;
     
@@ -133,6 +135,10 @@ int main() {
                     }
                     debug << "Lay eggs\n";
                 }
+                if (event.key.code == sf::Keyboard::F6) {
+                    game.showActionList = !game.showActionList;
+                    debug << "Toggled action list: " << game.showActionList << "\n";
+                }
                 if (event.key.code == sf::Keyboard::F11) {
                     if (!graphicsIsFullscreen) {
                         graphicsIsFullscreen = true;
@@ -176,10 +182,10 @@ int main() {
                     for (auto duck : game.entities) {
                         auto split = splitId(duck.first);
                         if (split.first == "duck")
-                            game.pushAction(duck.first, Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord(window).x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord(window).y + (getRand() - .5)));
+                            game.pushAction(duck.first, Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord().x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord().y + (getRand() - .5)));
                     }
                     // for (auto duck : game.ducks) 
-                    //     duck.second->actions.push_back(Action(Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord(window).x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord(window).y + (getRand() - .5))));
+                    //     duck.second->actions.push_back(Action(Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord().x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord().y + (getRand() - .5))));
                 }
 
             }
@@ -232,9 +238,9 @@ int main() {
             player->slideVelocity = coord();
 
         // for (auto duck : game.ducks) {
-        //     if (Camera::getMouseCoord(window).len(duck->position) < .6) {
-        //         // duck->heading = Camera::getMouseCoord(window).angle(duck->position);
-        //         // duck->velocity = 2. / Camera::getMouseCoord(window).len(duck->position);
+        //     if (Camera::getMouseCoord().len(duck->position) < .6) {
+        //         // duck->heading = Camera::getMouseCoord().angle(duck->position);
+        //         // duck->velocity = 2. / Camera::getMouseCoord().len(duck->position);
         //         if (duck->zPosition == 0.) {
         //             duck->insertAction(Timer::getNow(), "duckwalk_to_until 0 0");
         //         }
@@ -277,34 +283,26 @@ int main() {
         }
 
 
-        player->heading = player->position.angle(Camera::getMouseCoord(window));
+        player->heading = player->position.angle(Camera::getMouseCoord());
         
         game.update();
         game.render();
 
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
 
-        Entity* closest = nullptr;
-        for (auto e : game.entities) {
-            if ((closest == nullptr && Camera::getScreenPos(e.second->position).len(Camera::getMousePos(window)) < 20.)
-                 || (closest != nullptr && Camera::getScreenPos(e.second->position).len(Camera::getMousePos(window)) < Camera::getScreenPos(closest->position).len(Camera::getMousePos(window)))) {
-                closest = e.second;
-            }
-        }
-        if (closest)
-            Graphics::drawText(closest->getDescriptionStr(), sf::Color::Black, 12., Camera::getMousePos(window) + UIVec(0., 40.), 0., sf::Color(255, 255, 255, 140), 3.);
         
         debugGraphs[0].newGraphEntry(game.entities.size());
         debugGraphs[1].newGraphEntry(game.actionList.size());
         debugGraphs[2].newGraphEntry(Graphics::getQuadCount());
         debugGraphs[3].newGraphEntry(game.updateTime);
+        debugGraphs[4].newGraphEntry(game.entities.size());
 
         Graphics::setFont(1);
         Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::White, 24, UIVec(10, 30), 0., sf::Color::Black, 4.);
 
         Camera::setCenter(Camera::getCenter() + (player->position - Camera::getCenter()) * 0.08);
 
-        Camera::printCameraInfo(window);
+        Camera::printCameraInfo();
 
         Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
         Graphics::drawText("[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y), 

@@ -17,10 +17,10 @@ public:
         std::string function;
         while (ss >> function) {
             if (function == "init") {
-                // followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 25., "loop_wander"));
+                followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 25., "loop_wander"));
                 followUpActions.push_back(Action(id, Timer::getNow() + 10. + getRand() * 40., "loop_lay_eggs"));
                 followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 20., "loop_find_mate"));
-                // followUpActions.push_back(Action(id, Timer::getNow() + 20. + getRand() * 100., "death"));
+                // followUpActions.push_back(Action(id, Timer::getNow() + 50. + getRand() * 200., "death"));
             }
             if (function == "loop_wander") {
                 followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 25., "loop_wander"));

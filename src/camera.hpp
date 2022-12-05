@@ -30,14 +30,19 @@ struct coord {
 
 /// @brief handles mapping between different coordinate spaces
 class Camera {
+    inline static sf::RenderWindow* renderWindow;
     inline static UIRect viewport;
     inline static coord center;
-    inline static double zoom = 128.; // the span of the camera, in sqrt(w*h) coord space
+    inline static double zoom = 80.; // the span of the camera, in sqrt(w*h) coord space
     inline static double scale = 1.;
 
     static void updateScale() { scale = std::sqrt(viewport.size.x * viewport.size.y) / zoom; }
 
 public:
+    static void tieRenderWindow(sf::RenderWindow& window) {
+        renderWindow = &window;
+    }
+
     static void setViewport(UIRect vp) { // set the viewport for the camera
         viewport = vp;
         updateScale();
@@ -72,21 +77,25 @@ public:
         return center + coord(getTransform().getInverse().transformPoint((pos - (viewport.pos + viewport.size * UIVec(.5, .5))).getVec2f()));
     }
 
-    static coord getMouseCoord(sf::RenderWindow& renderWindow) {
-        return center + coord(getTransform().getInverse().transformPoint((UIVec(sf::Mouse::getPosition(renderWindow).x, sf::Mouse::getPosition(renderWindow).y) - (viewport.pos + viewport.size * UIVec(.5, .5))).getVec2f()));
+    static coord getMouseCoord() {
+        return center + coord(getTransform().getInverse().transformPoint((UIVec(sf::Mouse::getPosition(*renderWindow).x, sf::Mouse::getPosition(*renderWindow).y) - (viewport.pos + viewport.size * UIVec(.5, .5))).getVec2f()));
     }
 
-    static UIVec getMousePos(sf::RenderWindow& renderWindow) {
-        return UIVec(sf::Mouse::getPosition(renderWindow).x, sf::Mouse::getPosition(renderWindow).y) - viewport.pos;
+    static UIVec getMousePos() {
+        return UIVec(sf::Mouse::getPosition(*renderWindow).x, sf::Mouse::getPosition(*renderWindow).y) - viewport.pos;
+    }
+
+    static UIVec getAngleVectorUntransformed(float len, double angle) {
+        return UIVec(sf::Vector2f(std::cos(angle), std::sin(angle))) * len;
     }
 
     static UIVec getAngleVector(float len, double angle) {
         return UIVec(getTransform().transformPoint(sf::Vector2f(std::cos(angle), std::sin(angle)))) * len;
     }
     
-    static void printCameraInfo(sf::RenderWindow& renderWindow) {
+    static void printCameraInfo() {
         Graphics::setFont(1);
-        Graphics::drawText("(" + toStr(getMouseCoord(renderWindow).x, 3) + ", " + toStr(getMouseCoord(renderWindow).y, 3) + ")", sf::Color::Green, 16, viewport.pos + viewport.size - UIVec(5, 10), 1.);
+        Graphics::drawText("(" + toStr(getMouseCoord().x, 3) + ", " + toStr(getMouseCoord().y, 3) + ")", sf::Color::Green, 16, viewport.pos + viewport.size - UIVec(5, 10), 1.);
     }
 };
 

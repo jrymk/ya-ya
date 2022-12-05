@@ -327,18 +327,17 @@ public:
                 vertexArray.append(sf::Vertex(quad.v3.getVec2f(), quad.c3, quad.t3));
             }
 
-            if (showWireframe)
-                appendWireframe(quad.v0, quad.v1, quad.v2, quad.v3, sf::Color::Black, sf::Color::Transparent);
+            // if (showWireframe)
+            appendWireframe(quad.v0, quad.v1, quad.v2, quad.v3, sf::Color::Black, sf::Color::Transparent);
         }
 
         window.draw(vertexArray, &texture);
 
-        if (showWireframe) {
-            for (int i = 0; i < userWireframeVertexArray.getVertexCount(); i++)
-                wireframeVertexArray.append(userWireframeVertexArray[i]);
-            window.draw(wireframeVertexArray);
-        }
-
+        if (!showWireframe)
+            wireframeVertexArray.clear();
+        for (int i = 0; i < userWireframeVertexArray.getVertexCount(); i++)
+            wireframeVertexArray.append(userWireframeVertexArray[i]);
+        window.draw(wireframeVertexArray);
         userWireframeVertexArray.clear();
     }
 

@@ -8,87 +8,26 @@
 #include "duck.hpp"
 #include "objects.hpp"
 #include "serialization.hpp"
+#include "controls.hpp"
+#include "neighborsfinder.hpp"
 
 class Game {
 
 public:
+    bool showActionList = false;
+
     std::vector<Action> actionList;
     double updateTime;
     std::map<std::string, Duck*> ducks;
     std::map<std::string, Entity*> entities;
     
-    class NeighborsFinder {
-        Game* game;
-        std::map<std::pair<int, int>, std::set<std::string>> chunkMembers[5];
-    
-    public:
-        std::pair<int, int> getChunk(coord c, int level) {
-            return std::make_pair(int(floor(c.x)) & (~0 << level), int(floor(c.y)) & (~0 << level));
-        }
-        std::pair<int, int> getChunk(std::pair<int, int> p, int level) {
-            return std::make_pair(p.first & (~0 << level), p.second & (~0 << level));
-        }
+    NeighborsFinder neighborsFinder;
+    Controls controls;
 
-        void update() {
-            for (auto e : game->entities) {
-                if (e.second->neighborsFinderMyTile == std::make_pair((int)-1e8, (int)1e8)) {
-                    e.second->neighborsFinderMyTile = getChunk(e.second->position, 0);
-                    for (int l = 0; l < 5; l++)
-                        chunkMembers[l][getChunk(e.second->position, l)].insert(e.first);
-                }
-                else {
-                    for (int l = 0; l < 5; l++) {
-                        if (e.second->neighborsFinderMyTile != getChunk(e.second->position, l)) {
-                            chunkMembers[l][getChunk(e.second->neighborsFinderMyTile, l)].erase(e.second->id);
-                            chunkMembers[l][getChunk(e.second->position, l)].insert(e.second->id);
-                            if (l == 0)
-                                e.second->neighborsFinderMyTile = getChunk(e.second->position, 0);
-                        } 
-                        else
-                            break;
-                    }
-                }
-            }
-        }
-
-        void destroyEntry(Entity* e) {
-            for (int l = 0; l < 5; l++)
-                chunkMembers[l][getChunk(e->neighborsFinderMyTile, l)].erase(e->id);
-        }
-
-        std::vector<Entity*> findNeighbors(coord center, double radius, std::string filter = "") {
-            std::vector<Entity*> neighbors;
-            int d = int(ceil(radius));
-            int l = 0;
-            for (; l < 4; l++) {
-                if (d <= (1 << l))
-                    break;
-            }
-            for (int x = ((int(floor(center.x - radius)) - (1 << l)) & (~0 << l)); x <= ((int(ceil(center.x + radius)) + (1 << l)) & (~0 << l)); x+=(1 << l)) {
-                for (int y = ((int(floor(center.y - radius)) - (1 << l)) & (~0 << l)); y <= ((int(ceil(center.y + radius)) + (1 << l)) & (~0 << l)); y+=(1 << l)) {
-                    if (chunkMembers[l].find(std::make_pair(x, y)) == chunkMembers[l].end())
-                        continue;
-                    for (auto& id : chunkMembers[l][std::make_pair(x, y)]) {
-                        Entity* e = game->findEntity(id);
-                        if (e) {
-                            // if (filter != "" && e->type != filter)
-                            //     continue;
-                            if (e->position.len(center) <= radius)
-                                neighbors.push_back(e);
-                        }
-                    }
-                }
-            }
-            return neighbors;
-        }
-
-        NeighborsFinder(Game* game): game(game) {}
-
-    } neighborsFinder;
-
-    Game(): neighborsFinder(this) {
-        
-    }
+    Game(): 
+        neighborsFinder((&entities)),
+        controls(&entities, &neighborsFinder)
+    {}
 
     void update() {
         Timer updateTimer;
@@ -109,10 +48,10 @@ public:
             if (actionList[i].time.elapsed() >= 0 && !actionList[i].ranFlag) { // started
                 runAction(actionList[i], followUpActions);
                 actionList[i].ranFlag = true;
-            }
-            if (actionList[i].time.elapsed() >= 1.) {
                 actionList[i].deleteFlag = true;
             }
+            else 
+                break;
         }
         for (auto& action : followUpActions)
             actionList.push_back(action); // will run next update
@@ -298,20 +237,32 @@ public:
             entity.second->pushQuads();
         }
 
-        std::stringstream ss;
-        for (int i = actionList.size() - 1; i >= 0; i--) {
-            ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << actionList[i].time.elapsed() << "s  " << std::left << std::setw(20) << actionList[i].id << "  " << actionList[i].action << "\n";
-            if (i <= int(actionList.size()) - 101) {
-                ss << "... (truncated)\n";
-                break;
+        if (showActionList) {
+            std::stringstream ss;
+            for (int i = actionList.size() - 1; i >= 0; i--) {
+                ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << actionList[i].time.elapsed() << "s  " << std::left << std::setw(20) << actionList[i].id << "  " << actionList[i].action << "\n";
+                if (i <= int(actionList.size()) - 101) {
+                    ss << "... (truncated)\n";
+                    break;
+                }
             }
+            Graphics::drawText(ss.str(), sf::Color::Cyan, 12, UIVec(2., 55.), 0., sf::Color(0, 0, 0, 100), 2.);
         }
-
         // for (auto entity : entities) {
         //     Graphics::drawText(entity.first, sf::Color::Black, 14, Camera::getScreenPos(entity.second->position) + UIVec(0., 30.), .5, sf::Color(255, 255, 255, 100), 3.);
         // }
 
-        Graphics::drawText(ss.str(), sf::Color::Cyan, 12, UIVec(2., 55.), 0., sf::Color(0, 0, 0, 100), 2.);
+        auto facing = controls.getFacingEntity(findEntity("player$player"));
+        if (facing) {
+            Graphics::drawText(facing->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(facing->position) + UIVec(0., 40.), 0., sf::Color(255, 255, 255, 140), 3.);
+            Graphics::insertUserWireframe(
+                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
+                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
+                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
+                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
+                sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
+            );
+        }
     }
 
     static constexpr const char* defaultFilePath = ".\\save.ya";

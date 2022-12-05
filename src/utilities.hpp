@@ -4,7 +4,8 @@
 #include <queue>
 #include <sstream>
 #include <iomanip>
-#include <time.h>
+#include <random>
+#include <ctime>
 #include <cstdlib>
 #include "graphics.hpp"
 #include "names.hpp"
@@ -61,13 +62,15 @@ public:
     }
 };
 
+std::mt19937 rng(time(0));
+
 double getRand() {
-    // srand(time(0));
-    return (double)rand() / RAND_MAX;
+    return std::max(0., std::min(1., (double)rng() / rng.max()));
 }
 
 double subtractAngle(double l, double r) {
-    return l + r + 2 * PI - int((l + r + 2 * PI) / 2. / PI) * 2. * PI - PI;
+    return (((l - r) / 2. / PI) - int((l - r) / 2. / PI)) * 2. * PI;
+    // return l - r + 6 * PI - int((l - r + 6 * PI) / 2. / PI) * 2. * PI;
 }
 
 std::string randomId() {
