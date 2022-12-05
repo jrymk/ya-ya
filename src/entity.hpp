@@ -16,6 +16,7 @@ class Entity {
 public:
     std::string id = "undefined";
     std::string type = "entity";
+    std::pair<int, int> neighborsFinderMyTile = {-1e8, 1e8};
 
     Timer entityTimer;
     double lastUpdate = -1.;
@@ -29,6 +30,10 @@ public:
     coord slideVelocity; // TODO: get rid of this
     double heading = 0.;
     double headingRotationSpeed = 0.;
+    
+    bool genderIsMale = true;
+    bool fertilized = false;
+
     
     std::vector<Graphics::Quad> model;
 
@@ -45,6 +50,10 @@ public:
             quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + position) + UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
             quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) + position) + UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
             quad.zDepth += (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
+            quad.c0 = genderIsMale ? sf::Color(230, 230, 255) : sf::Color(255, 230, 230);
+            quad.c1 = genderIsMale ? sf::Color(230, 230, 255) : sf::Color(255, 230, 230);
+            quad.c2 = genderIsMale ? sf::Color(230, 230, 255) : sf::Color(255, 230, 230);
+            quad.c3 = genderIsMale ? sf::Color(230, 230, 255) : sf::Color(255, 230, 230);
             Graphics::insertQuad(quad);
 
             if (Graphics::showWireframe) {
@@ -81,6 +90,15 @@ public:
             historyPosition.pop_back();
         
         customUpdate();
+    }
+
+    virtual std::string getDescriptionStr() {
+        std::stringstream ss;
+        ss << "id: " << id << "\n";
+        ss << "type: " << type << "\n";
+        ss << "position: " << std::setprecision(3) << std::fixed << position.x << ", " << position.y << "\n";
+        ss << "chunk: " << neighborsFinderMyTile.first << ", " << neighborsFinderMyTile.second << "\n";
+        return ss.str();
     }
 
     virtual void customUpdate() {

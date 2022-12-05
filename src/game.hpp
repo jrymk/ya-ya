@@ -234,7 +234,7 @@ public:
                     followUpActions.push_back(Action(e->id, Timer::getNow(), "lay_unfertilized_egg"));
                     return;
                 }
-                Entity* f = candidates[
+                Entity* f = candidates[0];
                 f = candidates[std::min(int(getRand() * candidates.size()), int(candidates.size() - 1))];
                 pushAction(e->id, Timer::getNow(), "have_sex_with " + f->id);
                 pushAction(f->id, Timer::getNow(), "have_sex_with " + e->id);

@@ -10,9 +10,10 @@ public:
         std::string function;
         while (ss >> function) {
             if (function == "init") {
+                
             }
             if (function == "hatch") {
-                followUpActions.push_back(Action("global", Timer::getNow(), "hatch " + toStr(position.x) + " " + toStr(position.y)));
+                followUpActions.push_back(Action("global", Timer::getNow(), "hatch " + toStr(position.x) + " " + toStr(position.y) + " " + toStr(genderIsMale)));
                 followUpActions.push_back(Action("global", Timer::getNow() + 1., "destroy " + id));
                 
                 // delete this;
@@ -52,6 +53,17 @@ public:
         zPosition = std::max(zPosition, 0.);
         if (zPosition == 0.)
             zVelocity = 0.;
+    }
+
+    std::string getDescriptionStr() override {
+        std::stringstream ss;
+        ss << "id: " << id << "\n";
+        ss << "type: " << type << "\n";
+        ss << "position: " << std::setprecision(3) << std::fixed << position.x << ", " << position.y << "\n";
+        ss << "chunk: " << neighborsFinderMyTile.first << ", " << neighborsFinderMyTile.second << "\n";
+        ss << "fertilized: " << (fertilized ? "true" : "false") << "\n";
+        ss << "gender: " << (genderIsMale ? "male" : "female") << "\n";
+        return ss.str();
     }
 };
 

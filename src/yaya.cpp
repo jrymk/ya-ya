@@ -39,7 +39,8 @@ int main() {
     Game game;
     
     Player* player = new Player();
-    game.entities.insert({"player$kung", player});
+    player->id = "player$player";
+    game.insertEntity(player);
 
     // for (int i = 0; i < 20; i++) {
     //     for (int j = 0; j < 20; j++) {
@@ -57,6 +58,7 @@ int main() {
         duck->id = game.newId("duck");
         duck->position.x = 2.;
         duck->position.y = 2.;
+        duck->genderIsMale = true;
         game.insertEntity(duck);
     }
     {
@@ -64,6 +66,7 @@ int main() {
         duck->id = game.newId("duck");
         duck->position.x = 2.;
         duck->position.y = -2.;
+        duck->genderIsMale = false;
         game.insertEntity(duck);
     }
     {
@@ -71,6 +74,7 @@ int main() {
         duck->id = game.newId("duck");
         duck->position.x = -2.;
         duck->position.y = -2.;
+        duck->genderIsMale = true;
         game.insertEntity(duck);
     }
     {
@@ -78,6 +82,7 @@ int main() {
         duck->id = game.newId("duck");
         duck->position.x = -2.;
         duck->position.y = 2.;
+        duck->genderIsMale = false;
         game.insertEntity(duck);
     }
 
@@ -124,7 +129,7 @@ int main() {
                     for (auto duck : game.entities) {
                         auto split = splitId(duck.first);
                         if (split.first == "duck")
-                            game.pushAction(duck.first, Timer::getNow() + (getRand() * 10.), "lay_egg");
+                            game.pushAction(duck.first, Timer::getNow() + (getRand() * 10.), "lay_fertilized_egg");
                     }
                     debug << "Lay eggs\n";
                 }
@@ -251,22 +256,22 @@ int main() {
             if (eid.first != "duck" && eid.first != "player")
                 continue;
             
+            auto result = game.neighborsFinder.findNeighbors(e.second->position, .3, "duck");
+            
             // if (player->position.len(e.second->position) < .6) {
             //     e.second->heading = player->position.angle(e.second->position);
             //     e.second->velocity = 2. / player->position.len(e.second->position);
             //     // if (duck->zPosition == 0.)
             //     //     duck->zVelocity = .2;
             // }
-
-            for (auto f : game.entities) {
-                auto fid = splitId(f.first);
-                if (fid.first != "duck")
+            for (auto f : result) {
+                if (e.second == f)
                     continue;
-                if (e.first == f.first)
+                if (f->type != "duck")
                     continue;
 
-                if (e.second->position.len(f.second->position) < .3) {
-                    game.pushAction("global", Timer::getNow(), "process_collision " + e.first + " " + f.first);
+                if (e.second->position.len(f->position) < .3) {
+                    game.pushAction("global", Timer::getNow(), "process_collision " + e.second->id + " " + f->id);
                 }
             }
         }
@@ -278,6 +283,16 @@ int main() {
         game.render();
 
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
+
+        Entity* closest = nullptr;
+        for (auto e : game.entities) {
+            if ((closest == nullptr && Camera::getScreenPos(e.second->position).len(Camera::getMousePos(window)) < 20.)
+                 || (closest != nullptr && Camera::getScreenPos(e.second->position).len(Camera::getMousePos(window)) < Camera::getScreenPos(closest->position).len(Camera::getMousePos(window)))) {
+                closest = e.second;
+            }
+        }
+        if (closest)
+            Graphics::drawText(closest->getDescriptionStr(), sf::Color::Black, 12., Camera::getMousePos(window) + UIVec(0., 40.), 0., sf::Color(255, 255, 255, 140), 3.);
         
         debugGraphs[0].newGraphEntry(game.entities.size());
         debugGraphs[1].newGraphEntry(game.actionList.size());

@@ -32,7 +32,7 @@ struct coord {
 class Camera {
     inline static UIRect viewport;
     inline static coord center;
-    inline static double zoom = 64.; // the span of the camera, in sqrt(w*h) coord space
+    inline static double zoom = 128.; // the span of the camera, in sqrt(w*h) coord space
     inline static double scale = 1.;
 
     static void updateScale() { scale = std::sqrt(viewport.size.x * viewport.size.y) / zoom; }
@@ -74,6 +74,10 @@ public:
 
     static coord getMouseCoord(sf::RenderWindow& renderWindow) {
         return center + coord(getTransform().getInverse().transformPoint((UIVec(sf::Mouse::getPosition(renderWindow).x, sf::Mouse::getPosition(renderWindow).y) - (viewport.pos + viewport.size * UIVec(.5, .5))).getVec2f()));
+    }
+
+    static UIVec getMousePos(sf::RenderWindow& renderWindow) {
+        return UIVec(sf::Mouse::getPosition(renderWindow).x, sf::Mouse::getPosition(renderWindow).y) - viewport.pos;
     }
 
     static UIVec getAngleVector(float len, double angle) {

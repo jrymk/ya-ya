@@ -17,21 +17,52 @@ public:
         std::string function;
         while (ss >> function) {
             if (function == "init") {
-                followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 25., "loop_wander"));
+                // followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 25., "loop_wander"));
                 followUpActions.push_back(Action(id, Timer::getNow() + 10. + getRand() * 40., "loop_lay_eggs"));
-                followUpActions.push_back(Action(id, Timer::getNow() + 20. + getRand() * 100., "death"));
+                followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 20., "loop_find_mate"));
+                // followUpActions.push_back(Action(id, Timer::getNow() + 20. + getRand() * 100., "death"));
             }
             if (function == "loop_wander") {
                 followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 25., "loop_wander"));
                 followUpActions.push_back(Action(id, Timer::getNow(), "duckwalk_to_until " + toStr(position.x + getRand() * 3.) + " " + toStr(position.y + getRand() * 3.)));
             }
             if (function == "loop_lay_eggs") {
-                followUpActions.push_back(Action(id, Timer::getNow() + 30. + getRand() * 60., "loop_lay_eggs"));
-                followUpActions.push_back(Action(id, Timer::getNow(), "lay_egg"));
+                if (!genderIsMale) {
+                    followUpActions.push_back(Action("global", Timer::getNow(), "lay_egg_find_nearby_male " + id));
+                    followUpActions.push_back(Action(id, Timer::getNow() + 10. + getRand() * 40., "loop_lay_eggs"));
+                }
+            }
+            if (function == "loop_find_mate") {
+                if (genderIsMale) {
+                    followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 20., "loop_find_mate"));
+                    followUpActions.push_back(Action("global", Timer::getNow(), "find_mate_female " + id));
+                }
             }
             if (function == "death") {
-                zVelocity = .5;
-                followUpActions.push_back(Action("global", Timer::getNow() + 1., "destroy " + id));
+                for (int i = 0; i < 10; i++) {
+                    followUpActions.push_back(Action(id, Timer::getNow() + .05 * i, "slide_instant 0.05 0"));    
+                    followUpActions.push_back(Action(id, Timer::getNow() + .05 * i + .0125, "slide_instant 0 0.05"));    
+                    followUpActions.push_back(Action(id, Timer::getNow() + .05 * i + .025, "slide_instant -0.05 0"));    
+                    followUpActions.push_back(Action(id, Timer::getNow() + .05 * i + .0375, "slide_instant 0 -0.05"));    
+                }
+                followUpActions.push_back(Action("global", Timer::getNow() + .5, "destroy " + id));
+            }
+            if (function == "have_sex_with") {
+                for (int i = 0; i < 20; i++) {
+                    followUpActions.push_back(Action(id, Timer::getNow() + .1 * i, "slide_instant 0.05 0"));    
+                    followUpActions.push_back(Action(id, Timer::getNow() + .1 * i + .025, "slide_instant 0 0.05"));    
+                    followUpActions.push_back(Action(id, Timer::getNow() + .1 * i + .05, "slide_instant -0.05 0"));    
+                    followUpActions.push_back(Action(id, Timer::getNow() + .1 * i + .075, "slide_instant 0 -0.05"));    
+                }
+                if (!genderIsMale) {
+                    if (getRand() < .9) { // 90% 
+                        followUpActions.push_back(Action("global", Timer::getNow() + 3. + getRand() * 2., "lay_fertilized_egg " + toStr(position.x) + " " + toStr(position.y) + " " + toStr(getRand() > .5)));
+                        if (getRand() < .1) // 10% a twin!
+                            followUpActions.push_back(Action("global", Timer::getNow() + 3. + getRand() * 2., "lay_fertilized_egg " + toStr(position.x + 0.3 *(getRand() - .5)) + " " + toStr(position.y + 0.3 *(getRand() - .5)) + " " + toStr(getRand() > .5)));
+                    }
+                    else 
+                        followUpActions.push_back(Action("global", Timer::getNow() + 3. + getRand() * 2., "lay_unfertilized_egg " + toStr(position.x) + " " + toStr(position.y)));
+                }
             }
             if (function == "hop") {
                 if (zPosition == 0.)
@@ -61,8 +92,10 @@ public:
                     followUpActions.push_back(Action(id, Timer::getNow() + 0.2 * std::sqrt(position.len(target)), "duckwalk_to_until " + toStr(target.x) + " " + toStr(target.y)));
                 }
             }
-            if (function == "lay_egg") {
-                followUpActions.push_back(Action("global", Timer::getNow(), "lay_egg " + toStr(position.x) + " " + toStr(position.y)));
+            if (function == "lay_unfertilized_egg") {
+                followUpActions.push_back(Action("global", Timer::getNow(), "lay_unfertilized_egg " + toStr(position.x) + " " + toStr(position.y)));
+            }
+            if (function == "lay_fertilized_egg") {
             }
             if (function == "slide_instant") {
                 coord delta;
@@ -84,7 +117,12 @@ public:
                 if (distance > 0.)
                     followUpActions.push_back(Action(id, Timer::getNow(), "slide_velocity_distance " + toStr(velocity.x) + " " + toStr(velocity.y) + " " + toStr(distance)));
             }
-
+            if (function == "result_find_mate_female") {
+                std::string mateid;
+                coord pos;
+                ss >> mateid >> pos.x >> pos.y;
+                followUpActions.push_back(Action(id, Timer::getNow() + .1, "duckwalk_to_until " + toStr(pos.x) + " " + toStr(pos.y)));
+            }
         }
     }
 
@@ -135,6 +173,16 @@ public:
         zPosition = std::max(zPosition, 0.);
         if (zPosition == 0.)
             zVelocity = 0.;
+    }
+
+    std::string getDescriptionStr() override {
+        std::stringstream ss;
+        ss << "id: " << id << "\n";
+        ss << "type: " << type << "\n";
+        ss << "position: " << std::setprecision(3) << std::fixed << position.x << ", " << position.y << "\n";
+        ss << "chunk: " << neighborsFinderMyTile.first << ", " << neighborsFinderMyTile.second << "\n";
+        ss << "gender: " << (genderIsMale ? "male" : "female") << "\n";
+        return ss.str();
     }
 
     constexpr static auto properties = std::make_tuple(
