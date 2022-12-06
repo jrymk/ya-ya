@@ -12,7 +12,6 @@
 extern std::stringstream debugStream;
 extern bool fontLoaded;
 extern sf::Font debuggerFont;
-extern std::vector<DebugGraph> debugGraphs;
 
 class DebugGraph {
     std::string name;
@@ -36,6 +35,7 @@ public:
     float drawGraph(sf::RenderWindow& window, float y);
 };
 
+extern std::vector<DebugGraph> debugGraphs;
 
 void renderDebugOverlay(sf::RenderWindow& window);
 
