@@ -8,7 +8,8 @@
 #include <deque>
 #include <chrono>
 
-#define debug debugStream << "<" << __FILE__ << ":" << __LINE__ << "|" << __FUNCTION__ << "> "
+// #define debug debugStream << "<" << __FILE__ << ":" << __LINE__ << "|" << __FUNCTION__ << "> "
+#define debug std::cout << "<" << __FILE__ << ":" << __LINE__ << "|" << __FUNCTION__ << "> "
 
 extern std::stringstream debugStream;
 extern bool fontLoaded;

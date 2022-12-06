@@ -1,4 +1,4 @@
-#include "objects.h"
+#include "egg.h"
 #include <iomanip>
 
 void Egg::runAction(Action& action, std::vector<Action>& followUpActions) {
@@ -35,6 +35,7 @@ void Egg::initModel() {
 }
 
 Egg::Egg() {
+    Entity::childClassPtr = this;
     initModel();
 }
 

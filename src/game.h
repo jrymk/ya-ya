@@ -6,8 +6,8 @@
 #include <map>
 #include <set>
 #include "entity.h"
-#include "duck.hpp"
-#include "objects.h"
+#include "duck.h"
+#include "egg.h"
 #include "serialization.h"
 #include "controls.h"
 #include "neighborsfinder.h"
@@ -17,7 +17,7 @@ public:
     NeighborsFinder neighborsFinder;
     Controls controls;
 
-    bool showActionList = false;
+    bool showActionList = true;
 
     std::vector<Action> actionList;
     double updateTime;
@@ -27,6 +27,8 @@ public:
     Game();
 
     void update();
+
+    void processCollisions();
 
     void runActions();
 

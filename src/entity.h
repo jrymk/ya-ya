@@ -32,12 +32,10 @@ public:
     double heading = 0.;
     double headingRotationSpeed = 0.;
     
-    bool genderIsMale = true;
-    bool fertilized = false;
-
+    Entity* childClassPtr;
     
     std::vector<Graphics::Quad> model;
-
+    
     virtual void runAction(Action& action, std::vector<Action>& followUpActions);
 
     virtual void initModel();

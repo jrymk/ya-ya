@@ -1,4 +1,6 @@
 #include "game.h"
+#include <iomanip>
+#include <thread>
 
 Game::Game(): 
     neighborsFinder(this),
@@ -16,12 +18,35 @@ void Game::update() {
     updateTime = updateTimer.elapsed();
 }
 
+void Game::processCollisions() {
+    for (auto e : entities) {
+        auto eid = splitId(e.first);
+        if (eid.first != "duck" && eid.first != "player")
+            continue;
+        
+        auto result = neighborsFinder.findNeighbors(e.second->position, .3, "duck");
+        
+        for (auto f : result) {
+            if (e.second == f)
+                continue;
+            if (f->type != "duck")
+                continue;
+
+            if (e.second->position.len(f->position) < .3) {
+                pushAction("global", Timer::getNow(), "process_collision " + e.second->id + " " + f->id);
+            }
+        }
+    }
+}
+
 void Game::runActions() {
     std::vector<Action> followUpActions;
 
     std::sort(actionList.begin(), actionList.end());
+    // std::vector<std::thread> threadPool;
     for (int i = actionList.size() - 1; i >= 0; i--) {
         if (actionList[i].time.elapsed() >= 0 && !actionList[i].ranFlag) { // started
+            // threadPool.push_back(std::thread(&Game::runAction, this, actionList[i], followUpActions));
             runAction(actionList[i], followUpActions);
             actionList[i].ranFlag = true;
             actionList[i].deleteFlag = true;
@@ -29,6 +54,9 @@ void Game::runActions() {
         else 
             break;
     }
+    // for (std::thread& t : threadPool) {
+    //     t.join();
+    // }
     for (auto& action : followUpActions)
         actionList.push_back(action); // will run next update
 
@@ -121,7 +149,14 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
             Entity* closest = nullptr;
             std::vector<Entity*> candidates;
             for (auto f : result) {
-                if (!f->genderIsMale) {
+                if (!f->childClassPtr)
+                    continue;
+                if (f->type != "duck")
+                    continue;
+                Duck* duck = dynamic_cast<Duck*>(f->childClassPtr);
+                if (!duck)
+                    continue;
+                if (!duck->genderIsMale) {
                     if (!closest || f->position.len(e->position) < closest->position.len(e->position))
                         closest = f;
                     candidates.push_back(f);
@@ -142,8 +177,17 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
             auto result = neighborsFinder.findNeighbors(e->position, 1.);
             std::vector<Entity*> candidates;
             for (auto f : result) {
-                if (f->genderIsMale) 
+                if (!f->childClassPtr)
+                    continue;
+                if (f->type != "duck")
+                    continue;
+                Duck* duck = dynamic_cast<Duck*>(f->childClassPtr);
+                if (!duck)
+                    continue;
+                if (!duck->genderIsMale) {
+                    debug << duck->id << " is " << (duck->genderIsMale ? "male" : "female") << "\n";
                     candidates.push_back(f);
+                }
             }
             if (candidates.size() == 0) {
                 followUpActions.push_back(Action(e->id, Timer::getNow(), "lay_unfertilized_egg"));

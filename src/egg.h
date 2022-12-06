@@ -1,11 +1,14 @@
 #pragma once
-#ifndef _OBJECTS_HPP_
-#define _OBJECTS_HPP_
+#ifndef _EGG_H_
+#define _EGG_H_
 
 #include "entity.h"
 
 class Egg : public Entity {
 public:
+    bool genderIsMale = true;
+    bool fertilized = false;
+
     void runAction(Action& action, std::vector<Action>& followUpActions) override;
 
     void initModel() override;

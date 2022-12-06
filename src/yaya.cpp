@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "utilities.h"
 #include "game.h"
-#include "player.hpp"
+#include "player.h"
 
 /**
  * Key definitions
@@ -34,30 +34,34 @@ int main() {
     
     Player* player = new Player();
     player->id = "player$player";
+    player->childClassPtr = player;
     game.insertEntity(player);
 
-    // for (int i = 0; i < 20; i++) {
-    //     for (int j = 0; j < 20; j++) {
-    //         if (i >= 9 && i <= 11 && j >= 9 && j <= 11)
-    //             continue;
-    //         Duck* duck = new Duck();
-    //         duck->position.x = float(i - 10);
-    //         duck->position.y = float(j - 10);
-    //         game.entities.push_back(duck);
-    //         game.ducks.push_back(duck);
-    //     }
-    // }
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
+        duck->childClassPtr = duck;
+        debug << duck << "\n";
         duck->position.x = 2.;
         duck->position.y = 2.;
         duck->genderIsMale = true;
         game.insertEntity(duck);
+        
+        Duck* child = dynamic_cast<Duck*>(duck->childClassPtr);
+        debug << "casted: " << child << "\n";
+
+        if (!child)
+            debug << "casted oopsie\n";
+        else
+            debug << child->id << " is " << (child->genderIsMale ? "male" : "female") << "\n";
     }
+
+
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
+        duck->childClassPtr = duck;
+        debug << duck << "\n";
         duck->position.x = 2.;
         duck->position.y = -2.;
         duck->genderIsMale = false;
@@ -66,6 +70,8 @@ int main() {
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
+        duck->childClassPtr = duck;
+        debug << duck << "\n";
         duck->position.x = -2.;
         duck->position.y = -2.;
         duck->genderIsMale = true;
@@ -74,6 +80,8 @@ int main() {
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
+        duck->childClassPtr = duck;
+        debug << duck << "\n";
         duck->position.x = -2.;
         duck->position.y = 2.;
         duck->genderIsMale = false;
@@ -156,67 +164,30 @@ int main() {
         //     }
         // }
 
-        UIVec moveVec;        
+        // UIVec moveVec;        
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        //     moveVec.y -= 1.;
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        //     moveVec.y += 1.;
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        //     moveVec.x -= 1.;
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        //     moveVec.x += 1.;
+        // if (moveVec.len(UIVec()) > .1)
+        //     player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())) / coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).len() * 4.;
+        // else 
+        //     player->slideVelocity = coord();
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-            moveVec.y -= 1.;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            moveVec.y += 1.;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-            moveVec.x -= 1.;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-            moveVec.x += 1.;
-        if (moveVec.len(UIVec()) > .1)
-            player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())) / coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).len() * 4.;
-        else 
-            player->slideVelocity = coord();
+            player->velocity = 3.;
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            player->velocity = -2.;
+        else
+            player->velocity = 0.;
 
-        // for (auto duck : game.ducks) {
-        //     if (Camera::getMouseCoord().len(duck->position) < .6) {
-        //         // duck->heading = Camera::getMouseCoord().angle(duck->position);
-        //         // duck->velocity = 2. / Camera::getMouseCoord().len(duck->position);
-        //         if (duck->zPosition == 0.) {
-        //             duck->insertAction(Timer::getNow(), "duckwalk_to_until 0 0");
-        //         }
-        //         //     duck->zVelocity = .2;
-        //     }
-        //     else if (player->position.len(duck->position) < .6) {
-        //         duck->heading = player->position.angle(duck->position);
-        //         duck->velocity = 2. / player->position.len(duck->position);
-        //         // if (duck->zPosition == 0.)
-        //         //     duck->zVelocity = .2;
-        //     }
-        //     else {
-        //         // duck->heading = 0.;
-        //         duck->velocity = duck->velocity * 0.9;
-        //     }
-        // }
-        for (auto e : game.entities) {
-            auto eid = splitId(e.first);
-            if (eid.first != "duck" && eid.first != "player")
-                continue;
-            
-            auto result = game.neighborsFinder.findNeighbors(e.second->position, .3, "duck");
-            
-            // if (player->position.len(e.second->position) < .6) {
-            //     e.second->heading = player->position.angle(e.second->position);
-            //     e.second->velocity = 2. / player->position.len(e.second->position);
-            //     // if (duck->zPosition == 0.)
-            //     //     duck->zVelocity = .2;
-            // }
-            for (auto f : result) {
-                if (e.second == f)
-                    continue;
-                if (f->type != "duck")
-                    continue;
-
-                if (e.second->position.len(f->position) < .3) {
-                    game.pushAction("global", Timer::getNow(), "process_collision " + e.second->id + " " + f->id);
-                }
-            }
-        }
-
-
-        player->heading = player->position.angle(Camera::getMouseCoord());
+        // player->heading = player->position.angle(Camera::getMouseCoord());
+        player->heading += double(sf::Mouse::getPosition(window).x) / -200.;
+        sf::Mouse::setPosition(sf::Vector2i(0, sf::Mouse::getPosition(window).y), window);
         
         game.update();
         game.render();
