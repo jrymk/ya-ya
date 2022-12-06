@@ -46,14 +46,17 @@ void Game::processCollisions() {
 void Game::runActions() {
     std::vector<Action> followUpActions;
 
-    std::sort(actionList.begin(), actionList.end());
+    // std::sort(actionList.begin(), actionList.end());
     // std::vector<std::thread> threadPool;
-    for (int i = actionList.size() - 1; i >= 0; i--) {
-        if (actionList[i].time.elapsed() >= 0 && !actionList[i].ranFlag) { // started
+    // for (int i = actionList.size() - 1; i >= 0; i--) {
+    while (!actionList.empty()) {
+        Action action = actionList.top();
+        if (action.time.elapsed() >= 0 && !action.ranFlag) { // started
             // threadPool.push_back(std::thread(&Game::runAction, this, actionList[i], followUpActions));
-            runAction(actionList[i], followUpActions);
-            actionList[i].ranFlag = true;
-            actionList[i].deleteFlag = true;
+            runAction(action, followUpActions);
+            action.ranFlag = true;
+            action.deleteFlag = true;
+            actionList.pop();
         }
         else 
             break;
@@ -62,13 +65,13 @@ void Game::runActions() {
     //     t.join();
     // }
     for (auto& action : followUpActions)
-        actionList.push_back(action); // will run next update
+        actionList.push(action); // will run next update
 
-    std::sort(actionList.begin(), actionList.end());
-    for (int i = actionList.size() - 1; i >= 0; i--) {
-        if (actionList[i].deleteFlag)
-            actionList.resize(i);
-    }
+    // std::sort(actionList.begin(), actionList.end());
+    // for (int i = actionList.size() - 1; i >= 0; i--) {
+    //     if (actionList[i].deleteFlag)
+    //         actionList.resize(i);
+    // }
 }
 
 void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
@@ -96,7 +99,7 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
             // pushAction(egg->id, Timer::getNow() + getRand() * 10., "hatch"); // they don't hatch
             insertEntity(egg);
         }
-        if (function == "lay_fertilized_egg") {
+        else if (function == "lay_fertilized_egg") {
             coord position;
             bool genderIsMale;
             ss >> position.x >> position.y >> genderIsMale;
@@ -109,7 +112,7 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
             pushAction(egg->id, Timer::getNow() + getRand() * 10., "hatch");
             insertEntity(egg);
         }
-        if (function == "hatch") {
+        else if (function == "hatch") {
             if (getRand() > .8) // 60% success
                 return;
             coord position;
@@ -124,12 +127,12 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
             pushAction(duck->id, Timer::getNow() + .5, "duckwalk_to_until " + toStr(position.x + 3. * (getRand() - 0.5)) + " " + toStr(position.y + 3. * (getRand() - 0.5)));
             insertEntity(duck);
         }
-        if (function == "destroy") {
+        else if (function == "destroy") {
             std::string id;
             ss >> id;
             destroyEntity(id);
         }
-        if (function == "process_collision") {
+        else if (function == "process_collision") {
             std::string eid, fid;
             ss >> eid >> fid;
             Entity* e = findEntity(eid);
@@ -143,7 +146,7 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
             if (f->historyPosition.size() >= 2 && (f->historyPosition[1].second.len(f->historyPosition[0].second)) /  f->historyPosition[1].first.elapsed(f->historyPosition[0].first) < 0.1)
                 pushAction(f->id, Timer::getNow(), "slide_velocity_distance " + toStr(move.x) + " " + toStr(move.y) + " 0.1");
         }
-        if (function == "find_mate_female") {
+        else if (function == "find_mate_female") {
             std::string id;
             ss >> id;
             Entity* e = findEntity(id);
@@ -172,7 +175,7 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
                 pushAction(e->id, Timer::getNow(), "result_find_mate_female " + closest->id + " " + toStr(closest->position.x) + " " + toStr(closest->position.y));
             }
         }
-        if (function == "lay_egg_find_nearby_male") {
+        else if (function == "lay_egg_find_nearby_male") {
             std::string eid;
             ss >> eid;
             Entity* e = findEntity(eid);
@@ -189,7 +192,6 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
                 if (!duck)
                     continue;
                 if (!duck->genderIsMale) {
-                    debug << duck->id << " is " << (duck->genderIsMale ? "male" : "female") << "\n";
                     candidates.push_back(f);
                 }
             }
@@ -215,7 +217,7 @@ Entity* Game::findEntity(std::string id) {
 }
 
 void Game::pushAction(std::string id, Timer timer, std::string action) {
-    actionList.push_back(Action(id, timer, action));
+    actionList.push(Action(id, timer, action));
 }
 
 std::string Game::newId(const std::string& type) {
@@ -261,18 +263,18 @@ void Game::render() {
     for (auto entity : entities) {
         entity.second->pushQuads();
     }
-    Profiler::timeSplit("showactionlist");
-    if (showActionList) {
-        std::stringstream ss;
-        for (int i = actionList.size() - 1; i >= 0; i--) {
-            ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << actionList[i].time.elapsed() << "s  " << std::left << std::setw(20) << actionList[i].id << "  " << actionList[i].action << "\n";
-            if (i <= int(actionList.size()) - 101) {
-                ss << "... (truncated)\n";
-                break;
-            }
-        }
-        Graphics::drawText(ss.str(), sf::Color::Cyan, 12, UIVec(2., 55.), 0., sf::Color(0, 0, 0, 100), 2.);
-    }
+    // Profiler::timeSplit("showactionlist");
+    // if (showActionList) {
+    //     std::stringstream ss;
+    //     for (int i = actionList.size() - 1; i >= 0; i--) {
+    //         ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << actionList[i].time.elapsed() << "s  " << std::left << std::setw(20) << actionList[i].id << "  " << actionList[i].action << "\n";
+    //         if (i <= int(actionList.size()) - 101) {
+    //             ss << "... (truncated)\n";
+    //             break;
+    //         }
+    //     }
+    //     Graphics::drawText(ss.str(), sf::Color::Cyan, 12, UIVec(2., 55.), 0., sf::Color(0, 0, 0, 100), 2.);
+    // }
     // for (auto entity : entities) {
     //     Graphics::drawText(entity.first, sf::Color::Black, 14, Camera::getScreenPos(entity.second->position) + UIVec(0., 30.), .5, sf::Color(255, 255, 255, 100), 3.);
     // }

@@ -11,23 +11,23 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
             followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 20., "loop_find_mate"));
             // followUpActions.push_back(Action(id, Timer::getNow() + 50. + getRand() * 200., "death"));
         }
-        if (function == "loop_wander") {
+        else if (function == "loop_wander") {
             followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 25., "loop_wander"));
             followUpActions.push_back(Action(id, Timer::getNow(), "duckwalk_to_until " + toStr(position.x + getRand() * 3.) + " " + toStr(position.y + getRand() * 3.)));
         }
-        if (function == "loop_lay_eggs") {
+        else if (function == "loop_lay_eggs") {
             if (!genderIsMale) {
                 followUpActions.push_back(Action("global", Timer::getNow(), "lay_egg_find_nearby_male " + id));
                 followUpActions.push_back(Action(id, Timer::getNow() + 10. + getRand() * 40., "loop_lay_eggs"));
             }
         }
-        if (function == "loop_find_mate") {
+        else if (function == "loop_find_mate") {
             if (genderIsMale) {
                 followUpActions.push_back(Action(id, Timer::getNow() + 5. + getRand() * 20., "loop_find_mate"));
                 followUpActions.push_back(Action("global", Timer::getNow(), "find_mate_female " + id));
             }
         }
-        if (function == "death") {
+        else if (function == "death") {
             for (int i = 0; i < 10; i++) {
                 followUpActions.push_back(Action(id, Timer::getNow() + .05 * i, "slide_instant 0.05 0"));    
                 followUpActions.push_back(Action(id, Timer::getNow() + .05 * i + .0125, "slide_instant 0 0.05"));    
@@ -36,7 +36,7 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
             }
             followUpActions.push_back(Action("global", Timer::getNow() + .5, "destroy " + id));
         }
-        if (function == "have_sex_with") {
+        else if (function == "have_sex_with") {
             for (int i = 0; i < 20; i++) {
                 followUpActions.push_back(Action(id, Timer::getNow() + .1 * i, "slide_instant 0.05 0"));    
                 followUpActions.push_back(Action(id, Timer::getNow() + .1 * i + .025, "slide_instant 0 0.05"));    
@@ -53,11 +53,11 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
                     followUpActions.push_back(Action("global", Timer::getNow() + 3. + getRand() * 2., "lay_unfertilized_egg " + toStr(position.x) + " " + toStr(position.y)));
             }
         }
-        if (function == "hop") {
+        else if (function == "hop") {
             if (zPosition == 0.)
                 zVelocity = .2;
         }
-        if (function == "duckwalk_to_until") {
+        else if (function == "duckwalk_to_until") {
             coord target;
             ss >> target.x >> target.y;
 
@@ -81,22 +81,22 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
                 followUpActions.push_back(Action(id, Timer::getNow() + 0.2 * std::sqrt(position.len(target)), "duckwalk_to_until " + toStr(target.x) + " " + toStr(target.y)));
             }
         }
-        if (function == "lay_unfertilized_egg") {
+        else if (function == "lay_unfertilized_egg") {
             followUpActions.push_back(Action("global", Timer::getNow(), "lay_unfertilized_egg " + toStr(position.x) + " " + toStr(position.y)));
         }
-        if (function == "lay_fertilized_egg") {
+        else if (function == "lay_fertilized_egg") {
         }
-        if (function == "slide_instant") {
+        else if (function == "slide_instant") {
             coord delta;
             ss >> delta.x >> delta.y;
             position = position + delta;
         }
-        if (function == "slide_velocity") {
+        else if (function == "slide_velocity") {
             coord velocity;
             ss >> velocity.x >> velocity.y;
             position = position + velocity / elapsedSecs;
         }
-        if (function == "slide_velocity_distance") {
+        else if (function == "slide_velocity_distance") {
             coord velocity;
             double distance;
             ss >> velocity.x >> velocity.y >> distance;
@@ -106,7 +106,7 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
             if (distance > 0.)
                 followUpActions.push_back(Action(id, Timer::getNow(), "slide_velocity_distance " + toStr(velocity.x) + " " + toStr(velocity.y) + " " + toStr(distance)));
         }
-        if (function == "result_find_mate_female") {
+        else if (function == "result_find_mate_female") {
             std::string mateid;
             coord pos;
             ss >> mateid >> pos.x >> pos.y;

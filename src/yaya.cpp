@@ -26,9 +26,9 @@ int main() {
 
     debugGraphs.push_back(DebugGraph("entities", 200, 150, 10000));
     debugGraphs.push_back(DebugGraph("actions", 200, 150, 10000));
-    debugGraphs.push_back(DebugGraph("quads", 200, 150, 10000));
-    debugGraphs.push_back(DebugGraph("update time", 200, 150, 10000));
-    debugGraphs.push_back(DebugGraph("entities(long)", 200, 150, 1000000));
+    // debugGraphs.push_back(DebugGraph("quads", 200, 150, 10000));
+    // debugGraphs.push_back(DebugGraph("update time", 200, 150, 10000));
+    // debugGraphs.push_back(DebugGraph("entities(long)", 200, 150, 1000000));
 
     Game game;
     
@@ -162,9 +162,9 @@ int main() {
         
         debugGraphs[0].newGraphEntry(game.entities.size());
         debugGraphs[1].newGraphEntry(game.actionList.size());
-        debugGraphs[2].newGraphEntry(Graphics::getQuadCount());
-        debugGraphs[3].newGraphEntry(game.updateTime);
-        debugGraphs[4].newGraphEntry(game.entities.size());
+        // debugGraphs[2].newGraphEntry(Graphics::getQuadCount());
+        // debugGraphs[3].newGraphEntry(game.updateTime);
+        // debugGraphs[4].newGraphEntry(game.entities.size());
         
         Profiler::timeSplit("post");
         Graphics::setFont(1);

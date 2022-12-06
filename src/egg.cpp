@@ -8,14 +8,14 @@ void Egg::runAction(Action& action, std::vector<Action>& followUpActions) {
         if (function == "init") {
             
         }
-        if (function == "hatch") {
+        else if (function == "hatch") {
             followUpActions.push_back(Action("global", Timer::getNow(), "hatch " + toStr(position.x) + " " + toStr(position.y) + " " + toStr(genderIsMale)));
             followUpActions.push_back(Action("global", Timer::getNow() + 1., "destroy " + id));
             
             // delete this;
 
         }
-        if (function == "hop") {
+        else if (function == "hop") {
             if (zPosition == 0.)
                 zVelocity = .2;
         }

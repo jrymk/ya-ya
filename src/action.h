@@ -12,7 +12,7 @@ public:
     bool deleteFlag = false;
     Timer time;
 
-    // std::string id;
+    std::string id;
     std::string action; // is this a good idea?
     bool rerun = false;
 
@@ -21,7 +21,7 @@ public:
     : id(id), time(time), action(action) {
     }
 
-    inline bool operator<(const Action& rhs) {
+    inline bool operator<(const Action rhs) const {
         if (deleteFlag != rhs.deleteFlag)
             return rhs.deleteFlag;
         return !(time < rhs.time);

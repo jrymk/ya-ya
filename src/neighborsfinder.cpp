@@ -47,7 +47,8 @@ std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius,
         for (int y = ((int(floor(center.y - radius)) - (1 << l)) & (~0 << l)); y <= ((int(ceil(center.y + radius)) + (1 << l)) & (~0 << l)); y+=(1 << l)) {
             if (chunkMembers[l].find(std::make_pair(x, y)) == chunkMembers[l].end())
                 continue;
-            for (auto& id : chunkMembers[l][std::make_pair(x, y)]) {
+            auto chunk = chunkMembers[l][std::make_pair(x, y)];
+            for (auto& id : chunk) {
                 Entity* e;
                 auto result = game->entities.find(id);
                 if (result == game->entities.end()) {

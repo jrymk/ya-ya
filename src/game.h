@@ -5,6 +5,7 @@
 #include <fstream>
 #include <map>
 #include <set>
+#include <queue>
 #include "entity.h"
 #include "duck.h"
 #include "egg.h"
@@ -19,7 +20,7 @@ public:
 
     bool showActionList = true;
 
-    std::vector<Action> actionList;
+    std::priority_queue<Action> actionList;
     double updateTime;
     std::map<std::string, Duck*> ducks;
     std::map<std::string, Entity*> entities;
