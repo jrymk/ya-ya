@@ -3,6 +3,7 @@
 std::stringstream debugStream;
 bool fontLoaded = false;
 sf::Font debuggerFont;
+std::vector<DebugGraph> debugGraphs;
 
 DebugGraph::DebugGraph(const std::string& name, float graphWidth, float graphHeight, int ms) {
     this->name = name;
