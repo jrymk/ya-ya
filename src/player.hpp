@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <cmath>
-#include "entity.hpp"
-#include "timer.hpp"
+#include "entity.h"
+#include "timer.h"
 
 class Player: public Entity {
 private:

@@ -1,9 +1,9 @@
-#ifndef _ACTION_HPP_
-#define _ACTION_HPP_
+#ifndef _ACTION_H_
+#define _ACTION_H_
 
 #include <vector>
 #include <stdarg.h>
-#include "timer.hpp"
+#include "timer.h"
 
 class Action {
 public:
@@ -14,12 +14,12 @@ public:
     std::string action; // is this a good idea?
     bool rerun = false;
 
-    Action() {}
-    Action(const std::string& id, const Timer& time, const std::string& action)
+    inline Action() {}
+    inline Action(const std::string& id, const Timer& time, const std::string& action)
     : id(id), time(time), action(action) {
     }
 
-    bool operator<(const Action& rhs) {
+    inline bool operator<(const Action& rhs) {
         if (deleteFlag != rhs.deleteFlag)
             return rhs.deleteFlag;
         return !(time < rhs.time);

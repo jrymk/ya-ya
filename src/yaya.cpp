@@ -1,12 +1,8 @@
-#include "utilities.hpp"
-#include "camera.hpp"
-#include "entity.hpp"
-#include "graphics.hpp"
-#include "debugger.hpp"
-#include "events.hpp"
-#include "duck.hpp"
+#include "graphics.h"
+#include "camera.h"
+#include "utilities.h"
+#include "game.h"
 #include "player.hpp"
-#include "game.hpp"
 
 /**
  * Key definitions
@@ -112,7 +108,7 @@ int main() {
                 }
             }
             if (event.type == sf::Event::MouseWheelMoved) {
-                mouseWheelPosition += event.mouseWheel.delta;
+                // mouseWheelPosition += event.mouseWheel.delta;
             }
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Button::Left) {
