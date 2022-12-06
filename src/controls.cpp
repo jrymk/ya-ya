@@ -5,7 +5,7 @@ Controls::Controls(std::map<std::string, Entity*>* entities, NeighborsFinder* ne
     neighborsFinder(neighborsFinder) {
 }
 
-Entity* Controls::getFacingEntity(Entity* player, const std::string& filter) {
+Entity* Controls::getFacingEntity(Entity* player, EntityType filter) {
     auto nearby = neighborsFinder->findNeighbors(player->position, 2., filter);
     Entity* facingEntity = nullptr;
     double bestScore = 1e8;

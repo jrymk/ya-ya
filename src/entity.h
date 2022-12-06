@@ -13,11 +13,18 @@
 #define OUT_OF_SIGHT 500
 #define GRAVITY -1.
 
+enum EntityType {
+    ENTITY,
+    PLAYER,
+    DUCK,
+    EGG,
+};
+
 /// @brief Renderer and motion control for entities
 class Entity {
 public:
     std::string id = "undefined";
-    std::string type = "entity";
+    EntityType type = ENTITY;
     std::pair<int, int> neighborsFinderMyTile = {-1e8, 1e8};
 
     Timer entityTimer;

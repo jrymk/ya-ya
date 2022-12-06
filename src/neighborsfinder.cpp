@@ -13,13 +13,13 @@ void NeighborsFinder::update() {
         if (e.second->neighborsFinderMyTile == std::make_pair((int)-1e8, (int)1e8)) {
             e.second->neighborsFinderMyTile = getChunk(e.second->position, 0);
             for (int l = 0; l < 5; l++)
-                chunkMembers[l][getChunk(e.second->position, l)].insert(e.first);
+                chunkMembers[l][getChunk(e.second->position, l)].insert(e.second);
         }
         else {
             for (int l = 0; l < 5; l++) {
                 if (e.second->neighborsFinderMyTile != getChunk(e.second->position, l)) {
-                    chunkMembers[l][getChunk(e.second->neighborsFinderMyTile, l)].erase(e.second->id);
-                    chunkMembers[l][getChunk(e.second->position, l)].insert(e.second->id);
+                    chunkMembers[l][getChunk(e.second->neighborsFinderMyTile, l)].erase(e.second);
+                    chunkMembers[l][getChunk(e.second->position, l)].insert(e.second);
                     if (l == 0)
                         e.second->neighborsFinderMyTile = getChunk(e.second->position, 0);
                 } 
@@ -32,10 +32,10 @@ void NeighborsFinder::update() {
 
 void NeighborsFinder::destroyEntry(Entity* e) {
     for (int l = 0; l < 5; l++)
-        chunkMembers[l][getChunk(e->neighborsFinderMyTile, l)].erase(e->id);
+        chunkMembers[l][getChunk(e->neighborsFinderMyTile, l)].erase(e);
 }
 
-std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius, std::string filter) {
+std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius, EntityType filter) {
     std::vector<Entity*> neighbors;
     int d = int(ceil(radius));
     int l = 0;
@@ -47,16 +47,9 @@ std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius,
         for (int y = ((int(floor(center.y - radius)) - (1 << l)) & (~0 << l)); y <= ((int(ceil(center.y + radius)) + (1 << l)) & (~0 << l)); y+=(1 << l)) {
             if (chunkMembers[l].find(std::make_pair(x, y)) == chunkMembers[l].end())
                 continue;
-            for (auto& id : chunkMembers[l][std::make_pair(x, y)]) {
-                Entity* e;
-                auto result = game->entities.find(id);
-                if (result == game->entities.end()) {
-                    debug << "Find entity failed when tring to find \"" << id << "\"\n";
-                    e = nullptr;
-                }
-                e = result->second;
+            for (auto& e : chunkMembers[l][std::make_pair(x, y)]) {
                 if (e) {
-                    if (filter != "" && e->type != filter)
+                    if (filter != ENTITY && e->type != filter)
                         continue;
                     if (e->position.len(center) <= radius)
                         neighbors.push_back(e);

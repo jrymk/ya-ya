@@ -10,7 +10,7 @@ class Game;
 
 class NeighborsFinder {
     Game* game;
-    std::map<std::pair<int, int>, std::set<std::string>> chunkMembers[5];
+    std::map<std::pair<int, int>, std::set<Entity*>> chunkMembers[5];
     
 public:
     std::pair<int, int> getChunk(coord c, int level);
@@ -20,7 +20,7 @@ public:
 
     void destroyEntry(Entity* e);
 
-    std::vector<Entity*> findNeighbors(coord center, double radius, std::string filter = "");
+    std::vector<Entity*> findNeighbors(coord center, double radius, EntityType filter = ENTITY);
 
     NeighborsFinder(Game* game): game(game) {}
 };

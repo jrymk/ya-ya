@@ -24,20 +24,23 @@ void Game::update() {
 
 void Game::processCollisions() {
     for (auto e : entities) {
-        auto eid = splitId(e.first);
-        if (eid.first != "duck" && eid.first != "player")
+        // auto eid = splitId(e.first);
+        if (e.second->type != DUCK && e.second->type != PLAYER)
             continue;
         
-        auto result = neighborsFinder.findNeighbors(e.second->position, .3, "duck");
+        auto result = neighborsFinder.findNeighbors(e.second->position, .3, DUCK);
         
         for (auto f : result) {
             if (e.second == f)
                 continue;
-            if (f->type != "duck")
+            if (f->type != DUCK)
                 continue;
 
             if (e.second->position.len(f->position) < .3) {
-                pushAction("global", Timer::getNow(), "process_collision " + e.second->id + " " + f->id);
+                Action a(nullptr, Timer::getNow(), GLOBAL_PROCESS_COLLISION);
+                a.argEntity[0] = e.second;
+                a.argEntity[1] = f;
+                pushAction(a);
             }
         }
     }
@@ -46,14 +49,19 @@ void Game::processCollisions() {
 void Game::runActions() {
     std::vector<Action> followUpActions;
 
-    std::sort(actionList.begin(), actionList.end());
+    Profiler::timeSplit("sort");
+    // std::sort(actionList.begin(), actionList.end());
     // std::vector<std::thread> threadPool;
-    for (int i = actionList.size() - 1; i >= 0; i--) {
-        if (actionList[i].time.elapsed() >= 0 && !actionList[i].ranFlag) { // started
+    Profiler::timeSplit("run");
+    // for (int i = actionList.size() - 1; i >= 0; i--) {
+    while (!actionList.empty()) {
+        Action action = actionList.top();
+        if (action.time.elapsed() >= 0 && !actionList.top().ranFlag) { // started
             // threadPool.push_back(std::thread(&Game::runAction, this, actionList[i], followUpActions));
-            runAction(actionList[i], followUpActions);
-            actionList[i].ranFlag = true;
-            actionList[i].deleteFlag = true;
+            runAction(action, followUpActions);
+            // actionList[i].ranFlag = true;
+            // actionList[i].deleteFlag = true;
+            actionList.pop();
         }
         else 
             break;
@@ -61,147 +69,152 @@ void Game::runActions() {
     // for (std::thread& t : threadPool) {
     //     t.join();
     // }
+    Profiler::timeSplit("followup");
     for (auto& action : followUpActions)
-        actionList.push_back(action); // will run next update
+        actionList.push(action); // will run next update
 
-    std::sort(actionList.begin(), actionList.end());
-    for (int i = actionList.size() - 1; i >= 0; i--) {
-        if (actionList[i].deleteFlag)
-            actionList.resize(i);
-    }
+    Profiler::timeSplit("ssort");
+    // std::sort(actionList.begin(), actionList.end());
+    Profiler::timeSplit("resize");
+    // for (int i = actionList.size() - 1; i >= 0; i--) {
+    //     if (actionList[i].deleteFlag)
+    //         actionList.resize(i);
+    // }
 }
 
 void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
-    if (action.id != "global") {
-        std::map<std::string, Entity*>::iterator result = entities.find(action.id);
-        if (result == entities.end()) {
-            debug << "Attempt to find entity " << action.id << " failed";
-            // umm... now what?
-            return;
-        }
-        result->second->runAction(action, followUpActions);
+    // debug << std::setw(100) << action.action << std::setw(20) << action.entity << "\t" << (action.entity == nullptr ? "global" : action.entity->id) << std::endl;
+    if (action.entity != nullptr) {
+
+        // std::map<std::string, Entity*>::iterator result = entities.find(action.id);
+        // if (result == entities.end()) {
+        //     debug << "Attempt to find entity " << action.id << " failed";
+        //     // umm... now what?
+        //     return;
+        // }
+        action.entity->runAction(action, followUpActions);
         return;
     }
     // global actions
-    std::stringstream ss(action.action); 
-    std::string function;
-    if (ss >> function) {
-        if (function == "lay_unfertilized_egg") {
-            coord position;
-            ss >> position.x >> position.y;
-            Egg* egg = new Egg();
-            egg->id = newId("egg");
-            egg->position = position + coord(0.01 * (getRand() - .5), 0.01 * (getRand() - .5));
-            pushAction(egg->id, Timer::getNow(), "hop");
-            // pushAction(egg->id, Timer::getNow() + getRand() * 10., "hatch"); // they don't hatch
-            insertEntity(egg);
+    switch (action.command) {
+    case GLOBAL_LAY_UNFERTILIZED_EGG: {
+        Egg* egg = new Egg();
+        egg->id = newId(EGG);
+        egg->position = action.argCoord[0] + coord(0.01 * (getRand() - .5), 0.01 * (getRand() - .5));
+        pushAction(Action(egg, Timer::getNow(), EGG_HOP));
+        insertEntity(egg);
+        break;
+    }
+    case GLOBAL_LAY_FERTILIZED_EGG: {
+        Egg* egg = new Egg();
+        egg->id = newId(EGG);
+        egg->position = action.argCoord[0] + coord(0.01 * (getRand() - .5), 0.01 * (getRand() - .5));
+        egg->fertilized = true;
+        egg->genderIsMale = action.argBool[0];
+        pushAction(Action(egg, Timer::getNow(), EGG_HOP));
+        pushAction(Action(egg, Timer::getNow() + getRand() * 10., EGG_HATCH));
+        insertEntity(egg);
+        break;
+    }
+    case GLOBAL_HATCH: {
+        if (getRand() > .8) // 60% success
+            return;
+        Duck* duck = new Duck();
+        duck->id = newId(DUCK);
+        duck->position = action.argCoord[0] + coord(0.05 * (getRand() - .5), 0.05 * (getRand() - .5));
+        duck->genderIsMale = action.argBool[0];
+        pushAction(Action(duck, Timer::getNow(), DUCK_HOP));
+
+        Action a(duck, Timer::getNow() + .5, DUCK_DUCKWALK_TO_UNTIL);
+        a.argCoord[0].x = action.argCoord[0].x + 3. * (getRand() - 0.5);
+        a.argCoord[0].y = action.argCoord[0].y + 3. * (getRand() - 0.5);
+        pushAction(a);
+        insertEntity(duck);
+        break;
+    }
+    case GLOBAL_DESTROY: {
+        destroyEntity(action.argString[0]);
+        break;
+    }
+    case GLOBAL_PROCESS_COLLISION: {
+        if (!action.argEntity[0] || !action.argEntity[1])
+            return;
+        coord delta = action.argEntity[1]->position - action.argEntity[0]->position;
+        coord move = delta / delta.len() / delta.len() / 3.;
+        if (action.argEntity[0]->historyPosition.size() >= 2 && 
+            (action.argEntity[0]->historyPosition[1].second.len(action.argEntity[0]->historyPosition[0].second)) /  action.argEntity[0]->historyPosition[1].first.elapsed(action.argEntity[0]->historyPosition[0].first) < 0.1) {
+            Action a(action.argEntity[0], Timer::getNow(), DUCK_SLIDE_VELOCITY_DISTANCE);
+            a.argCoord[0] = move * -1.;
+            a.argFloat[0] = 0.1;
+            pushAction(a);
         }
-        if (function == "lay_fertilized_egg") {
-            coord position;
-            bool genderIsMale;
-            ss >> position.x >> position.y >> genderIsMale;
-            Egg* egg = new Egg();
-            egg->id = newId("egg");
-            egg->position = position + coord(0.01 * (getRand() - .5), 0.01 * (getRand() - .5));
-            egg->fertilized = true;
-            egg->genderIsMale = genderIsMale;
-            pushAction(egg->id, Timer::getNow(), "hop");
-            pushAction(egg->id, Timer::getNow() + getRand() * 10., "hatch");
-            insertEntity(egg);
+        if (action.argEntity[1]->historyPosition.size() >= 2 && 
+            (action.argEntity[1]->historyPosition[1].second.len(action.argEntity[1]->historyPosition[0].second)) /  action.argEntity[1]->historyPosition[1].first.elapsed(action.argEntity[1]->historyPosition[0].first) < 0.1) {
+            Action a(action.argEntity[1], Timer::getNow(), DUCK_SLIDE_VELOCITY_DISTANCE);
+            a.argCoord[0] = move;
+            a.argFloat[0] = 0.1;
+            pushAction(a);
         }
-        if (function == "hatch") {
-            if (getRand() > .8) // 60% success
-                return;
-            coord position;
-            bool genderIsMale;
-            ss >> position.x >> position.y >> genderIsMale;
-            Duck* duck = new Duck();
-            duck->id = newId("duck");
-            duck->position = position + coord(0.05 * (getRand() - .5), 0.05 * (getRand() - .5));
-            duck->genderIsMale = genderIsMale;
-            pushAction(duck->id, Timer::getNow(), "hop");
-            // duck->actions.push_back(Action(Timer::getNow() + getRand() * 5., "lay_egg"));
-            pushAction(duck->id, Timer::getNow() + .5, "duckwalk_to_until " + toStr(position.x + 3. * (getRand() - 0.5)) + " " + toStr(position.y + 3. * (getRand() - 0.5)));
-            insertEntity(duck);
-        }
-        if (function == "destroy") {
-            std::string id;
-            ss >> id;
-            destroyEntity(id);
-        }
-        if (function == "process_collision") {
-            std::string eid, fid;
-            ss >> eid >> fid;
-            Entity* e = findEntity(eid);
-            Entity* f = findEntity(fid);
-            if (!e || !f)
-                return;
-            coord delta = f->position - e->position;
-            coord move = delta / delta.len() / delta.len() / 3.;
-            if (e->historyPosition.size() >= 2 && (e->historyPosition[1].second.len(e->historyPosition[0].second)) /  e->historyPosition[1].first.elapsed(e->historyPosition[0].first) < 0.1)
-                pushAction(e->id, Timer::getNow(), "slide_velocity_distance " + toStr(-move.x) + " " + toStr(-move.y) + " 0.1");
-            if (f->historyPosition.size() >= 2 && (f->historyPosition[1].second.len(f->historyPosition[0].second)) /  f->historyPosition[1].first.elapsed(f->historyPosition[0].first) < 0.1)
-                pushAction(f->id, Timer::getNow(), "slide_velocity_distance " + toStr(move.x) + " " + toStr(move.y) + " 0.1");
-        }
-        if (function == "find_mate_female") {
-            std::string id;
-            ss >> id;
-            Entity* e = findEntity(id);
-            if (!e)
-                return;
-            auto result = neighborsFinder.findNeighbors(e->position, 8.);
-            Entity* closest = nullptr;
-            std::vector<Entity*> candidates;
-            for (auto f : result) {
-                if (!f->childClassPtr)
-                    continue;
-                if (f->type != "duck")
-                    continue;
-                Duck* duck = dynamic_cast<Duck*>(f->childClassPtr);
-                if (!duck)
-                    continue;
-                if (!duck->genderIsMale) {
-                    if (!closest || f->position.len(e->position) < closest->position.len(e->position))
-                        closest = f;
-                    candidates.push_back(f);
-                }
-            }
-            if (closest) {
-                if (getRand() < .4) // change mate?
-                    closest = candidates[std::min(int(getRand() * candidates.size()), int(candidates.size() - 1))];
-                pushAction(e->id, Timer::getNow(), "result_find_mate_female " + closest->id + " " + toStr(closest->position.x) + " " + toStr(closest->position.y));
+        break;
+    }
+    case GLOBAL_FIND_MATE_FEMALE: {
+        auto result = neighborsFinder.findNeighbors(action.argEntity[0]->position, 8.);
+        Entity* closest = nullptr;
+        std::vector<Entity*> candidates;
+        for (auto f : result) {
+            if (!f->childClassPtr)
+                continue;
+            if (f->type != DUCK)
+                continue;
+            Duck* duck = dynamic_cast<Duck*>(f->childClassPtr);
+            if (!duck)
+                continue;
+            if (!duck->genderIsMale) {
+                if (!closest || f->position.len(action.argEntity[0]->position) < closest->position.len(action.argEntity[0]->position))
+                    closest = f;
+                candidates.push_back(f);
             }
         }
-        if (function == "lay_egg_find_nearby_male") {
-            std::string eid;
-            ss >> eid;
-            Entity* e = findEntity(eid);
-            if (!e)
-                return;
-            auto result = neighborsFinder.findNeighbors(e->position, 1.);
-            std::vector<Entity*> candidates;
-            for (auto f : result) {
-                if (!f->childClassPtr)
-                    continue;
-                if (f->type != "duck")
-                    continue;
-                Duck* duck = dynamic_cast<Duck*>(f->childClassPtr);
-                if (!duck)
-                    continue;
-                if (!duck->genderIsMale) {
-                    debug << duck->id << " is " << (duck->genderIsMale ? "male" : "female") << "\n";
-                    candidates.push_back(f);
-                }
-            }
-            if (candidates.size() == 0) {
-                followUpActions.push_back(Action(e->id, Timer::getNow(), "lay_unfertilized_egg"));
-                return;
-            }
-            Entity* f = candidates[0];
-            f = candidates[std::min(int(getRand() * candidates.size()), int(candidates.size() - 1))];
-            pushAction(e->id, Timer::getNow(), "have_sex_with " + f->id);
-            pushAction(f->id, Timer::getNow(), "have_sex_with " + e->id);
+        if (closest) {
+            if (getRand() < .4) // change mate?
+                closest = candidates[std::min(int(getRand() * candidates.size()), int(candidates.size() - 1))];
+            Action a(action.argEntity[0], Timer::getNow(), DUCK_RESULT_FIND_MATE_FEMALE);
+            a.argEntity[0] = closest;
+            a.argCoord[0] = closest->position;
+            pushAction(a);
         }
+        break;
+    }
+    case GLOBAL_LAY_EGG_FIND_NEARBY_MALE: {
+        auto result = neighborsFinder.findNeighbors(action.argEntity[0]->position, 1.);
+        std::vector<Entity*> candidates;
+        for (auto f : result) {
+            if (!f->childClassPtr)
+                continue;
+            if (f->type != DUCK)
+                continue;
+            Duck* duck = dynamic_cast<Duck*>(f->childClassPtr);
+            if (!duck)
+                continue;
+            if (!duck->genderIsMale) {
+                // debug << duck->id << " is " << (duck->genderIsMale ? "male" : "female") << "\n";
+                candidates.push_back(f);
+            }
+        }
+        if (candidates.size() == 0) {
+            followUpActions.push_back(Action(action.argEntity[0], Timer::getNow(), DUCK_LAY_UNFERTILIZED_EGG));
+            return;
+        }
+        Entity* f = candidates[0];
+        f = candidates[std::min(int(getRand() * candidates.size()), int(candidates.size() - 1))];
+        Action a(action.argEntity[0], Timer::getNow(), DUCK_HAVE_SEX_WITH);
+        a.argEntity[0] = f;
+        pushAction(a);
+        Action b(f, Timer::getNow(), DUCK_HAVE_SEX_WITH);
+        a.argEntity[0] = action.argEntity[0];
+        pushAction(a);
+        break;
+    }
     }
 }
 
@@ -214,16 +227,26 @@ Entity* Game::findEntity(std::string id) {
     return result->second;
 }
 
-void Game::pushAction(std::string id, Timer timer, std::string action) {
-    actionList.push_back(Action(id, timer, action));
+void Game::pushAction(const Action& action) {
+    actionList.push(action);
 }
 
-std::string Game::newId(const std::string& type) {
+std::string Game::newId(EntityType type) {
     std::string id;
-    if (type == "duck")
-        id = type + "$" + randomName();
-    else 
-        id = type + "$" + randomId();
+    switch (type) {
+    case ENTITY:
+        id = "undefined$" + randomId();
+        break;
+    case PLAYER:
+        id = "player$player";
+        break;
+    case DUCK:
+        id = "duck$" + randomName();
+        break;
+    case EGG:
+        id = "EGG$" + randomId();
+        break;
+    }
     if (entities.find(id) == entities.end())
         return id;
     else
@@ -237,7 +260,7 @@ void Game::insertEntity(Entity* entity) {
     }
     if (entities.find(entity->id) == entities.end()) {
         entities.insert({entity->id, entity});
-        pushAction(entity->id, Timer::getNow(), "init");
+        pushAction(Action(entity, Timer::getNow(), INIT));
     }
     else {
         debug << "Entity insertion failed because name \"" << entity->id << "\" is already taken\n";
@@ -262,17 +285,18 @@ void Game::render() {
         entity.second->pushQuads();
     }
     Profiler::timeSplit("showactionlist");
-    if (showActionList) {
-        std::stringstream ss;
-        for (int i = actionList.size() - 1; i >= 0; i--) {
-            ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << actionList[i].time.elapsed() << "s  " << std::left << std::setw(20) << actionList[i].id << "  " << actionList[i].action << "\n";
-            if (i <= int(actionList.size()) - 101) {
-                ss << "... (truncated)\n";
-                break;
-            }
-        }
-        Graphics::drawText(ss.str(), sf::Color::Cyan, 12, UIVec(2., 55.), 0., sf::Color(0, 0, 0, 100), 2.);
-    }
+    // if (showActionList) {
+    //     std::stringstream ss;
+    //     for (int i = actionList.size() - 1; i >= 0; i--) {
+    //         ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << actionList[i].time.elapsed() << "s  " << std::left << std::setw(20) << (actionList[i].entity == nullptr ? "global" : actionList[i].entity->id) << "  " << actionList[i].command << "\n";
+    //         if (i <= int(actionList.size()) - 101) {
+    //             ss << "... (truncated)\n";
+    //             break;
+    //         }
+    //     }
+    //     Graphics::drawText(ss.str(), sf::Color::Cyan, 12, UIVec(2., 55.), 0., sf::Color(0, 0, 0, 100), 2.);
+    // }
+
     // for (auto entity : entities) {
     //     Graphics::drawText(entity.first, sf::Color::Black, 14, Camera::getScreenPos(entity.second->position) + UIVec(0., 30.), .5, sf::Color(255, 255, 255, 100), 3.);
     // }
