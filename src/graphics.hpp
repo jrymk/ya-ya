@@ -344,6 +344,40 @@ public:
     static int getQuadCount() {
         return vertexArray.getVertexCount() / 4;
     }
+    
+    static void resizeView(unsigned int width, unsigned int height) {
+        debug << "Resized to " << width << "*" << height << "\n";
+        getRenderWindow().setSize(sf::Vector2u(width, height));
+        sf::View view = getRenderWindow().getView();
+        view.setSize(sf::Vector2f(width, height));
+        view.setCenter(sf::Vector2f(width / 2., height / 2.));
+        getRenderWindow().setView(view);
+    }
+
+private:
+    static sf::ContextSettings getContextSettings() {
+        sf::ContextSettings settings;
+        settings.antialiasingLevel = 4;
+        return settings;    
+    }
+
+    static void setupWindow() {
+        getRenderWindow().setVerticalSyncEnabled(true);
+        getRenderWindow().setKeyRepeatEnabled(false);
+    }
+
+public:
+    static void createWindow(bool fullscreen) {
+        if (getRenderWindow().isOpen())
+            getRenderWindow().close();
+        else
+            debug << "Created window, fullscreen: " << fullscreen << "\n";
+        if (fullscreen)
+            getRenderWindow().create(sf::VideoMode::getFullscreenModes()[0], L"Ya-Ya!", sf::Style::Fullscreen, getContextSettings());
+        else
+            getRenderWindow().create(sf::VideoMode(1600, 900), L"Ya-Ya!", sf::Style::Default, getContextSettings());
+        setupWindow();
+    }
 };
 
 #endif

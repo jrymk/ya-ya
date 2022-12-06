@@ -20,14 +20,10 @@
  */
 
 int main() {
-    sf::ContextSettings settings;
-    settings.antialiasingLevel = 4;
     sf::RenderWindow window;
-    window.create(sf::VideoMode(1600, 1200), L"Ya-Ya!", sf::Style::Default, settings);
-    window.setKeyRepeatEnabled(false);
-    window.setVerticalSyncEnabled(true);
     Camera::tieRenderWindow(window);
     Graphics::setRenderWindow(window);
+    Graphics::createWindow(false);
     Graphics::loadFont(0, "yourStar.ttf");
     Graphics::loadFont(1, "CascadiaCode.ttf");
     FramerateCounter fc;
@@ -103,70 +99,11 @@ int main() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == sf::Event::Resized) {
-                debug << "Resized to " << event.size.width << "*" << event.size.height << "\n";
-                window.setSize(sf::Vector2u(event.size.width, event.size.height));
-                sf::View view = window.getView();
-                view.setSize(sf::Vector2f(event.size.width, event.size.height));
-                view.setCenter(sf::Vector2f(event.size.width / 2., event.size.height / 2.));
-                window.setView(view);
-            }
+            if (event.type == sf::Event::Resized) 
+                Graphics::resizeView(event.size.width, event.size.height);
             if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::F1) {
-                    Graphics::showWireframe = !Graphics::showWireframe;
-                    debug << "Toggled wireframe: " << Graphics::showWireframe << "\n";
-                }
-                if (event.key.code == sf::Keyboard::F2) {
-                    for (int i = 0; i < debugGraphs.size(); i++)
-                        debugGraphs[i].resetRange();
-                }
-                if (event.key.code == sf::Keyboard::F3) {
-                    debugStream.str("");
-                }
-                if (event.key.code == sf::Keyboard::F4) {
-                    Graphics::debugOutOfSight = !Graphics::debugOutOfSight;
-                    debug << "Toggled debug out of sight: " << Graphics::debugOutOfSight << "\n";
-                }
-                if (event.key.code == sf::Keyboard::F5) {
-                    for (auto duck : game.entities) {
-                        auto split = splitId(duck.first);
-                        if (split.first == "duck")
-                            game.pushAction(duck.first, Timer::getNow() + (getRand() * 10.), "lay_fertilized_egg");
-                    }
-                    debug << "Lay eggs\n";
-                }
-                if (event.key.code == sf::Keyboard::F6) {
-                    game.showActionList = !game.showActionList;
-                    debug << "Toggled action list: " << game.showActionList << "\n";
-                }
-                if (event.key.code == sf::Keyboard::F11) {
-                    if (!graphicsIsFullscreen) {
-                        graphicsIsFullscreen = true;
-                        window.close();
-                        sf::ContextSettings settings;
-                        settings.antialiasingLevel = 4;
-                        window.create(sf::VideoMode::getFullscreenModes()[0], L"Ya-Ya!", sf::Style::Fullscreen, settings);
-                        window.setVerticalSyncEnabled(true);
-                        window.setKeyRepeatEnabled(false);
-                    }
-                    else {
-                        graphicsIsFullscreen = false;
-                        window.close();
-                        sf::ContextSettings settings;
-                        settings.antialiasingLevel = 4;
-                        window.create(sf::VideoMode(1600, 900), L"Ya-Ya!", sf::Style::Default, settings);
-                        window.setVerticalSyncEnabled(true);
-                        window.setKeyRepeatEnabled(false);
-                    }
-                    debug << "Toggled fullscreen: " << graphicsIsFullscreen << "\n";
-                }
-                if (event.key.code == sf::Keyboard::Right) {
-                }
-                if (event.key.code == sf::Keyboard::Left) {
-                }
-                if (event.key.code == sf::Keyboard::P) {
-                    updatePhysics = true;
-                }
+                game.controls.handleKeyPress(event.key.code);
+                
             }
             if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code == sf::Keyboard::Right) {
