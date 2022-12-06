@@ -1,4 +1,5 @@
 #include "timer.h"
+#include "debugger.h"
 
 Timer::Timer() { tp = std::chrono::steady_clock::now(); }
 Timer::Timer(const Timer& timer) { tp = timer.tp; }

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _NEIGHBORSFINDER_H_
 #define _NEIGHBORSFINDER_H_
 

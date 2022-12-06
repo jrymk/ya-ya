@@ -1,5 +1,6 @@
-#ifndef _ENTITY_HPP_
-#define _ENTITY_HPP_
+#pragma once
+#ifndef _ENTITY_H_
+#define _ENTITY_H_
 
 #include "utilities.h"
 #include "graphics.h"

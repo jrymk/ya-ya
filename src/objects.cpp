@@ -1,4 +1,5 @@
 #include "objects.h"
+#include <iomanip>
 
 void Egg::runAction(Action& action, std::vector<Action>& followUpActions) {
     std::stringstream ss(action.action); 

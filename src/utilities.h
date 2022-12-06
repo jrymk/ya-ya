@@ -1,14 +1,10 @@
+#pragma once
 #ifndef _UTILITIES_H_
 #define _UTILITIES_H_
-#include <chrono>
+#include <string>
 #include <queue>
-#include <sstream>
-#include <iomanip>
+#include <chrono>
 #include <random>
-#include <ctime>
-#include <cstdlib>
-#include "graphics.h"
-#include "names.hpp"
 
 #define prm(a) " " + toStr(a)
 

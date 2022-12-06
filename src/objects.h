@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _OBJECTS_HPP_
 #define _OBJECTS_HPP_
 

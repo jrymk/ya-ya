@@ -1,4 +1,5 @@
 #include "entity.h"
+#include <iomanip>
 
 void Entity::runAction(Action& action, std::vector<Action>& followUpActions) {};
 

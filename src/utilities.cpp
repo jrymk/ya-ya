@@ -1,5 +1,7 @@
 #include "utilities.h"
 #include "graphics.h"
+#include "names.hpp"
+#include <iomanip>
 
 std::string toStr(int a) {
     std::stringstream ss;

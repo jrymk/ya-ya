@@ -1,8 +1,8 @@
+#pragma once
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
 #include <chrono>
-#include "debugger.h"
 
 class Timer {
     inline static std::chrono::steady_clock::time_point globalStart = std::chrono::steady_clock::now();
