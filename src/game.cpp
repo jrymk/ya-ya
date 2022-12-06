@@ -248,7 +248,7 @@ void Game::destroyEntity(std::string id) {
         return;
     }
     neighborsFinder.destroyEntry(result->second);
-    delete result->second;
+    delete result->second->childClassPtr;
     entities.erase(result);
 }
 
