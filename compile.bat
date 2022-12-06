@@ -6,11 +6,10 @@ del .\yaya.exe
 @REM g++ -c ..\src\debugger.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 @REM g++ -c ..\src\entity.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 @REM g++ -c ..\src\events.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
-@REM g++ -c ..\src\game.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
+g++ -c ..\src\game.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 @REM g++ -c ..\src\graphics.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 @REM g++ -c ..\src\neighborsfinder.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 @REM g++ -c ..\src\objects.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
-@REM g++ -c ..\src\serialization.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 @REM g++ -c ..\src\timer.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 @REM g++ -c ..\src\utilities.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 
@@ -24,7 +23,6 @@ del .\yaya.exe
 @REM  ..\src\graphics.cpp^
 @REM  ..\src\neighborsfinder.cpp^
 @REM  ..\src\objects.cpp^
-@REM  ..\src\serialization.cpp^
 @REM  ..\src\timer.cpp^
 @REM  ..\src\utilities.cpp^
 @REM  -o yaya.exe -I..\SFML-2.5.1\include -DSFML_STATIC -L..\SFML-2.5.1\lib -lsfml-graphics-s -lfreetype -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32
@@ -39,7 +37,6 @@ g++ yaya.o^
  graphics.o^
  neighborsfinder.o^
  objects.o^
- serialization.o^
  timer.o^
  utilities.o^
  -o yaya.exe -I..\src -I..\SFML-2.5.1\include -DSFML_STATIC -L..\SFML-2.5.1\lib -lsfml-graphics-s -lfreetype -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32

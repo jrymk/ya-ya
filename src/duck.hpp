@@ -185,10 +185,6 @@ public:
         ss << "gender: " << (genderIsMale ? "male" : "female") << "\n";
         return ss.str();
     }
-
-    constexpr static auto properties = std::make_tuple(
-        SaveUtilities::property(&Duck::position, "Dk.ps")
-    );
 };
 
 #endif

@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "timer.h"
 #include "action.h"
+#include "serialization.h"
 #include <deque>
 
 #define OUT_OF_SIGHT 500
@@ -51,6 +52,10 @@ public:
     virtual std::string getDescriptionStr();
 
     virtual void customUpdate();
+
+    constexpr static auto properties = std::make_tuple(
+        SaveUtilities::property(&Entity::position, "Ey.ps")
+    );
 };
 
 #endif
