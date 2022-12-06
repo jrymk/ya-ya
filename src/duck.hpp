@@ -4,8 +4,8 @@
 #include <vector>
 #include <sstream>
 #include <cmath>
-#include "entity.hpp"
-#include "timer.hpp"
+#include "entity.h"
+#include "timer.h"
 #include "serialization.hpp"
 
 class Duck : public Entity {
