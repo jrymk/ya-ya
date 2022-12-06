@@ -1,15 +1,5 @@
 #include "serialization.h"
 
-template<typename Class, typename MemberType>
-constexpr SaveUtilities::PropertyObj<Class, MemberType> SaveUtilities::property(MemberType Class::*member, const char* ID){
-    return SaveUtilities::PropertyObj<Class, MemberType>{member, ID};
-}
-
-template<typename T, T... IdxSeq, typename FuncType>
-constexpr void SaveUtilities::forSequence(std::integer_sequence<T, IdxSeq...>, FuncType&& f){
-    (static_cast<void>(f(std::integral_constant<T, IdxSeq>{})), ...);
-}
-
 /* START serialize */
 template<typename T>
 std::string Serialization::serialize(const T& obj){

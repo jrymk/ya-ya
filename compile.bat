@@ -22,6 +22,6 @@ g++ ..\src\yaya.cpp^
  ..\src\serialization.cpp^
  ..\src\timer.cpp^
  ..\src\utilities.cpp^
- -o yaya.exe -I..\SFML-2.5.1\include -DSFML_STATIC -L..\SFML-2.5.1\lib -mwindows -lsfml-graphics-s -lfreetype -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32
+ -o yaya.exe -I..\SFML-2.5.1\include -DSFML_STATIC -L..\SFML-2.5.1\lib -lsfml-graphics-s -lfreetype -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32
 @REM .\yaya.exe
 cd ..

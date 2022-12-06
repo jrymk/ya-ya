@@ -30,10 +30,14 @@ namespace SaveUtilities{
     };
 
     template<typename Class, typename MemberType>
-    constexpr PropertyObj<Class, MemberType> property(MemberType Class::*member, const char* ID);
+    inline constexpr PropertyObj<Class, MemberType> property(MemberType Class::*member, const char* ID){
+        return SaveUtilities::PropertyObj<Class, MemberType>{member, ID};
+    }
 
     template<typename T, T... IdxSeq, typename FuncType>
-    constexpr void forSequence(std::integer_sequence<T, IdxSeq...>, FuncType&& f);
+    inline constexpr void forSequence(std::integer_sequence<T, IdxSeq...>, FuncType&& f){
+        (static_cast<void>(f(std::integral_constant<T, IdxSeq>{})), ...);
+    }
 }
 
 template<typename T>
