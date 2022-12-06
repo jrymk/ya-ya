@@ -3,7 +3,7 @@
 
 #include "utilities.h"
 #include "graphics.h"
-#include "serialization.hpp"
+#include "serialization.h"
 
 struct coord {
     double x = 0.;

@@ -7,7 +7,7 @@
 #include "entity.h"
 #include "duck.hpp"
 #include "objects.h"
-#include "serialization.hpp"
+#include "serialization.h"
 #include "controls.h"
 #include "neighborsfinder.h"
 

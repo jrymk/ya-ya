@@ -6,7 +6,7 @@
 #include <cmath>
 #include "entity.h"
 #include "timer.h"
-#include "serialization.hpp"
+#include "serialization.h"
 
 class Duck : public Entity {
 private:
