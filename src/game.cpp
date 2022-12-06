@@ -28,7 +28,7 @@ void Game::processCollisions() {
         if (e.second->type != DUCK && e.second->type != PLAYER)
             continue;
         
-        auto result = neighborsFinder.findNeighbors(e.second->position, .3, DUCK);
+        auto result = neighborsFinder.findNeighbors(e.second->position, .3, true, DUCK);
         
         for (auto f : result) {
             if (e.second == f)
@@ -158,7 +158,7 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
         break;
     }
     case GLOBAL_FIND_MATE_FEMALE: {
-        auto result = neighborsFinder.findNeighbors(action.argEntity[0]->position, 8.);
+        auto result = neighborsFinder.findNeighbors(action.argEntity[0]->position, 8., false, DUCK);
         Entity* closest = nullptr;
         std::vector<Entity*> candidates;
         for (auto f : result) {
@@ -186,7 +186,7 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
         break;
     }
     case GLOBAL_LAY_EGG_FIND_NEARBY_MALE: {
-        auto result = neighborsFinder.findNeighbors(action.argEntity[0]->position, 1.);
+        auto result = neighborsFinder.findNeighbors(action.argEntity[0]->position, 1., false, DUCK);
         std::vector<Entity*> candidates;
         for (auto f : result) {
             if (!f->childClassPtr)
@@ -244,7 +244,7 @@ std::string Game::newId(EntityType type) {
         id = "duck$" + randomName();
         break;
     case EGG:
-        id = "EGG$" + randomId();
+        id = "egg$" + randomId();
         break;
     }
     if (entities.find(id) == entities.end())

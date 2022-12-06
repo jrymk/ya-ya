@@ -4,16 +4,21 @@
 void Egg::runAction(Action& action, std::vector<Action>& followUpActions) {
     switch (action.command) {
     case INIT: {
+        if (!fertilized) {
+            Action a(nullptr, Timer::getNow() + 10., GLOBAL_DESTROY);
+            a.argString[0] = id;
+            followUpActions.push_back(a);
+        }
         break;
     }
     case EGG_HATCH: {
-            Action a(nullptr, Timer::getNow(), GLOBAL_HATCH);
-            a.argCoord[0] = position;
-            a.argBool[0] = genderIsMale;
-            followUpActions.push_back(a);
-            Action b(nullptr, Timer::getNow() + 1., GLOBAL_DESTROY);
-            b.argString[0] = id;
-            followUpActions.push_back(b);
+        Action a(nullptr, Timer::getNow(), GLOBAL_HATCH);
+        a.argCoord[0] = position;
+        a.argBool[0] = genderIsMale;
+        followUpActions.push_back(a);
+        Action b(nullptr, Timer::getNow() + 1., GLOBAL_DESTROY);
+        b.argString[0] = id;
+        followUpActions.push_back(b);
             // delete this;
         break;
     }

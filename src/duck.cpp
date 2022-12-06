@@ -7,7 +7,7 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
         followUpActions.push_back(Action(action.entity, Timer::getNow() + 5. + getRand() * 25., DUCK_LOOP_WANDER));
         followUpActions.push_back(Action(action.entity, Timer::getNow() + 10. + getRand() * 40., DUCK_LOOP_LAY_EGGS));
         followUpActions.push_back(Action(action.entity, Timer::getNow() + 5. + getRand() * 20., DUCK_LOOP_FIND_MATE));
-        // followUpActions.push_back(Action(action.entity, Timer::getNow() + 50. + getRand() * 200., "death"));
+        followUpActions.push_back(Action(action.entity, Timer::getNow() + 30. + getRand() * 60., DUCK_DEATH));
         break;
     }
     case DUCK_LOOP_WANDER: {
@@ -51,9 +51,9 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
             d.argCoord[0] = coord(0., -0.05);
             followUpActions.push_back(d);
         }
-        Action a(nullptr, Timer::getNow() + .5, GLOBAL_DESTROY);
-        a.argEntity[0] = action.entity;
-        followUpActions.push_back(a);
+        // Action a(nullptr, Timer::getNow() + .5, GLOBAL_DESTROY);
+        // a.argString[0] = id;
+        // followUpActions.push_back(a);
         break;
     }
     case DUCK_HOP: {

@@ -1,5 +1,6 @@
 #include "neighborsfinder.h"
 #include "game.h"
+#include <thread>
 
 std::pair<int, int> NeighborsFinder::getChunk(coord c, int level) {
     return std::make_pair(int(floor(c.x)) & (~0 << level), int(floor(c.y)) & (~0 << level));
@@ -35,11 +36,11 @@ void NeighborsFinder::destroyEntry(Entity* e) {
         chunkMembers[l][getChunk(e->neighborsFinderMyTile, l)].erase(e);
 }
 
-std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius, EntityType filter) {
+std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius, bool coarse, EntityType filter) {
     std::vector<Entity*> neighbors;
     int d = int(ceil(radius));
     int l = 0;
-    for (; l < 4; l++) {
+    for (; l < 2; l++) { // or l < 4
         if (d <= (1 << l))
             break;
     }
@@ -47,11 +48,12 @@ std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius,
         for (int y = ((int(floor(center.y - radius)) - (1 << l)) & (~0 << l)); y <= ((int(ceil(center.y + radius)) + (1 << l)) & (~0 << l)); y+=(1 << l)) {
             if (chunkMembers[l].find(std::make_pair(x, y)) == chunkMembers[l].end())
                 continue;
-            for (auto& e : chunkMembers[l][std::make_pair(x, y)]) {
+            auto chunk = chunkMembers[l][std::make_pair(x, y)];
+            for (auto& e : chunk) {
                 if (e) {
                     if (filter != ENTITY && e->type != filter)
                         continue;
-                    if (e->position.len(center) <= radius)
+                    if (coarse || e->position.len(center) <= radius)
                         neighbors.push_back(e);
                 }
             }

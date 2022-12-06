@@ -6,7 +6,7 @@ Controls::Controls(std::map<std::string, Entity*>* entities, NeighborsFinder* ne
 }
 
 Entity* Controls::getFacingEntity(Entity* player, EntityType filter) {
-    auto nearby = neighborsFinder->findNeighbors(player->position, 2., filter);
+    auto nearby = neighborsFinder->findNeighbors(player->position, 2., true, filter);
     Entity* facingEntity = nullptr;
     double bestScore = 1e8;
     for (auto e : nearby) {
@@ -18,7 +18,7 @@ Entity* Controls::getFacingEntity(Entity* player, EntityType filter) {
         double dist = epos.len(ppos);
         // debug << subtractAngle(0, 303.13);
         // debug << e->id << ": " << angle << "  " << dist << "\n";
-        if (dist < 4. * Camera::getScale() && angle < 1.5) {
+        if (dist < 3. * Camera::getScale() && angle < 1.5) {
             if (angle * dist < bestScore) {
                 facingEntity = e;
                 bestScore = angle * dist;
