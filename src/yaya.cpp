@@ -40,28 +40,14 @@ int main() {
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
-        duck->childClassPtr = duck;
-        debug << duck << "\n";
         duck->position.x = 2.;
         duck->position.y = 2.;
         duck->genderIsMale = true;
         game.insertEntity(duck);
-        
-        Duck* child = dynamic_cast<Duck*>(duck->childClassPtr);
-        debug << "casted: " << child << "\n";
-
-        if (!child)
-            debug << "casted oopsie\n";
-        else
-            debug << child->id << " is " << (child->genderIsMale ? "male" : "female") << "\n";
     }
-
-
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
-        duck->childClassPtr = duck;
-        debug << duck << "\n";
         duck->position.x = 2.;
         duck->position.y = -2.;
         duck->genderIsMale = false;
@@ -70,8 +56,6 @@ int main() {
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
-        duck->childClassPtr = duck;
-        debug << duck << "\n";
         duck->position.x = -2.;
         duck->position.y = -2.;
         duck->genderIsMale = true;
@@ -80,8 +64,6 @@ int main() {
     {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
-        duck->childClassPtr = duck;
-        debug << duck << "\n";
         duck->position.x = -2.;
         duck->position.y = 2.;
         duck->genderIsMale = false;
@@ -99,6 +81,7 @@ int main() {
 
 
     while (window.isOpen()) {
+        Profiler::timeSplit("event");
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
@@ -132,6 +115,7 @@ int main() {
             }
         }
 
+        Profiler::timeSplit("clear window");
         // handleEvents(window);
         window.clear(sf::Color(129, 214, 131));
 
@@ -141,57 +125,38 @@ int main() {
         
         Graphics::clearQuadsArray();
 
-        // for (int x = int(Camera::getCenter().x - 40); x <= int(Camera::getCenter().x + 40); x+=1) {
-        //     for (int y = int(Camera::getCenter().y - 30) / 2 * 2; y <= int(Camera::getCenter().y + 30); y+=1) {
-        //         Graphics::insertQuad(
-        //             Graphics::Quad(
-        //                 0.2,
-        //                 Camera::getScreenPos(coord(x, y)), sf::Vector2f(0, 90.5), sf::Color::Red,
-        //                 Camera::getScreenPos(coord(x + 1, y)), sf::Vector2f(384, 0), sf::Color::Yellow,
-        //                 Camera::getScreenPos(coord(x + 1, y - 1.)), sf::Vector2f(512, 271.5), sf::Color::Blue,
-        //                 Camera::getScreenPos(coord(x, y- 1.)), sf::Vector2f(128, 362), sf::Color::Green
-        //             )
-        //         );
-        //         Graphics::insertQuad(
-        //             Graphics::Quad(
-        //                 0.2,
-        //                 Camera::getScreenPos(coord(x, y+ 1.)), sf::Vector2f(0 + 128, 90.5 + 90.5 * 3), sf::Color::Green,
-        //                 Camera::getScreenPos(coord(x + 1, y + 1.)), sf::Vector2f(384 + 128, 0 + 90.5 * 3), sf::Color::Blue,
-        //                 Camera::getScreenPos(coord(x + 1, y)), sf::Vector2f(512 + 128, 271.5 + 90.5 * 3), sf::Color::Yellow,
-        //                 Camera::getScreenPos(coord(x, y)), sf::Vector2f(128 + 128, 362 + 90.5 * 3), sf::Color::Red
-        //             )
-        //         );
-        //     }
-        // }
-
-        // UIVec moveVec;        
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        //     moveVec.y -= 1.;
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        //     moveVec.y += 1.;
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        //     moveVec.x -= 1.;
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        //     moveVec.x += 1.;
-        // if (moveVec.len(UIVec()) > .1)
-        //     player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())) / coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).len() * 4.;
-        // else 
-        //     player->slideVelocity = coord();
-
+        Profiler::timeSplit("move");
+        UIVec moveVec;        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-            player->velocity = 3.;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            player->velocity = -2.;
-        else
-            player->velocity = 0.;
+            moveVec.y -= 1.;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            moveVec.y += 1.;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            moveVec.x -= 1.;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+            moveVec.x += 1.;
+        if (moveVec.len(UIVec()) > .1)
+            player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())) / coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).len() * 4.;
+        else 
+            player->slideVelocity = coord();
 
-        // player->heading = player->position.angle(Camera::getMouseCoord());
-        player->heading += double(sf::Mouse::getPosition(window).x) / -200.;
-        sf::Mouse::setPosition(sf::Vector2i(0, sf::Mouse::getPosition(window).y), window);
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        //     player->velocity = 3.;
+        // else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        //     player->velocity = -2.;
+        // else
+        //     player->velocity = 0.;
+
+        player->heading = player->position.angle(Camera::getMouseCoord());
         
+        // player->heading += double(sf::Mouse::getPosition(window).x) / -200.;
+        // sf::Mouse::setPosition(sf::Vector2i(0, sf::Mouse::getPosition(window).y), window);
+        Profiler::timeSplit("update");
         game.update();
+        Profiler::timeSplit("gamerender");
         game.render();
 
+        Profiler::timeSplit("render");
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
 
         
@@ -200,7 +165,8 @@ int main() {
         debugGraphs[2].newGraphEntry(Graphics::getQuadCount());
         debugGraphs[3].newGraphEntry(game.updateTime);
         debugGraphs[4].newGraphEntry(game.entities.size());
-
+        
+        Profiler::timeSplit("post");
         Graphics::setFont(1);
         Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::White, 24, UIVec(10, 30), 0., sf::Color::Black, 4.);
 
@@ -208,11 +174,14 @@ int main() {
 
         Camera::printCameraInfo();
 
-        Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
-        Graphics::drawText("[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y), 
-            sf::Color::White, 16, rectWindow.pos + UIVec(0, -10), 0., sf::Color::Black, 1.);
+        // Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
+        // Graphics::drawText("[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y), 
+        //     sf::Color::White, 16, rectWindow.pos + UIVec(0, -10), 0., sf::Color::Black, 1.);
 
+        Profiler::timeSplit("renderdebugoverlay");
         renderDebugOverlay(window);
+        Profiler::drawBarAndClear();
+        Profiler::timeSplit("display");
         window.display();
     }
     game.save();

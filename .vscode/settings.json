@@ -65,6 +65,7 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "random": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "stop_token": "cpp"
     }
 }

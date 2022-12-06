@@ -2,6 +2,8 @@
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
+#include <string>
+#include <vector>
 #include <chrono>
 
 class Timer {
@@ -24,6 +26,15 @@ public:
     void increment(double seconds);
 
     bool operator<(const Timer& rhs) const;
+};
+
+class Profiler {
+    inline static std::vector<std::pair<Timer, std::string>> splits;
+
+public:
+    static void timeSplit(const std::string& title);
+
+    static void drawBarAndClear();
 };
 
 #endif

@@ -11,7 +11,8 @@ public:
     bool ranFlag = false;
     bool deleteFlag = false;
     Timer time;
-    std::string id;
+
+    // std::string id;
     std::string action; // is this a good idea?
     bool rerun = false;
 

@@ -123,9 +123,8 @@ void renderDebugOverlay(sf::RenderWindow& window) {
     coord.setOutlineThickness(2.);
     window.draw(coord);
 
-    float y = 25;
-    for (int i = 0; i < debugGraphs.size(); i++) {
-        y = debugGraphs[i].drawGraph(window, y);
-    }
-    
+    // float y = 25;
+    // for (int i = 0; i < debugGraphs.size(); i++) {
+    //     y = debugGraphs[i].drawGraph(window, y);
+    // }
 }
