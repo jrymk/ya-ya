@@ -33,6 +33,7 @@ void Player::initModel() {
 
 Player::Player() {
     childClassPtr = this;
+    type = PLAYER;
     initModel();
 }
 

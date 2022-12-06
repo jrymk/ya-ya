@@ -14,7 +14,7 @@ class Controls {
 public:
     Controls(std::map<std::string, Entity*>* entities, NeighborsFinder* neighborsFinder);
 
-    Entity* getFacingEntity(Entity* player, const std::string& filter = "");
+    Entity* getFacingEntity(Entity* player, EntityType filter = ENTITY);
 
     void handleKeyPress(enum sf::Keyboard::Key key);
 };

@@ -2,23 +2,26 @@
 #include <iomanip>
 
 void Egg::runAction(Action& action, std::vector<Action>& followUpActions) {
-    std::stringstream ss(action.action); 
-    std::string function;
-    while (ss >> function) {
-        if (function == "init") {
-            
-        }
-        if (function == "hatch") {
-            followUpActions.push_back(Action("global", Timer::getNow(), "hatch " + toStr(position.x) + " " + toStr(position.y) + " " + toStr(genderIsMale)));
-            followUpActions.push_back(Action("global", Timer::getNow() + 1., "destroy " + id));
-            
+    switch (action.command) {
+    case INIT: {
+        break;
+    }
+    case EGG_HATCH: {
+            Action a(nullptr, Timer::getNow(), GLOBAL_HATCH);
+            a.argCoord[0] = position;
+            a.argBool[0] = genderIsMale;
+            followUpActions.push_back(a);
+            Action b(nullptr, Timer::getNow() + 1., GLOBAL_DESTROY);
+            b.argString[0] = id;
+            followUpActions.push_back(b);
             // delete this;
-
-        }
-        if (function == "hop") {
-            if (zPosition == 0.)
-                zVelocity = .2;
-        }
+        break;
+    }
+    case EGG_HOP: {
+        if (zPosition == 0.)
+            zVelocity = .2;
+        break;
+    }
     }
 }
 
@@ -36,6 +39,7 @@ void Egg::initModel() {
 
 Egg::Egg() {
     Entity::childClassPtr = this;
+    type = EGG;
     initModel();
 }
 

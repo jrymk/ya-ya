@@ -5,6 +5,7 @@
 #include <fstream>
 #include <map>
 #include <set>
+#include <queue>
 #include "entity.h"
 #include "duck.h"
 #include "egg.h"
@@ -17,9 +18,9 @@ public:
     NeighborsFinder neighborsFinder;
     Controls controls;
 
-    bool showActionList = true;
+    bool showActionList = false;
 
-    std::vector<Action> actionList;
+    std::priority_queue<Action> actionList;
     double updateTime;
     std::map<std::string, Duck*> ducks;
     std::map<std::string, Entity*> entities;
@@ -36,9 +37,9 @@ public:
 
     Entity* findEntity(std::string id);
 
-    void pushAction(std::string id, Timer timer, std::string action);
+    void pushAction(const Action& action);
 
-    std::string newId(const std::string& type);
+    std::string newId(EntityType type);
 
     void insertEntity(Entity* entity);
 
