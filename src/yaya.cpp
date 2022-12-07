@@ -29,7 +29,6 @@ int main() {
     // debugGraphs.push_back(DebugGraph("quads", 200, 150, 10000));
     // debugGraphs.push_back(DebugGraph("update time", 200, 150, 10000));
     // debugGraphs.push_back(DebugGraph("entities(long)", 200, 150, 1000000));
-
     Game game;
     
     Player* player = new Player();
@@ -37,7 +36,7 @@ int main() {
     player->childClassPtr = player;
     game.insertEntity(player);
 
-    {
+`    {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
         duck->position.x = 2.;
