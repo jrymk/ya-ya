@@ -7,6 +7,7 @@
 #include <tuple>
 #include <string>
 #include <cstring>
+#include <type_traits>
 
 /*  SERIALIZATION GUIDES
     1. to use vector serialization, template Class must implement default constructor
@@ -45,13 +46,14 @@ namespace SaveUtilities{
 template<typename T>
 inline std::string rserialize(const T& obj);  // recursive serialize helper
 template<typename T>
-inline void runserialize(T& obj, const std::string& str);  // recursive unserialize helper
+inline void rdeserialize(T& obj, const std::string& str);  // recursive unserialize helper
 
 /// @brief converting objects and vectors to string, vice versa
 namespace Serialization{
     /* BEGIN serialize */
-    template<typename T>
-    inline std::string serialize(const T& obj){
+    template<typename T,
+            typename std::enable_if_t<!std::is_pointer<T>::value>* = nullptr>
+    inline std::string serialize(const T& obj){  // object
         std::string str;
         constexpr auto propertyCnt = std::tuple_size<decltype(T::properties)>::value;
         SaveUtilities::forSequence(std::make_index_sequence<propertyCnt>{}, [&](auto i){
@@ -62,6 +64,12 @@ namespace Serialization{
         });
 
         return str;
+    }
+
+    template<typename T,
+            typename std::enable_if_t<std::is_pointer<T>::value>* = nullptr>
+    inline std::string serialize(const T ptr){  // object* and normal type*
+        return rserialize(*ptr);
     }
 
     template<typename T, typename U, typename A>  // vector<object>
@@ -134,8 +142,9 @@ namespace Serialization{
     /* END serialize*/
 
     /* BEGIN deserialize */
-    template<typename T>
-    inline void deserialize(T& obj, const std::string& str){
+    template<typename T,
+            typename std::enable_if_t<!std::is_pointer<T>::value>* = nullptr>
+    inline void deserialize(T& obj, const std::string& str){  // object
         constexpr auto propertyCnt = std::tuple_size<decltype(T::properties)>::value;
         SaveUtilities::forSequence(std::make_index_sequence<propertyCnt>{}, [&](auto i){
             constexpr auto property = std::get<i>(T::properties);
@@ -143,8 +152,16 @@ namespace Serialization{
             int tagStart = str.find("<" + std::string(property.ID) + ">"),
                 tagEnd = str.find("</" + std::string(property.ID) + ">"),
                 tagLen = strlen(property.ID) + 2;
-            runserialize(obj.*(property.member), str.substr(tagStart + tagLen, tagEnd - tagStart - tagLen));
+            rdeserialize(obj.*(property.member), str.substr(tagStart + tagLen, tagEnd - tagStart - tagLen));
         });
+    }
+
+    template<typename T,
+            typename std::enable_if_t<std::is_pointer<T>::value>* = nullptr>
+    inline void deserialize(T& obj, const std::string& str){  // object* and normal type*
+        typedef typename std::remove_pointer<T>::type U;
+        obj = new U;
+        rdeserialize(*obj, str);
     }
     
     template<typename T, typename U, typename A>  // vector<object>
@@ -166,7 +183,7 @@ namespace Serialization{
                     nxtIdx++;
                 }
             }
-            runserialize(obj[i], str.substr(searchIdx, nxtIdx - searchIdx));
+            rdeserialize(obj[i], str.substr(searchIdx, nxtIdx - searchIdx));
             searchIdx = nxtIdx + 1;
         }
     }
@@ -191,7 +208,7 @@ namespace Serialization{
                 }
             }
             obj[i] = new U;
-            runserialize(*obj[i], str.substr(searchIdx, nxtIdx - searchIdx));
+            rdeserialize(*obj[i], str.substr(searchIdx, nxtIdx - searchIdx));
             searchIdx = nxtIdx + 1;
         }
     }
@@ -222,8 +239,8 @@ namespace Serialization{
                 nxtIdx++;
             }
             K key; V value;
-            runserialize(key, str.substr(searchIdx, sepIdx - searchIdx));
-            runserialize(value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
+            rdeserialize(key, str.substr(searchIdx, sepIdx - searchIdx));
+            rdeserialize(value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
             obj[key] = value;
             searchIdx = nxtIdx + 1;
         }
@@ -256,8 +273,8 @@ namespace Serialization{
                 nxtIdx++;
             }
             K key; V* value = new V;
-            runserialize(key, str.substr(searchIdx, sepIdx - searchIdx));
-            runserialize(*value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
+            rdeserialize(key, str.substr(searchIdx, sepIdx - searchIdx));
+            rdeserialize(*value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
             obj[key] = value;
             searchIdx = nxtIdx + 1;
         }
@@ -287,7 +304,7 @@ inline std::string rserialize(const T& obj){
     return Serialization::serialize<T>(obj);
 }
 template<typename T>
-inline void runserialize(T& obj, const std::string& str){
+inline void rdeserialize(T& obj, const std::string& str){
     Serialization::deserialize<T>(obj, str);
 }
 
