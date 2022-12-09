@@ -36,7 +36,7 @@ int main() {
     player->childClassPtr = player;
     game.insertEntity(player);
 
-`    {
+    {
         Duck* duck = new Duck();
         duck->id = game.newId("duck");
         duck->position.x = 2.;
