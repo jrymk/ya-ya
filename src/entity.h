@@ -2,6 +2,7 @@
 #ifndef _ENTITY_H_
 #define _ENTITY_H_
 
+#include <memory>
 #include "utilities.h"
 #include "graphics.h"
 #include "camera.h"
@@ -26,8 +27,10 @@ public:
     std::string id = "undefined";
     EntityType type = ENTITY;
     std::pair<int, int> neighborsFinderMyTile = {-1e8, 1e8};
+    
+    bool deleted = false;
 
-    Timer entityTimer;
+    Timer entityTimer; // get elapsed per update
     double lastUpdate = -1.;
     double elapsedSecs = 0.;
 
@@ -40,7 +43,7 @@ public:
     double heading = 0.;
     double headingRotationSpeed = 0.;
     
-    Entity* childClassPtr;
+    std::shared_ptr<Entity> childClassPtr; // it will NOT be an Entity pointer though
     
     std::vector<Graphics::Quad> model;
     
@@ -57,6 +60,8 @@ public:
     virtual std::string getDescriptionStr();
 
     virtual void customUpdate();
+
+    ~Entity();
 
     constexpr static auto properties = std::make_tuple(
         SaveUtilities::property(&Entity::position, "Ey.ps")

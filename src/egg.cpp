@@ -7,11 +7,11 @@ void Egg::runAction(Action& action, std::vector<Action>& followUpActions) {
         break;
     }
     case EGG_HATCH: {
-            Action a(nullptr, Timer::getNow(), GLOBAL_HATCH);
+            Action a(Timer::getNow(), GLOBAL_HATCH);
             a.argCoord[0] = position;
             a.argBool[0] = genderIsMale;
             followUpActions.push_back(a);
-            Action b(nullptr, Timer::getNow() + 1., GLOBAL_DESTROY);
+            Action b(Timer::getNow() + 1., GLOBAL_DESTROY);
             b.argString[0] = id;
             followUpActions.push_back(b);
             // delete this;
@@ -38,7 +38,8 @@ void Egg::initModel() {
 }
 
 Egg::Egg() {
-    Entity::childClassPtr = this;
+    // auto shared = std::make_shared<Egg>(this);
+    Entity::childClassPtr.reset(this);
     type = EGG;
     initModel();
 }

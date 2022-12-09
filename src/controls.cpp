@@ -1,12 +1,12 @@
 #include "controls.h"
+#include "game.h"
 
-Controls::Controls(std::map<std::string, Entity*>* entities, NeighborsFinder* neighborsFinder): 
-    entities(entities),
-    neighborsFinder(neighborsFinder) {
+Controls::Controls(Game* game): 
+    game(game) {
 }
 
 Entity* Controls::getFacingEntity(Entity* player, EntityType filter) {
-    auto nearby = neighborsFinder->findNeighbors(player->position, 2., filter);
+    auto nearby = game->neighborsFinder.findNeighbors(player->position, 2., filter);
     Entity* facingEntity = nullptr;
     double bestScore = 1e8;
     for (auto e : nearby) {

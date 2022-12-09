@@ -33,41 +33,40 @@ int main() {
     Game game;
     
     Player* player = new Player();
+    auto& player_ptr = game.insertEntity(player);
     player->id = "player$player";
-    player->childClassPtr = player;
-    game.insertEntity(player);
 
     {
         Duck* duck = new Duck();
+        auto& duck_ptr = game.insertEntity(duck);
         duck->id = game.newId(DUCK);
         duck->position.x = 2.;
         duck->position.y = 2.;
         duck->genderIsMale = true;
-        game.insertEntity(duck);
     }
     {
         Duck* duck = new Duck();
+        auto& duck_ptr = game.insertEntity(duck);
         duck->id = game.newId(DUCK);
         duck->position.x = 2.;
         duck->position.y = -2.;
         duck->genderIsMale = false;
-        game.insertEntity(duck);
     }
     {
         Duck* duck = new Duck();
+        auto& duck_ptr = game.insertEntity(duck);
         duck->id = game.newId(DUCK);
         duck->position.x = -2.;
         duck->position.y = -2.;
         duck->genderIsMale = true;
-        game.insertEntity(duck);
     }
     {
         Duck* duck = new Duck();
+        auto& duck_ptr = game.insertEntity(duck);
         duck->id = game.newId(DUCK);
         duck->position.x = -2.;
         duck->position.y = 2.;
         duck->genderIsMale = false;
-        game.insertEntity(duck);
     }
 
     // game.load();

@@ -7,12 +7,14 @@
 #include "camera.h"
 #include "neighborsfinder.h"
 
+class Game;
+
 class Controls {
     std::map<std::string, Entity*>* entities;
-    NeighborsFinder* neighborsFinder;
+    Game* game;
 
 public:
-    Controls(std::map<std::string, Entity*>* entities, NeighborsFinder* neighborsFinder);
+    Controls(Game* game);
 
     Entity* getFacingEntity(Entity* player, EntityType filter = ENTITY);
 

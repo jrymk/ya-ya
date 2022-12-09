@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <stdarg.h>
+#include <memory>
 #include "timer.h"
 #include "graphics.h"
 #include "camera.h"
@@ -42,12 +43,16 @@ public:
     bool deleteFlag = false;
     Timer time;
 
-    Entity* entity;
+    bool isGlobal = false;
+    std::shared_ptr<Entity> entity;
     Command command;
 
     inline Action() {}
-    inline Action(Entity* entity, const Timer& time, Command command)
-    : entity(entity), time(time), command(command) {
+    inline Action(const Timer& time, Command command)
+    : isGlobal(true), time(time), command(command) {
+    }
+    inline Action(std::shared_ptr<Entity>& entity, const Timer& time, Command command)
+    : isGlobal(false), entity(entity), time(time), command(command) {
     }
 
     bool argBool[8];
@@ -55,7 +60,7 @@ public:
     double argFloat[8];
     coord argCoord[8];
     UIVec argUIVec[8];
-    Entity* argEntity[8];
+    std::shared_ptr<Entity> argEntity[8];
     std::string argString[8];
 
     inline bool operator<(const Action rhs) const {

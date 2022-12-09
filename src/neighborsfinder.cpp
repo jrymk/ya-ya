@@ -30,7 +30,7 @@ void NeighborsFinder::update() {
     }
 }
 
-void NeighborsFinder::destroyEntry(Entity* e) {
+void NeighborsFinder::destroyEntry(std::shared_ptr<Entity>& e) {
     for (int l = 0; l < 5; l++)
         chunkMembers[l][getChunk(e->neighborsFinderMyTile, l)].erase(e);
 }
@@ -45,14 +45,15 @@ std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius,
     }
     for (int x = ((int(floor(center.x - radius)) - (1 << l)) & (~0 << l)); x <= ((int(ceil(center.x + radius)) + (1 << l)) & (~0 << l)); x+=(1 << l)) {
         for (int y = ((int(floor(center.y - radius)) - (1 << l)) & (~0 << l)); y <= ((int(ceil(center.y + radius)) + (1 << l)) & (~0 << l)); y+=(1 << l)) {
-            if (chunkMembers[l].find(std::make_pair(x, y)) == chunkMembers[l].end())
+            auto entities = chunkMembers[l].find(std::make_pair(x, y));
+            if (entities == chunkMembers[l].end())
                 continue;
-            for (auto& e : chunkMembers[l][std::make_pair(x, y)]) {
+            for (auto &e : entities->second) {
                 if (e) {
                     if (filter != ENTITY && e->type != filter)
                         continue;
                     if (e->position.len(center) <= radius)
-                        neighbors.push_back(e);
+                        neighbors.push_back(e.get());
                 }
             }
         }

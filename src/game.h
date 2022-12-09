@@ -6,6 +6,7 @@
 #include <map>
 #include <set>
 #include <queue>
+#include <memory>
 #include "entity.h"
 #include "duck.h"
 #include "egg.h"
@@ -22,8 +23,7 @@ public:
 
     std::priority_queue<Action> actionList;
     double updateTime;
-    std::map<std::string, Duck*> ducks;
-    std::map<std::string, Entity*> entities;
+    std::map<std::string, std::shared_ptr<Entity>> entities;
 
     Game();
 
@@ -41,7 +41,7 @@ public:
 
     std::string newId(EntityType type);
 
-    void insertEntity(Entity* entity);
+    std::shared_ptr<Entity>& insertEntity(Entity* entity);
 
     void destroyEntity(std::string id);
 

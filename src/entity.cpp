@@ -66,3 +66,7 @@ std::string Entity::getDescriptionStr() {
 void Entity::customUpdate() {
 
 }
+
+Entity::~Entity() {
+    debug << "Entity destroyed\n";
+}

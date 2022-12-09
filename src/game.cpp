@@ -4,7 +4,7 @@
 
 Game::Game(): 
     neighborsFinder(this),
-    controls(&entities, &neighborsFinder)
+    controls(this)
 {}
 
 void Game::update() {
@@ -31,15 +31,15 @@ void Game::processCollisions() {
         auto result = neighborsFinder.findNeighbors(e.second->position, .3, DUCK);
         
         for (auto f : result) {
-            if (e.second == f)
+            if (e.second.get() == f)
                 continue;
             if (f->type != DUCK)
                 continue;
 
             if (e.second->position.len(f->position) < .3) {
-                Action a(nullptr, Timer::getNow(), GLOBAL_PROCESS_COLLISION);
+                Action a(Timer::getNow(), GLOBAL_PROCESS_COLLISION);
                 a.argEntity[0] = e.second;
-                a.argEntity[1] = f;
+                a.argEntity[1].reset(f);
                 pushAction(a);
             }
         }
@@ -99,37 +99,37 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
     switch (action.command) {
     case GLOBAL_LAY_UNFERTILIZED_EGG: {
         Egg* egg = new Egg();
+        auto& egg_ptr = insertEntity(egg);
         egg->id = newId(EGG);
         egg->position = action.argCoord[0] + coord(0.01 * (getRand() - .5), 0.01 * (getRand() - .5));
-        pushAction(Action(egg, Timer::getNow(), EGG_HOP));
-        insertEntity(egg);
+        pushAction(Action(egg_ptr, Timer::getNow(), EGG_HOP));
         break;
     }
     case GLOBAL_LAY_FERTILIZED_EGG: {
         Egg* egg = new Egg();
+        auto& egg_ptr = insertEntity(egg);
         egg->id = newId(EGG);
         egg->position = action.argCoord[0] + coord(0.01 * (getRand() - .5), 0.01 * (getRand() - .5));
         egg->fertilized = true;
         egg->genderIsMale = action.argBool[0];
-        pushAction(Action(egg, Timer::getNow(), EGG_HOP));
-        pushAction(Action(egg, Timer::getNow() + getRand() * 10., EGG_HATCH));
-        insertEntity(egg);
+        pushAction(Action(egg_ptr, Timer::getNow(), EGG_HOP));
+        pushAction(Action(egg_ptr, Timer::getNow() + getRand() * 10., EGG_HATCH));
         break;
     }
     case GLOBAL_HATCH: {
         if (getRand() > .8) // 60% success
             return;
         Duck* duck = new Duck();
+        auto& duck_ptr = insertEntity(duck);
         duck->id = newId(DUCK);
         duck->position = action.argCoord[0] + coord(0.05 * (getRand() - .5), 0.05 * (getRand() - .5));
         duck->genderIsMale = action.argBool[0];
-        pushAction(Action(duck, Timer::getNow(), DUCK_HOP));
+        pushAction(Action(duck_ptr, Timer::getNow(), DUCK_HOP));
 
-        Action a(duck, Timer::getNow() + .5, DUCK_DUCKWALK_TO_UNTIL);
+        Action a(duck_ptr, Timer::getNow() + .5, DUCK_DUCKWALK_TO_UNTIL);
         a.argCoord[0].x = action.argCoord[0].x + 3. * (getRand() - 0.5);
         a.argCoord[0].y = action.argCoord[0].y + 3. * (getRand() - 0.5);
         pushAction(a);
-        insertEntity(duck);
         break;
     }
     case GLOBAL_DESTROY: {
@@ -166,7 +166,7 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
                 continue;
             if (f->type != DUCK)
                 continue;
-            Duck* duck = dynamic_cast<Duck*>(f->childClassPtr);
+            Duck* duck = dynamic_cast<Duck*>(f->childClassPtr.get());
             if (!duck)
                 continue;
             if (!duck->genderIsMale) {
@@ -179,7 +179,7 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
             if (getRand() < .4) // change mate?
                 closest = candidates[std::min(int(getRand() * candidates.size()), int(candidates.size() - 1))];
             Action a(action.argEntity[0], Timer::getNow(), DUCK_RESULT_FIND_MATE_FEMALE);
-            a.argEntity[0] = closest;
+            a.argEntity[0].reset(closest);
             a.argCoord[0] = closest->position;
             pushAction(a);
         }
@@ -193,7 +193,7 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
                 continue;
             if (f->type != DUCK)
                 continue;
-            Duck* duck = dynamic_cast<Duck*>(f->childClassPtr);
+            auto duck = std::dynamic_pointer_cast<Duck>(f->childClassPtr).get();
             if (!duck)
                 continue;
             if (!duck->genderIsMale) {
@@ -208,9 +208,10 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
         Entity* f = candidates[0];
         f = candidates[std::min(int(getRand() * candidates.size()), int(candidates.size() - 1))];
         Action a(action.argEntity[0], Timer::getNow(), DUCK_HAVE_SEX_WITH);
-        a.argEntity[0] = f;
+        a.argEntity[0].reset(f);
         pushAction(a);
-        Action b(f, Timer::getNow(), DUCK_HAVE_SEX_WITH);
+        auto f_ptr = std::make_shared<Entity>(*f);
+        Action b(f_ptr, Timer::getNow(), DUCK_HAVE_SEX_WITH);
         a.argEntity[0] = action.argEntity[0];
         pushAction(a);
         break;
@@ -224,7 +225,7 @@ Entity* Game::findEntity(std::string id) {
         debug << "Find entity failed when tring to find \"" << id << "\"\n";
         return nullptr;
     }
-    return result->second;
+    return result->second.get();
 }
 
 void Game::pushAction(const Action& action) {
@@ -253,18 +254,19 @@ std::string Game::newId(EntityType type) {
         return newId(type);
 }
 
-void Game::insertEntity(Entity* entity) {
+std::shared_ptr<Entity>& Game::insertEntity(Entity* entity) {
     if (entity->id == "undefined") {
         debug << "Entity insertion failed because name is undefined\n";
-        return;
+        return entities.end()->second;
     }
     if (entities.find(entity->id) == entities.end()) {
-        entities.insert({entity->id, entity});
-        pushAction(Action(entity, Timer::getNow(), INIT));
+        auto ret = entities.insert({entity->id, std::make_shared<Entity>(*entity)});
+        pushAction(Action(ret.first->second, Timer::getNow(), INIT));
+        return ret.first->second;
     }
     else {
         debug << "Entity insertion failed because name \"" << entity->id << "\" is already taken\n";
-        return;
+        return entities.end()->second;
     }
 }
 
@@ -274,8 +276,9 @@ void Game::destroyEntity(std::string id) {
         debug << "Find entity failed when tring to find \"" << id << "\"\n";
         return;
     }
+    result->second->deleted = true;
     neighborsFinder.destroyEntry(result->second);
-    delete result->second->childClassPtr;
+    delete result->second->childClassPtr.get();
     entities.erase(result);
 }
 
