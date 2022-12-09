@@ -1,8 +1,8 @@
 cd build
 del .\yaya.exe
 
-g++ -c ..\src\yaya.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
-@REM g++ -c ..\src\camera.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
+@REM g++ -c ..\src\yaya.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
+g++ -c ..\src\camera.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 @REM g++ -c ..\src\controls.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 @REM g++ -c ..\src\debugger.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
 @REM g++ -c ..\src\duck.cpp -I..\SFML-2.5.1\include -DSFML_STATIC
@@ -50,5 +50,5 @@ g++ yaya.o^
  utilities.o^
  -o yaya.exe -I..\src -I..\SFML-2.5.1\include -DSFML_STATIC -L..\SFML-2.5.1\lib -lsfml-graphics-s -lfreetype -lsfml-window-s -lsfml-system-s -lopengl32 -lwinmm -lgdi32
 
-@REM .\yaya.exe
+.\yaya.exe
 cd ..

@@ -9,15 +9,11 @@ Game::Game():
 
 void Game::update() {
     Timer updateTimer;
-    Profiler::timeSplit("gprocesscollisions");
     processCollisions();
-    Profiler::timeSplit("gneighborsfinder");
     neighborsFinder.update();
 
-    Profiler::timeSplit("gentitiesupdate");
     for (auto& entity : entities)
         entity.second->update();
-    Profiler::timeSplit("grunactions");
     runActions();
     updateTime = updateTimer.elapsed();
 }
@@ -259,26 +255,10 @@ void Game::destroyEntity(std::string id) {
 }
 
 void Game::render() {
-    Profiler::timeSplit("pushquads");
     for (auto entity : entities) {
         entity.second->pushQuads();
     }
-    // Profiler::timeSplit("showactionlist");
-    // if (showActionList) {
-    //     std::stringstream ss;
-    //     for (int i = actionList.size() - 1; i >= 0; i--) {
-    //         ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << actionList[i].time.elapsed() << "s  " << std::left << std::setw(20) << actionList[i].id << "  " << actionList[i].action << "\n";
-    //         if (i <= int(actionList.size()) - 101) {
-    //             ss << "... (truncated)\n";
-    //             break;
-    //         }
-    //     }
-    //     Graphics::drawText(ss.str(), sf::Color::Cyan, 12, UIVec(2., 55.), 0., sf::Color(0, 0, 0, 100), 2.);
-    // }
-    // for (auto entity : entities) {
-    //     Graphics::drawText(entity.first, sf::Color::Black, 14, Camera::getScreenPos(entity.second->position) + UIVec(0., 30.), .5, sf::Color(255, 255, 255, 100), 3.);
-    // }
-    Profiler::timeSplit("getfacingentity");
+    
     auto facing = controls.getFacingEntity(findEntity("player$player"));
     if (facing) {
         Graphics::drawText(facing->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(facing->position) + UIVec(0., 40.), 0., sf::Color(255, 255, 255, 140), 3.);

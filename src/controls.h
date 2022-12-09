@@ -11,6 +11,8 @@ class Controls {
     std::map<std::string, Entity*>* entities;
     NeighborsFinder* neighborsFinder;
 
+    // std::string 
+
 public:
     Controls(std::map<std::string, Entity*>* entities, NeighborsFinder* neighborsFinder);
 

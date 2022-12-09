@@ -28,13 +28,4 @@ public:
     bool operator<(const Timer& rhs) const;
 };
 
-class Profiler {
-    inline static std::vector<std::pair<Timer, std::string>> splits;
-
-public:
-    static void timeSplit(const std::string& title);
-
-    static void drawBarAndClear();
-};
-
 #endif
