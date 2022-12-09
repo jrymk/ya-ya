@@ -3,6 +3,68 @@
 
 void Entity::runAction(Action& action, std::vector<Action>& followUpActions) {};
 
+void Entity::runActionCommon(Action& action, std::vector<Action>& followUpActions) {
+    std::stringstream ss(action.action); 
+    std::string function;
+    ss >> function;
+    if (function == "motion_frozen") {
+        bool frozen;
+        ss >> frozen;
+        motionFrozen = frozen;
+    }
+    else if (function == "highlightable") {
+        bool highlightable;
+        ss >> highlightable;
+        facingHighlightable = highlightable;
+    }
+    else if (function == "move_to_instant") {
+        coord pos;
+        ss >> pos.x >> pos.y;
+        position = pos;
+    }
+    else if (function == "move_to_approach") {
+        coord pos;
+        double speed;
+        ss >> pos.x >> pos.y >> speed;
+        position = pos - (pos - position) * std::pow(speed, elapsedSecs);
+    }
+    else if (function == "heading_instant") {
+        double h;
+        ss >> h;
+        heading = h;
+    }
+    else if (function == "heading_instant") {
+        double h;
+        ss >> h;
+        heading = h;
+    }
+    else if (function == "hop") {
+        if (zPosition == 0.)
+            zVelocity = .2;
+    }
+    else if (function == "slide_instant") {
+        coord delta;
+        ss >> delta.x >> delta.y;
+        position = position + delta;
+    }
+    else if (function == "slide_velocity") {
+        coord velocity;
+        ss >> velocity.x >> velocity.y;
+        position = position + velocity / elapsedSecs;
+    }
+    else if (function == "slide_velocity_distance") {
+        coord velocity;
+        double distance;
+        ss >> velocity.x >> velocity.y >> distance;
+        position = position + velocity / velocity.len() * std::min(velocity.len() * elapsedSecs, distance);
+        distance -= velocity.len() * elapsedSecs;
+        velocity = velocity / velocity.len() * std::max(distance / 0.5, velocity.len() - 0.05 * elapsedSecs); // deccelerate
+    }
+    else {
+        runAction(action, followUpActions);
+    }
+};
+
 void Entity::initModel() {}
 
 void Entity::pushQuads() {

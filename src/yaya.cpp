@@ -100,15 +100,6 @@ int main() {
                 // mouseWheelPosition += event.mouseWheel.delta;
             }
             if (event.type == sf::Event::MouseButtonPressed) {
-                if (event.mouseButton.button == sf::Mouse::Button::Left) {
-                    for (auto duck : game.entities) {
-                        auto split = splitId(duck.first);
-                        if (split.first == "duck")
-                            game.pushAction(duck.first, Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord().x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord().y + (getRand() - .5)));
-                    }
-                    // for (auto duck : game.ducks) 
-                    //     duck.second->actions.push_back(Action(Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord().x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord().y + (getRand() - .5))));
-                }
 
             }
         }
@@ -144,7 +135,7 @@ int main() {
         //     player->velocity = 0.;
 
         player->heading = player->position.angle(Camera::getMouseCoord());
-        
+
         // player->heading += double(sf::Mouse::getPosition(window).x) / -200.;
         // sf::Mouse::setPosition(sf::Vector2i(0, sf::Mouse::getPosition(window).y), window);
         game.update();

@@ -53,10 +53,6 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
                     followUpActions.push_back(Action("global", Timer::getNow() + 3. + getRand() * 2., "lay_unfertilized_egg " + toStr(position.x) + " " + toStr(position.y)));
             }
         }
-        else if (function == "hop") {
-            if (zPosition == 0.)
-                zVelocity = .2;
-        }
         else if (function == "duckwalk_to_until") {
             coord target;
             ss >> target.x >> target.y;
@@ -78,7 +74,10 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
                 headingRotationSpeed = 0.;
             }
             else {
-                followUpActions.push_back(Action(id, Timer::getNow() + 0.2 * std::sqrt(position.len(target)), "duckwalk_to_until " + toStr(target.x) + " " + toStr(target.y)));
+                if (!motionFrozen) {
+                    followUpActions.push_back(Action(id, Timer::getNow() + 0.2 * std::max(std::sqrt(position.len(target)), 0.1), "duckwalk_to_until " + toStr(target.x) + " " + toStr(target.y)));
+                    // debug << "pushed a new duckwalk\n";
+                }
             }
         }
         else if (function == "lay_unfertilized_egg") {
@@ -86,31 +85,14 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
         }
         else if (function == "lay_fertilized_egg") {
         }
-        else if (function == "slide_instant") {
-            coord delta;
-            ss >> delta.x >> delta.y;
-            position = position + delta;
-        }
-        else if (function == "slide_velocity") {
-            coord velocity;
-            ss >> velocity.x >> velocity.y;
-            position = position + velocity / elapsedSecs;
-        }
-        else if (function == "slide_velocity_distance") {
-            coord velocity;
-            double distance;
-            ss >> velocity.x >> velocity.y >> distance;
-            position = position + velocity / velocity.len() * std::min(velocity.len() * elapsedSecs, distance);
-            distance -= velocity.len() * elapsedSecs;
-            velocity = velocity / velocity.len() * std::max(distance / 0.5, velocity.len() - 0.05 * elapsedSecs); // deccelerate
-            if (distance > 0.)
-                followUpActions.push_back(Action(id, Timer::getNow(), "slide_velocity_distance " + toStr(velocity.x) + " " + toStr(velocity.y) + " " + toStr(distance)));
-        }
         else if (function == "result_find_mate_female") {
             std::string mateid;
             coord pos;
             ss >> mateid >> pos.x >> pos.y;
             followUpActions.push_back(Action(id, Timer::getNow() + .1, "duckwalk_to_until " + toStr(pos.x) + " " + toStr(pos.y)));
+        }
+        else {
+            debug << "Unknown action for duck: " << action.action << "\n";
         }
     }
 }
@@ -153,16 +135,18 @@ Duck::Duck() {
 }
 
 void Duck::customUpdate() {
-    heading += headingRotationSpeed * elapsedSecs;
-    position.x += velocity * std::cos(heading) * elapsedSecs;
-    position.y += velocity * std::sin(heading) * elapsedSecs;
-    position = position + slideVelocity * elapsedSecs;
-    if (zPosition > 0)
-        zVelocity += GRAVITY * elapsedSecs;
-    zPosition += zVelocity;
-    zPosition = std::max(zPosition, 0.);
-    if (zPosition == 0.)
-        zVelocity = 0.;
+    if (!motionFrozen) {
+        heading += headingRotationSpeed * elapsedSecs;
+        position.x += velocity * std::cos(heading) * elapsedSecs;
+        position.y += velocity * std::sin(heading) * elapsedSecs;
+        position = position + slideVelocity * elapsedSecs;
+        if (zPosition > 0)
+            zVelocity += GRAVITY * elapsedSecs;
+        zPosition += zVelocity;
+        zPosition = std::max(zPosition, 0.);
+        if (zPosition == 0.)
+            zVelocity = 0.;
+    }
 }
 
 std::string Duck::getDescriptionStr() {

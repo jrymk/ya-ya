@@ -24,6 +24,7 @@ public:
     double lastUpdate = -1.;
     double elapsedSecs = 0.;
 
+    bool motionFrozen = false;
     coord position;
     std::deque<std::pair<Timer, coord>> historyPosition;
     double zPosition = 0.;
@@ -35,9 +36,13 @@ public:
     
     Entity* childClassPtr;
     
+    bool facingHighlightable = true;
+    bool selectable = true;
+
     std::vector<Graphics::Quad> model;
     
     virtual void runAction(Action& action, std::vector<Action>& followUpActions);
+    void runActionCommon(Action& action, std::vector<Action>& followUpActions);
 
     virtual void initModel();
 

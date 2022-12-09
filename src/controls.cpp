@@ -2,7 +2,8 @@
 
 Controls::Controls(std::map<std::string, Entity*>* entities, NeighborsFinder* neighborsFinder): 
     entities(entities),
-    neighborsFinder(neighborsFinder) {
+    neighborsFinder(neighborsFinder),
+    inventory(2, "null") {
 }
 
 Entity* Controls::getFacingEntity(Entity* player, const std::string& filter) {
@@ -11,6 +12,8 @@ Entity* Controls::getFacingEntity(Entity* player, const std::string& filter) {
     double bestScore = 1e8;
     for (auto e : nearby) {
         if (e == player)
+            continue;
+        if (!e->facingHighlightable)
             continue;
         UIVec epos = Camera::getScreenPos(e->position);
         UIVec ppos = Camera::getScreenPos(player->position);

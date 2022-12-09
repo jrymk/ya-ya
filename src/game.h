@@ -35,7 +35,7 @@ public:
 
     virtual void runAction(Action& action, std::vector<Action>& followUpActions);
 
-    Entity* findEntity(std::string id);
+    Entity* findEntity(const std::string& id);
 
     void pushAction(std::string id, Timer timer, std::string action);
 

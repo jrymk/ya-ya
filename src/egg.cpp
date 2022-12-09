@@ -15,9 +15,8 @@ void Egg::runAction(Action& action, std::vector<Action>& followUpActions) {
             // delete this;
 
         }
-        else if (function == "hop") {
-            if (zPosition == 0.)
-                zVelocity = .2;
+        else {
+            debug << "Unknown action for egg: " << action.action << "\n";
         }
     }
 }
@@ -40,16 +39,18 @@ Egg::Egg() {
 }
 
 void Egg::customUpdate() {
-    heading += headingRotationSpeed * elapsedSecs;
-    position.x += velocity * std::cos(heading) * elapsedSecs;
-    position.y += velocity * std::sin(heading) * elapsedSecs;
-    position = position + slideVelocity * elapsedSecs;
-    if (zPosition > 0)
-        zVelocity += GRAVITY * elapsedSecs;
-    zPosition += zVelocity;
-    zPosition = std::max(zPosition, 0.);
-    if (zPosition == 0.)
-        zVelocity = 0.;
+    if (!motionFrozen) {
+        heading += headingRotationSpeed * elapsedSecs;
+        position.x += velocity * std::cos(heading) * elapsedSecs;
+        position.y += velocity * std::sin(heading) * elapsedSecs;
+        position = position + slideVelocity * elapsedSecs;
+        if (zPosition > 0)
+            zVelocity += GRAVITY * elapsedSecs;
+        zPosition += zVelocity;
+        zPosition = std::max(zPosition, 0.);
+        if (zPosition == 0.)
+            zVelocity = 0.;
+    }
 }
 
 std::string Egg::getDescriptionStr() {

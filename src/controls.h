@@ -11,9 +11,10 @@ class Controls {
     std::map<std::string, Entity*>* entities;
     NeighborsFinder* neighborsFinder;
 
-    // std::string 
 
 public:
+    std::vector<std::string> inventory;
+    
     Controls(std::map<std::string, Entity*>* entities, NeighborsFinder* neighborsFinder);
 
     Entity* getFacingEntity(Entity* player, const std::string& filter = "");

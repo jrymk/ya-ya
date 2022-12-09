@@ -9,12 +9,73 @@ Game::Game():
 
 void Game::update() {
     Timer updateTimer;
-    processCollisions();
     neighborsFinder.update();
+
+    auto player = findEntity("player$player");
+    if (!player)
+        return;
+    auto facing = controls.getFacingEntity(player);
+    std::string facingId = "null";
+    if (facing) {
+        Graphics::drawText(facing->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(facing->position) + UIVec(0., 40.), 0., sf::Color(255, 255, 255, 140), 3.);
+        Graphics::insertUserWireframe(
+            Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
+            Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
+            Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
+            Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
+            sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
+        );
+        facingId = facing->id;
+    }
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+        if (controls.inventory[0] == "null" && facingId != "null") {
+            controls.inventory[0] = facingId;
+            pushAction(controls.inventory[0], Timer::getNow(), "motion_frozen 1");
+            pushAction(controls.inventory[0], Timer::getNow(), "highlightable 0");
+        }
+        if (controls.inventory[0] != "null") {
+            coord pos = player->position 
+                + coord(Camera::getAngleVectorUntransformed(0.4, player->heading + PI/4).x, Camera::getAngleVectorUntransformed(0.4, player->heading + PI/4).y);
+            pushAction(controls.inventory[0], Timer::getNow(), "move_to_approach " + toStr(pos.x) + " " + toStr(pos.y) + " 0.00000005");
+            pushAction(controls.inventory[0], Timer::getNow(), "heading_instant " + toStr(player->heading));
+        }
+    }
+    else {
+        if (controls.inventory[0] != "null") {
+            pushAction(controls.inventory[0], Timer::getNow(), "motion_frozen 0");
+            pushAction(controls.inventory[0], Timer::getNow(), "highlightable 1");
+            controls.inventory[0] = "null";
+        }
+    }
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+        if (controls.inventory[1] == "null" && facingId != "null") {
+            controls.inventory[1] = facingId;
+            pushAction(controls.inventory[1], Timer::getNow(), "motion_frozen 1");
+            pushAction(controls.inventory[1], Timer::getNow(), "highlightable 0");
+        }
+        if (controls.inventory[1] != "null") {
+            coord pos = player->position 
+                + coord(Camera::getAngleVectorUntransformed(0.4, player->heading - PI/4).x, Camera::getAngleVectorUntransformed(0.4, player->heading - PI/4).y);
+            pushAction(controls.inventory[1], Timer::getNow(), "move_to_approach " + toStr(pos.x) + " " + toStr(pos.y) + " 0.00000005");
+            pushAction(controls.inventory[1], Timer::getNow(), "heading_instant " + toStr(player->heading));
+        }
+    }
+    else {
+        if (controls.inventory[1] != "null") {
+            pushAction(controls.inventory[1], Timer::getNow(), "motion_frozen 0");
+            pushAction(controls.inventory[1], Timer::getNow(), "highlightable 1");
+            controls.inventory[1] = "null";
+        }
+    }
+
+
+    processCollisions();
 
     for (auto& entity : entities)
         entity.second->update();
     runActions();
+
     updateTime = updateTimer.elapsed();
 }
 
@@ -25,7 +86,6 @@ void Game::processCollisions() {
             continue;
         
         auto result = neighborsFinder.findNeighbors(e.second->position, .3, "duck");
-        
         for (auto f : result) {
             if (e.second == f)
                 continue;
@@ -48,6 +108,7 @@ void Game::runActions() {
     while (!actionList.empty()) {
         Action action = actionList.top();
         if (action.time.elapsed() >= 0 && !action.ranFlag) { // started
+            std::cerr << std::right << std::setw(10) << std::setprecision(3) << std::fixed << Timer::getGlobalStart().elapsed(action.time) << "s  " << std::left << std::setw(20) << action.id << "  " << action.action << "\n";
             // threadPool.push_back(std::thread(&Game::runAction, this, actionList[i], followUpActions));
             runAction(action, followUpActions);
             action.ranFlag = true;
@@ -60,8 +121,13 @@ void Game::runActions() {
     // for (std::thread& t : threadPool) {
     //     t.join();
     // }
-    for (auto& action : followUpActions)
+    for (auto& action : followUpActions) {
         actionList.push(action); // will run next update
+        if (actionList.size() > 1000) {
+            debug << "Actions overloaded, check log. Some actions may be lost\n";
+            break;
+        }
+    }
 
     // std::sort(actionList.begin(), actionList.end());
     // for (int i = actionList.size() - 1; i >= 0; i--) {
@@ -74,11 +140,11 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
     if (action.id != "global") {
         std::map<std::string, Entity*>::iterator result = entities.find(action.id);
         if (result == entities.end()) {
-            debug << "Attempt to find entity " << action.id << " failed";
+            debug << "Attempt to find entity " << action.id << " failed\n";
             // umm... now what?
             return;
         }
-        result->second->runAction(action, followUpActions);
+        result->second->runActionCommon(action, followUpActions);
         return;
     }
     // global actions
@@ -137,9 +203,9 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
                 return;
             coord delta = f->position - e->position;
             coord move = delta / delta.len() / delta.len() / 3.;
-            if (e->historyPosition.size() >= 2 && (e->historyPosition[1].second.len(e->historyPosition[0].second)) /  e->historyPosition[1].first.elapsed(e->historyPosition[0].first) < 0.1)
+            if (e->historyPosition.size() >= 2 && (e->historyPosition[1].second.len(e->historyPosition[0].second)) /  e->historyPosition[1].first.elapsed(e->historyPosition[0].first) < 0.1 && !e->motionFrozen)
                 pushAction(e->id, Timer::getNow(), "slide_velocity_distance " + toStr(-move.x) + " " + toStr(-move.y) + " 0.1");
-            if (f->historyPosition.size() >= 2 && (f->historyPosition[1].second.len(f->historyPosition[0].second)) /  f->historyPosition[1].first.elapsed(f->historyPosition[0].first) < 0.1)
+            if (f->historyPosition.size() >= 2 && (f->historyPosition[1].second.len(f->historyPosition[0].second)) /  f->historyPosition[1].first.elapsed(f->historyPosition[0].first) < 0.1 && !f->motionFrozen)
                 pushAction(f->id, Timer::getNow(), "slide_velocity_distance " + toStr(move.x) + " " + toStr(move.y) + " 0.1");
         }
         else if (function == "find_mate_female") {
@@ -203,7 +269,7 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
     }
 }
 
-Entity* Game::findEntity(std::string id) {
+Entity* Game::findEntity(const std::string& id) {
     auto result = entities.find(id);
     if (result == entities.end()) {
         debug << "Find entity failed when tring to find \"" << id << "\"\n";
@@ -249,6 +315,7 @@ void Game::destroyEntity(std::string id) {
         debug << "Find entity failed when tring to find \"" << id << "\"\n";
         return;
     }
+    neighborsFinder.update();
     neighborsFinder.destroyEntry(result->second);
     delete result->second->childClassPtr;
     entities.erase(result);
@@ -257,18 +324,6 @@ void Game::destroyEntity(std::string id) {
 void Game::render() {
     for (auto entity : entities) {
         entity.second->pushQuads();
-    }
-    
-    auto facing = controls.getFacingEntity(findEntity("player$player"));
-    if (facing) {
-        Graphics::drawText(facing->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(facing->position) + UIVec(0., 40.), 0., sf::Color(255, 255, 255, 140), 3.);
-        Graphics::insertUserWireframe(
-            Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
-            Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
-            Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
-            Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) + UIVec(0, -facing->zPosition * Camera::getScale()),
-            sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
-        );
     }
 }
 

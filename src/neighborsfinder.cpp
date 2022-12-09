@@ -31,8 +31,14 @@ void NeighborsFinder::update() {
 }
 
 void NeighborsFinder::destroyEntry(Entity* e) {
-    for (int l = 0; l < 5; l++)
-        chunkMembers[l][getChunk(e->neighborsFinderMyTile, l)].erase(e->id);
+    for (int l = 0; l < 5; l++) {
+        auto res = chunkMembers[l][getChunk(e->neighborsFinderMyTile, l)].find(e->id);
+        if (res == chunkMembers[l][getChunk(e->neighborsFinderMyTile, l)].end()) {
+            debug << "destroy entity failed\n";
+            continue;
+        }
+        chunkMembers[l][getChunk(e->neighborsFinderMyTile, l)].erase(res);
+    }
 }
 
 std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius, std::string filter) {
@@ -53,6 +59,7 @@ std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius,
                 auto result = game->entities.find(id);
                 if (result == game->entities.end()) {
                     debug << "Find entity failed when tring to find \"" << id << "\"\n";
+                    // destroyEntry(e);
                     e = nullptr;
                 }
                 e = result->second;
