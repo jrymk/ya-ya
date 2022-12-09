@@ -3,25 +3,20 @@
 
 void Egg::runAction(Action& action, std::vector<Action>& followUpActions) {
     switch (action.command) {
-    case INIT: {
-        break;
-    }
-    case EGG_HATCH: {
-            Action a(Timer::getNow(), GLOBAL_HATCH);
-            a.argCoord[0] = position;
-            a.argBool[0] = genderIsMale;
-            followUpActions.push_back(a);
-            Action b(Timer::getNow() + 1., GLOBAL_DESTROY);
-            b.argString[0] = id;
-            followUpActions.push_back(b);
-            // delete this;
-        break;
-    }
-    case EGG_HOP: {
-        if (zPosition == 0.)
-            zVelocity = .2;
-        break;
-    }
+        case INIT: {
+            break;
+        }
+        case EGG_HATCH: {
+                Action a(Timer::getNow(), GLOBAL_HATCH);
+                a.argCoord[0] = position;
+                a.argBool[0] = genderIsMale;
+                followUpActions.push_back(a);
+                Action b(Timer::getNow() + 1., GLOBAL_DESTROY);
+                b.argString[0] = id;
+                followUpActions.push_back(b);
+                // delete this;
+            break;
+        }
     }
 }
 
@@ -44,16 +39,18 @@ Egg::Egg() {
 }
 
 void Egg::customUpdate() {
-    heading += headingRotationSpeed * elapsedSecs;
-    position.x += velocity * std::cos(heading) * elapsedSecs;
-    position.y += velocity * std::sin(heading) * elapsedSecs;
-    position = position + slideVelocity * elapsedSecs;
-    if (zPosition > 0)
-        zVelocity += GRAVITY * elapsedSecs;
-    zPosition += zVelocity;
-    zPosition = std::max(zPosition, 0.);
-    if (zPosition == 0.)
-        zVelocity = 0.;
+    if (!motionFrozen) {
+        heading += headingRotationSpeed * elapsedSecs;
+        position.x += velocity * std::cos(heading) * elapsedSecs;
+        position.y += velocity * std::sin(heading) * elapsedSecs;
+        position = position + slideVelocity * elapsedSecs;
+        if (zPosition > 0)
+            zVelocity += GRAVITY * elapsedSecs;
+        zPosition += zVelocity;
+        zPosition = std::max(zPosition, 0.);
+        if (zPosition == 0.)
+            zVelocity = 0.;
+    }
 }
 
 std::string Egg::getDescriptionStr() {

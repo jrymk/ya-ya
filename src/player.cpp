@@ -39,10 +39,11 @@ Player::Player() {
 }
 
 void Player::customUpdate() {
-    heading += headingRotationSpeed * elapsedSecs;
-    position.x += velocity * std::cos(heading) * elapsedSecs;
-    position.y += velocity * std::sin(heading) * elapsedSecs;
-    position = position + slideVelocity * elapsedSecs;
+    if (!motionFrozen) {
+        heading += headingRotationSpeed * elapsedSecs;
+        position.x += velocity * std::cos(heading) * elapsedSecs;
+        position.y += velocity * std::sin(heading) * elapsedSecs;
+        position = position + slideVelocity * elapsedSecs;
 //    debug << "custom updated " << slideVelocity.x << ", " << slideVelocity.y << "\n";
-
+    }
 }

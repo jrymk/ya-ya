@@ -4,7 +4,55 @@
 #include "duck.h"
 #include "egg.h"
 
-void Entity::runAction(Action& action, std::vector<Action>& followUpActions) {};
+void Entity::runActionEntity(Action &action, std::vector<Action> &followUpActions) {
+    switch (action.command) {
+        case ENTITY_MOTION_FROZEN:
+            motionFrozen = action.argBool[0];
+            break;
+        case ENTITY_HIGHLIGHTABLE:
+            facingHighlightable = action.argBool[0];
+            break;
+        case ENTITY_COLLISION_PUSHABLE:
+            collisionPushable = action.argBool[0];
+            break;
+        case ENTITY_COLLISION_COLLIDABLE:
+            collisionCollidable = action.argBool[0];
+            break;
+        case ENTITY_MOVE_TO_INSTANT:
+            position = action.argCoord[0];
+            break;
+        case ENTITY_MOVE_TO_APPROACH:
+            position = action.argCoord[0] - (action.argCoord[0] - position) * std::pow(action.argFloat[0], elapsedSecs);
+            break;
+        case ENTITY_HEADING_INSTANT:
+            heading = action.argFloat[0];
+            break;
+        case ENTITY_HOP:
+            if (zPosition == 0.)
+                zVelocity = .2;
+            break;
+        case ENTITY_SLIDE_INSTANT:
+            position = position + action.argCoord[0];
+            break;
+        case ENTITY_SLIDE_VELOCITY: {
+            position = position + action.argCoord[0] / elapsedSecs;
+            break;
+        }
+        case ENTITY_SLIDE_VELOCITY_DISTANCE:
+            position = position + action.argCoord[0] / action.argCoord[0].len() * std::min(action.argCoord[0].len() * elapsedSecs, action.argFloat[0]);
+            action.argFloat[0] -= action.argCoord[0].len() * elapsedSecs;
+            velocity = velocity / action.argCoord[0].len() * std::max(action.argFloat[0] / 0.5, action.argCoord[0].len() - 0.05 * elapsedSecs); // deccelerate
+            if (action.argFloat[0] > 0.) {
+                Action a(action.entity, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
+                a.argCoord[0] = action.argCoord[0];
+                a.argFloat[0] = action.argFloat[0];
+                followUpActions.push_back(a);
+            }
+            break;
+        default:
+            runAction(action, followUpActions); // run entity specific actions
+    }
+};
 
 void Entity::initModel() {}
 
@@ -50,7 +98,7 @@ void Entity::updateTimer() {
 
 void Entity::update() {
     updateTimer();
-    historyPosition.push_front({Timer::getNow(), position});
+    historyPosition.emplace_front(Timer::getNow(), position);
     while (!historyPosition.empty() && historyPosition.front().first.elapsed() >= 1.0)
         historyPosition.pop_back();
 
@@ -74,3 +122,8 @@ void Entity::customUpdate() {
 Entity::~Entity() {
     debug << "Entity destroyed\n";
 }
+
+void Entity::runAction(Action &action, std::vector<Action> &followUpActions) {
+
+}
+

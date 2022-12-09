@@ -2,15 +2,18 @@
 #include "game.h"
 
 Controls::Controls(Game* game): 
-    game(game) {
+    game(game),
+    inventory(2, nullptr) {
 }
 
 std::shared_ptr<Entity> Controls::getFacingEntity(std::shared_ptr<Entity> player, EntityType filter) {
     auto nearby = game->neighborsFinder.findNeighbors(player->position, 2., filter);
-    std::shared_ptr<Entity> facingEntity;
+    std::shared_ptr<Entity> facingEntity = nullptr;
     double bestScore = 1e8;
     for (auto e : nearby) {
         if (e == player)
+            continue;
+        if (!e->facingHighlightable)
             continue;
         UIVec epos = Camera::getScreenPos(e->position);
         UIVec ppos = Camera::getScreenPos(player->position);

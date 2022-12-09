@@ -13,6 +13,8 @@ class Controls {
     Game* game;
 
 public:
+    std::vector<std::shared_ptr<Entity>> inventory;
+
     Controls(Game* game);
 
     std::shared_ptr<Entity> getFacingEntity(std::shared_ptr<Entity> player, EntityType filter = ENTITY);

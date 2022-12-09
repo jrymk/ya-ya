@@ -26,19 +26,18 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bdc0e094-a08b-41c6-890a-e68c20cac951" name="Changes" comment="Fixed shared_ptr object ownership">
+    <list default="true" id="bdc0e094-a08b-41c6-890a-e68c20cac951" name="Changes" comment="Fixed shared_ptr object ownership (:chefkiss:)">
+      <changelist_data name="jrymk" email="jerrymklu@gmail.com" date="1670608667000" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/save.ya" beforeDir="false" afterPath="$PROJECT_DIR$/build/save.ya" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/camera.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/camera.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/action.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/action.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controls.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/controls.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controls.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/controls.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/duck.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/duck.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/egg.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/egg.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/entity.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entity.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/entity.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/entity.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/game.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/game.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/game.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/neighborsfinder.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/neighborsfinder.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/neighborsfinder.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/neighborsfinder.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/player.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/player.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/yaya.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/yaya.cpp" afterDir="false" />
     </list>
@@ -70,6 +69,10 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/src/entity.cpp" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/player.cpp" root0="SKIP_INSPECTION" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -196,7 +199,14 @@
       <option name="project" value="LOCAL" />
       <updated>1670686996661</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Fixed shared_ptr object ownership (:chefkiss:)">
+      <created>1670692475031</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1670692475031</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -230,7 +240,8 @@
     <MESSAGE value="Deleted SFML files" />
     <MESSAGE value="Added SFML build profiles" />
     <MESSAGE value="Fixed shared_ptr object ownership" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed shared_ptr object ownership" />
+    <MESSAGE value="Fixed shared_ptr object ownership (:chefkiss:)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed shared_ptr object ownership (:chefkiss:)" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

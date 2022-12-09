@@ -34,6 +34,9 @@ public:
     double lastUpdate = -1.;
     double elapsedSecs = 0.;
 
+    bool motionFrozen = false;
+    bool collisionPushable = true;
+    bool collisionCollidable = true;
     coord position;
     std::deque<std::pair<Timer, coord>> historyPosition;
     double zPosition = 0.;
@@ -44,9 +47,14 @@ public:
     double headingRotationSpeed = 0.;
     
     std::shared_ptr<Entity> childClassPtr; // it will NOT be an Entity pointer though
-    
+
+    bool facingHighlightable = true;
+    bool selectable = true;
+
     std::vector<Graphics::Quad> model;
-    
+
+    void runActionEntity(Action& action, std::vector<Action>& followUpActions);
+
     virtual void runAction(Action& action, std::vector<Action>& followUpActions);
 
     virtual void initModel();
