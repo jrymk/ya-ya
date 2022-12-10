@@ -4,3 +4,4 @@ build/libwinpthread-1.dll
 /cmake-build-debug/
 /cmake-build-release/
 /.vscode/
+/.idea/
