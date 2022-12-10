@@ -35,8 +35,8 @@ void NeighborsFinder::destroyEntry(std::shared_ptr<Entity>& e) {
         chunkMembers[l][getChunk(e->neighborsFinderMyTile, l)].erase(e);
 }
 
-std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius, EntityType filter) {
-    std::vector<Entity*> neighbors;
+std::vector<std::shared_ptr<Entity>> NeighborsFinder::findNeighbors(coord center, double radius, EntityType filter) {
+    std::vector<std::shared_ptr<Entity>> neighbors;
     int d = int(ceil(radius));
     int l = 0;
     for (; l < 4; l++) {
@@ -53,7 +53,7 @@ std::vector<Entity*> NeighborsFinder::findNeighbors(coord center, double radius,
                     if (filter != ENTITY && e->type != filter)
                         continue;
                     if (e->position.len(center) <= radius)
-                        neighbors.push_back(e.get());
+                        neighbors.push_back(e);
                 }
             }
         }

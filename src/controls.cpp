@@ -5,9 +5,9 @@ Controls::Controls(Game* game):
     game(game) {
 }
 
-Entity* Controls::getFacingEntity(Entity* player, EntityType filter) {
+std::shared_ptr<Entity> Controls::getFacingEntity(std::shared_ptr<Entity> player, EntityType filter) {
     auto nearby = game->neighborsFinder.findNeighbors(player->position, 2., filter);
-    Entity* facingEntity = nullptr;
+    std::shared_ptr<Entity> facingEntity;
     double bestScore = 1e8;
     for (auto e : nearby) {
         if (e == player)

@@ -31,42 +31,21 @@ int main() {
     debugGraphs.push_back(DebugGraph("entities(long)", 200, 150, 1000000));
 
     Game game;
-    
-    Player* player = new Player();
-    auto& player_ptr = game.insertEntity(player);
-    player->id = "player$player";
 
-    {
-        Duck* duck = new Duck();
-        auto& duck_ptr = game.insertEntity(duck);
+    std::shared_ptr<Player> player(new Player);
+    player->id = "player$player";
+    player->childClassPtr = player;
+    auto& player_e = game.insertEntity(player);
+    game.setPlayer(player_e);
+
+    for (int i = 0; i < 4; i++){
+        std::shared_ptr<Duck> duck(new Duck);
         duck->id = game.newId(DUCK);
-        duck->position.x = 2.;
+        duck->childClassPtr = duck;
+        game.insertEntity(duck);
+        duck->position.x = i;
         duck->position.y = 2.;
         duck->genderIsMale = true;
-    }
-    {
-        Duck* duck = new Duck();
-        auto& duck_ptr = game.insertEntity(duck);
-        duck->id = game.newId(DUCK);
-        duck->position.x = 2.;
-        duck->position.y = -2.;
-        duck->genderIsMale = false;
-    }
-    {
-        Duck* duck = new Duck();
-        auto& duck_ptr = game.insertEntity(duck);
-        duck->id = game.newId(DUCK);
-        duck->position.x = -2.;
-        duck->position.y = -2.;
-        duck->genderIsMale = true;
-    }
-    {
-        Duck* duck = new Duck();
-        auto& duck_ptr = game.insertEntity(duck);
-        duck->id = game.newId(DUCK);
-        duck->position.x = -2.;
-        duck->position.y = 2.;
-        duck->genderIsMale = false;
     }
 
     // game.load();
@@ -138,9 +117,9 @@ int main() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
             moveVec.x += 1.;
         if (moveVec.len(UIVec()) > .1)
-            player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())) / coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).len() * 4.;
-        else 
-            player->slideVelocity = coord();
+            game.player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())) / coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).len() * 4.;
+        else
+            game.player->slideVelocity = coord();
 
         // if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
         //     player->velocity = 3.;

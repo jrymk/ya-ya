@@ -24,10 +24,13 @@ public:
     std::priority_queue<Action> actionList;
     double updateTime;
     std::map<std::string, std::shared_ptr<Entity>> entities;
+    std::shared_ptr<Entity> player;
 
     Game();
 
     void update();
+
+    void setPlayer(std::shared_ptr<Entity>& player);
 
     void processCollisions();
 
@@ -35,13 +38,28 @@ public:
 
     virtual void runAction(Action& action, std::vector<Action>& followUpActions);
 
-    Entity* findEntity(std::string id);
+    std::shared_ptr<Entity> findEntity(std::string id);
 
     void pushAction(const Action& action);
 
     std::string newId(EntityType type);
 
-    std::shared_ptr<Entity>& insertEntity(Entity* entity);
+    template<class T>
+    inline std::shared_ptr<Entity>& insertEntity(std::shared_ptr<T>& childPtr) {
+        if (childPtr->id == "undefined") {
+            debug << "Entity insertion failed because name is undefined\n";
+            return entities.end()->second;
+        }
+        if (entities.find(childPtr->id) == entities.end()) {
+            auto ret = entities.insert({childPtr->id, childPtr});
+            pushAction(Action(ret.first->second, Timer::getNow(), INIT));
+            return ret.first->second;
+        }
+        else {
+            debug << "Entity insertion failed because name \"" << childPtr->id << "\" is already taken\n";
+            return entities.end()->second;
+        }
+    }
 
     void destroyEntity(std::string id);
 

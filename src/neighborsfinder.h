@@ -20,7 +20,7 @@ public:
 
     void destroyEntry(std::shared_ptr<Entity>& e);
 
-    std::vector<Entity*> findNeighbors(coord center, double radius, EntityType filter = ENTITY);
+    std::vector<std::shared_ptr<Entity>> findNeighbors(coord center, double radius, EntityType filter = ENTITY);
 
     NeighborsFinder(Game* game): game(game) {}
 };

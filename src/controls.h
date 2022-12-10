@@ -10,13 +10,12 @@
 class Game;
 
 class Controls {
-    std::map<std::string, Entity*>* entities;
     Game* game;
 
 public:
     Controls(Game* game);
 
-    Entity* getFacingEntity(Entity* player, EntityType filter = ENTITY);
+    std::shared_ptr<Entity> getFacingEntity(std::shared_ptr<Entity> player, EntityType filter = ENTITY);
 
     void handleKeyPress(enum sf::Keyboard::Key key);
 };

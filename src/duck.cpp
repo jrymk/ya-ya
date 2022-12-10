@@ -192,7 +192,6 @@ void Duck::initModel() {
 }
 
 Duck::Duck() {
-    Entity::childClassPtr.reset(this);
     // auto shared = std::make_shared<Duck>(this);
     // Entity::childClassPtr = std::dynamic_pointer_cast<Entity>(shared);
     type = DUCK;

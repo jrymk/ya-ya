@@ -39,7 +39,6 @@ void Egg::initModel() {
 
 Egg::Egg() {
     // auto shared = std::make_shared<Egg>(this);
-    Entity::childClassPtr.reset(this);
     type = EGG;
     initModel();
 }

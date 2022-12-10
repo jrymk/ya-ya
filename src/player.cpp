@@ -32,7 +32,6 @@ void Player::initModel() {
 }
 
 Player::Player() {
-    Entity::childClassPtr.reset(this);
     // auto shared = std::make_shared<Player>(this);
     // Entity::childClassPtr = std::dynamic_pointer_cast<Entity>(shared);
     type = PLAYER;
@@ -44,4 +43,6 @@ void Player::customUpdate() {
     position.x += velocity * std::cos(heading) * elapsedSecs;
     position.y += velocity * std::sin(heading) * elapsedSecs;
     position = position + slideVelocity * elapsedSecs;
+//    debug << "custom updated " << slideVelocity.x << ", " << slideVelocity.y << "\n";
+
 }

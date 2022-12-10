@@ -26,9 +26,20 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bdc0e094-a08b-41c6-890a-e68c20cac951" name="Changes" comment="">
+    <list default="true" id="bdc0e094-a08b-41c6-890a-e68c20cac951" name="Changes" comment="Fixed shared_ptr object ownership">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/save.ya" beforeDir="false" afterPath="$PROJECT_DIR$/build/save.ya" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/camera.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/camera.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controls.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/controls.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controls.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/controls.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/duck.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/duck.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/egg.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/egg.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/entity.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/entity.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/game.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/game.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/game.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/game.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/neighborsfinder.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/neighborsfinder.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/neighborsfinder.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/neighborsfinder.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/player.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/player.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/yaya.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/yaya.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -62,6 +73,15 @@
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="NamedScopeManager">
+    <scope name="Yaya Source" pattern="file[ya-ya]:src/*" />
+  </component>
+  <component name="ProblemsViewState">
+    <hideBySeverity>
+      <option value="300" />
+    </hideBySeverity>
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
@@ -169,7 +189,14 @@
       <option name="project" value="LOCAL" />
       <updated>1670686750308</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added SFML build profiles">
+      <created>1670686996660</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1670686996661</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,7 +207,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -189,7 +228,9 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Deleted SFML files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Deleted SFML files" />
+    <MESSAGE value="Added SFML build profiles" />
+    <MESSAGE value="Fixed shared_ptr object ownership" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed shared_ptr object ownership" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

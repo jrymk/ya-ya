@@ -1,5 +1,8 @@
 #include "entity.h"
 #include <iomanip>
+#include "player.h"
+#include "duck.h"
+#include "egg.h"
 
 void Entity::runAction(Action& action, std::vector<Action>& followUpActions) {};
 
@@ -50,7 +53,8 @@ void Entity::update() {
     historyPosition.push_front({Timer::getNow(), position});
     while (!historyPosition.empty() && historyPosition.front().first.elapsed() >= 1.0)
         historyPosition.pop_back();
-    
+
+
     customUpdate();
 }
 
@@ -64,7 +68,7 @@ std::string Entity::getDescriptionStr() {
 }
 
 void Entity::customUpdate() {
-
+    debug << "Entity version of custom update is ran\n";
 }
 
 Entity::~Entity() {
