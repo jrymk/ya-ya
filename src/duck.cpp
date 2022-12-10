@@ -233,6 +233,7 @@ Duck::Duck(std::shared_ptr<Entity>& entity){
     type = entity -> type;
     position = entity -> position;
     deleted = entity -> deleted;
+    childClassPtr = std::shared_ptr<Duck>(this);
     initModel();
 }
 

@@ -37,12 +37,13 @@ int main() {
     auto &player_e = game.insertEntity(player);
     game.setPlayer(player_e);
 
-    for (int i = 0; i < 100; i++){
+    for (int i = 0; i < 1000; i++){
         std::shared_ptr<Duck> duck(new Duck);
         duck->id = game.newId(DUCK);
+        duck->childClassPtr = duck;
         game.insertEntity(duck);
-        duck->position.x = -5.0 + i % 10;
-        duck->position.y = -5.0 + i / 10;
+        duck->position.x = -16.0 + i % 32;
+        duck->position.y = -16.0 + i / 32;
         duck->genderIsMale = true;
     }
     */
@@ -125,7 +126,7 @@ int main() {
         // else
         //     player->velocity = 0.;
 
-        game.player->heading = game.player->position.angle(Camera::getMouseCoord());
+        player->heading = player->position.angle(Camera::getMouseCoord());
 
         // player->heading += double(sf::Mouse::getPosition(window).x) / -200.;
         // sf::Mouse::setPosition(sf::Vector2i(0, sf::Mouse::getPosition(window).y), window);
