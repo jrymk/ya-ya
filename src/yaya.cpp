@@ -34,18 +34,16 @@ int main() {
 
     std::shared_ptr<Player> player(new Player);
     player->id = "player$player";
-    player->childClassPtr = player;
     auto& player_e = game.insertEntity(player);
     game.setPlayer(player_e);
 
     for (int i = 0; i < 4; i++){
         std::shared_ptr<Duck> duck(new Duck);
         duck->id = game.newId(DUCK);
-        duck->childClassPtr = duck;
         game.insertEntity(duck);
         duck->position.x = i;
         duck->position.y = 2.;
-        duck->genderIsMale = true;
+        duck->genderIsMale = i & 0b1;
     }
 
     // game.load();
@@ -80,18 +78,18 @@ int main() {
                 // mouseWheelPosition += event.mouseWheel.delta;
             }
             if (event.type == sf::Event::MouseButtonPressed) {
-//                if (event.mouseButton.button == sf::Mouse::Button::Left) {
-//                    for (auto duck : game.entities) {
-//                        if (duck.second->type == DUCK) {
-//                            Action a(duck.second, Timer::getNow(), DUCK_DUCKWALK_TO_UNTIL);
-//                            a.argCoord[0].x = Camera::getMouseCoord().x + (getRand() - .5);
-//                            a.argCoord[0].y = Camera::getMouseCoord().y + (getRand() - .5);
-//                            game.pushAction(a);
-//                        }
-//                    }
-//                    // for (auto duck : game.ducks)
-//                    //     duck.second->actions.push_back(Action(Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord().x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord().y + (getRand() - .5))));
-//                }
+                if (event.mouseButton.button == sf::Mouse::Button::Left) {
+                    for (auto duck : game.entities) {
+                        if (duck.second->type == DUCK) {
+                            Action a(duck.second, Timer::getNow(), DUCK_DUCKWALK_TO_UNTIL);
+                            a.argCoord[0].x = Camera::getMouseCoord().x + (getRand() - .5);
+                            a.argCoord[0].y = Camera::getMouseCoord().y + (getRand() - .5);
+                            game.pushAction(a);
+                        }
+                    }
+                    // for (auto duck : game.ducks)
+                    //     duck.second->actions.push_back(Action(Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord().x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord().y + (getRand() - .5))));
+                }
             }
         }
 

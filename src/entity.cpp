@@ -120,7 +120,7 @@ void Entity::customUpdate() {
 }
 
 Entity::~Entity() {
-    debug << "Entity destroyed\n";
+//    debug << "Entity destroyed\n";
 }
 
 void Entity::runAction(Action &action, std::vector<Action> &followUpActions) {

@@ -20,18 +20,22 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
         }
         case DUCK_LOOP_LAY_EGGS: {
             if (!genderIsMale) {
-                Action a(Timer::getNow(), GLOBAL_LAY_EGG_FIND_NEARBY_MALE);
-                a.argEntity[0] = action.entity;
-                followUpActions.push_back(a);
+                {
+                    Action a(Timer::getNow(), GLOBAL_LAY_EGG_FIND_NEARBY_MALE);
+                    a.argEntity[0] = action.entity;
+                    followUpActions.push_back(a);
+                }
                 followUpActions.push_back(Action(action.entity, Timer::getNow() + 10. + getRand() * 40., DUCK_LOOP_LAY_EGGS));
             }
             break;
         }
         case DUCK_LOOP_FIND_MATE: {
             if (genderIsMale) {
-                Action a(Timer::getNow(), GLOBAL_FIND_MATE_FEMALE);
-                a.argEntity[0] = action.entity;
-                followUpActions.push_back(a);
+                {
+                    Action a(Timer::getNow(), GLOBAL_FIND_MATE_FEMALE);
+                    a.argEntity[0] = action.entity;
+                    followUpActions.push_back(a);
+                }
                 followUpActions.push_back(Action(action.entity, Timer::getNow() + 5. + getRand() * 20., DUCK_LOOP_FIND_MATE));
             }
             break;
@@ -51,9 +55,11 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
                 d.argCoord[0] = coord(0., -0.05);
                 followUpActions.push_back(d);
             }
-            Action a(Timer::getNow() + .5, GLOBAL_DESTROY);
-            a.argEntity[0] = action.entity;
-            followUpActions.push_back(a);
+            {
+                Action a(Timer::getNow() + .5, GLOBAL_DESTROY);
+                a.argEntity[0] = action.entity;
+                followUpActions.push_back(a);
+            }
             break;
         }
         case DUCK_HAVE_SEX_WITH: {
@@ -73,10 +79,12 @@ void Duck::runAction(Action& action, std::vector<Action>& followUpActions) {
             }
             if (!genderIsMale) {
                 if (getRand() < .9) { // 90%
-                    Action a(Timer::getNow() + 3. + getRand() * 2., GLOBAL_LAY_FERTILIZED_EGG);
-                    a.argCoord[0] = position;
-                    a.argBool[0] = (getRand() > .5);
-                    followUpActions.push_back(a);
+                    {
+                        Action a(Timer::getNow() + 3. + getRand() * 2., GLOBAL_LAY_FERTILIZED_EGG);
+                        a.argCoord[0] = position;
+                        a.argBool[0] = (getRand() > .5);
+                        followUpActions.push_back(a);
+                    }
                     if (getRand() < .1) {// 10% a twin!
                         Action a(Timer::getNow() + 3. + getRand() * 2., GLOBAL_LAY_FERTILIZED_EGG);
                         a.argCoord[0].x = position.x + 0.3 *(getRand() - .5);

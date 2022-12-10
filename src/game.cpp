@@ -204,7 +204,6 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
         case GLOBAL_LAY_UNFERTILIZED_EGG: {
             std::shared_ptr<Egg> egg(new Egg);
             egg->id = newId(EGG);
-            egg->childClassPtr = egg;
             auto& egg_ptr = insertEntity(egg);
             egg->position = action.argCoord[0] + coord(0.01 * (getRand() - .5), 0.01 * (getRand() - .5));
             pushAction(Action(egg_ptr, Timer::getNow(), ENTITY_HOP));
@@ -213,7 +212,6 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
         case GLOBAL_LAY_FERTILIZED_EGG: {
             std::shared_ptr<Egg> egg(new Egg);
             egg->id = newId(EGG);
-            egg->childClassPtr = egg;
             auto& egg_ptr = insertEntity(egg);
             egg->position = action.argCoord[0] + coord(0.01 * (getRand() - .5), 0.01 * (getRand() - .5));
             egg->fertilized = true;
@@ -227,7 +225,6 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
                 return;
             std::shared_ptr<Duck> duck(new Duck);
             duck->id = newId(DUCK);
-            duck->childClassPtr = duck;
             auto& duck_ptr = insertEntity(duck);
             duck->position = action.argCoord[0] + coord(0.05 * (getRand() - .5), 0.05 * (getRand() - .5));
             duck->genderIsMale = action.argBool[0];
@@ -269,11 +266,9 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
             std::shared_ptr<Entity> closest;
             std::vector<std::shared_ptr<Entity>> candidates;
             for (auto f : result) {
-                if (!f->childClassPtr)
-                    continue;
                 if (f->type != DUCK)
                     continue;
-                Duck* duck = dynamic_cast<Duck*>(f->childClassPtr.get());
+                auto duck = std::dynamic_pointer_cast<Duck>(f);
                 if (!duck)
                     continue;
                 if (!duck->genderIsMale) {
@@ -296,11 +291,9 @@ void Game::runAction(Action& action, std::vector<Action>& followUpActions) {
             auto result = neighborsFinder.findNeighbors(action.argEntity[0]->position, 1.);
             std::vector<std::shared_ptr<Entity>> candidates;
             for (auto f : result) {
-                if (!f->childClassPtr)
-                    continue;
                 if (f->type != DUCK)
                     continue;
-                auto duck = std::dynamic_pointer_cast<Duck>(f->childClassPtr).get();
+                auto duck = std::dynamic_pointer_cast<Duck>(f);
                 if (!duck)
                     continue;
                 if (!duck->genderIsMale) {
@@ -368,16 +361,17 @@ void Game::destroyEntity(std::string id) {
         debug << "Find entity failed when tring to find \"" << id << "\"\n";
         return;
     }
+//    debug << "Destroying " << id << " with " << result->second.use_count() << " uses\n";
     result->second->deleted = true;
     neighborsFinder.destroyEntry(result->second);
-    delete result->second->childClassPtr.get();
     entities.erase(result);
+//    delete result->second.get();
 }
 
 void Game::render() {
     Profiler::timeSplit("pushquads");
     for (auto entity : entities) {
-        entity.second->childClassPtr->pushQuads();
+        entity.second->pushQuads();
         //        switch (entity.second->type) {
 //            case PLAYER:
 //                std::dynamic_pointer_cast<Player>(entity.second->childClassPtr)->pushQuads();
