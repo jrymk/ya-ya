@@ -70,6 +70,11 @@ public:
     void save();
 
     void load(const char* filepath = defaultFilePath);
+
+    constexpr static auto properties = std::make_tuple(
+        SaveUtilities::property(&Game::entities, "Gm.et"),
+        SaveUtilities::property(&Game::player, "Gm.pl")
+    );
 };
 
 #endif

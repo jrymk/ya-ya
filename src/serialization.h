@@ -141,6 +141,10 @@ namespace Serialization{
         return std::to_string(val);
     }
     template<>
+    inline std::string serialize(const bool& val){
+        return std::to_string(val);
+    }
+    template<>
     inline std::string serialize(const float& val){
         return std::to_string(val);
     }
@@ -308,6 +312,10 @@ namespace Serialization{
     
     template<>
     inline void deserialize(int& val, const std::string& data){
+        val = std::stoi(data);
+    }
+    template<>
+    inline void deserialize(bool& val, const std::string& data){
         val = std::stoi(data);
     }
     template<>

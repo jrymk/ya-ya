@@ -38,6 +38,15 @@ Player::Player() {
     initModel();
 }
 
+Player::Player(std::shared_ptr<Entity>& entity){
+    id = entity -> id;
+    type = entity -> type;
+    position = entity -> position;
+    deleted = entity -> deleted;
+    childClassPtr = std::shared_ptr<Player>(this);
+    initModel();
+}
+
 void Player::customUpdate() {
     if (!motionFrozen) {
         heading += headingRotationSpeed * elapsedSecs;

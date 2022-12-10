@@ -173,6 +173,15 @@ Duck::Duck() {
     initModel();
 }
 
+Duck::Duck(std::shared_ptr<Entity>& entity){
+    id = entity -> id;
+    type = entity -> type;
+    position = entity -> position;
+    deleted = entity -> deleted;
+    childClassPtr = std::shared_ptr<Duck>(this);
+    initModel();
+}
+
 void Duck::customUpdate() {
     if (!motionFrozen) {
         heading += headingRotationSpeed * elapsedSecs;

@@ -31,24 +31,24 @@ int main() {
     debugGraphs.push_back(DebugGraph("entities(long)", 200, 150, 1000000));
 
     Game game;
-
+    /*
     std::shared_ptr<Player> player(new Player);
     player->id = "player$player";
     player->childClassPtr = player;
     auto& player_e = game.insertEntity(player);
     game.setPlayer(player_e);
 
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 1000; i++){
         std::shared_ptr<Duck> duck(new Duck);
         duck->id = game.newId(DUCK);
         duck->childClassPtr = duck;
         game.insertEntity(duck);
-        duck->position.x = i;
-        duck->position.y = 2.;
+        duck->position.x = -16.0 + i % 32;
+        duck->position.y = -16.0 + i / 32;
         duck->genderIsMale = true;
     }
-
-    // game.load();
+    */
+    game.load();
     
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("tilemap.png"))
@@ -57,7 +57,7 @@ int main() {
         debug << "maximum texture size: " << sf::Texture::getMaximumSize() << "\n";
     tilemap.setSmooth(true);
 
-
+    
     while (window.isOpen()) {
         Profiler::timeSplit("event");
         sf::Event event;
@@ -127,7 +127,7 @@ int main() {
         // else
         //     player->velocity = 0.;
 
-        player->heading = player->position.angle(Camera::getMouseCoord());
+        game.player->heading = game.player->position.angle(Camera::getMouseCoord());
         
         // player->heading += double(sf::Mouse::getPosition(window).x) / -200.;
         // sf::Mouse::setPosition(sf::Vector2i(0, sf::Mouse::getPosition(window).y), window);
@@ -150,7 +150,7 @@ int main() {
         Graphics::setFont(1);
         Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::White, 24, UIVec(10, 30), 0., sf::Color::Black, 4.);
 
-        Camera::setCenter(Camera::getCenter() + (player->position - Camera::getCenter()) * 0.08);
+        Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.08);
 
         Camera::printCameraInfo();
 

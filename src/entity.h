@@ -72,7 +72,10 @@ public:
     ~Entity();
 
     constexpr static auto properties = std::make_tuple(
-        SaveUtilities::property(&Entity::position, "Ey.ps")
+        SaveUtilities::property(&Entity::id, "Ey.id"),
+        SaveUtilities::property(&Entity::type, "Ey.tp"),
+        SaveUtilities::property(&Entity::position, "Ey.ps"),
+        SaveUtilities::property(&Entity::deleted, "Ey.dl")
     );
 };
 
