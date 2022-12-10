@@ -46,8 +46,6 @@ public:
     double heading = 0.;
     double headingRotationSpeed = 0.;
     
-    std::shared_ptr<Entity> childClassPtr; // it will NOT be an Entity pointer though
-
     bool facingHighlightable = true;
     bool selectable = true;
 
