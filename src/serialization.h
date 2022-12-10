@@ -2,8 +2,8 @@
 #ifndef _SERIALIZATION_H_
 #define _SERIALIZATION_H_
 
-#include <vector>
 #include <memory>
+#include <vector>
 #include <map>
 #include <tuple>
 #include <string>
@@ -53,7 +53,8 @@ inline void rdeserialize(T& obj, const std::string& str);  // recursive unserial
 namespace Serialization{
     /* BEGIN serialize */
     template<typename T,
-            typename std::enable_if_t<!std::is_pointer<T>::value>* = nullptr>
+            typename std::enable_if_t<!std::is_pointer<T>::value>* = nullptr,
+            typename std::enable_if_t<!std::is_enum<T>::value>* = nullptr>
     inline std::string serialize(const T& obj){  // object
         std::string str;
         constexpr auto propertyCnt = std::tuple_size<decltype(T::properties)>::value;
@@ -71,6 +72,12 @@ namespace Serialization{
             typename std::enable_if_t<std::is_pointer<T>::value>* = nullptr>
     inline std::string serialize(const T ptr){  // object* and normal type*
         return rserialize(*ptr);
+    }
+
+    template<typename T,
+            typename std::enable_if_t<std::is_enum<T>::value>* = nullptr>
+    inline std::string serialize(const T& etp){  // enum
+        return std::to_string(static_cast<unsigned>(etp));
     }
 
     template<typename T, typename U>  // shared_ptr
@@ -149,7 +156,8 @@ namespace Serialization{
 
     /* BEGIN deserialize */
     template<typename T,
-            typename std::enable_if_t<!std::is_pointer<T>::value>* = nullptr>
+            typename std::enable_if_t<!std::is_pointer<T>::value>* = nullptr,
+            typename std::enable_if_t<!std::is_enum<T>::value>* = nullptr>
     inline void deserialize(T& obj, const std::string& str){  // object
         constexpr auto propertyCnt = std::tuple_size<decltype(T::properties)>::value;
         SaveUtilities::forSequence(std::make_index_sequence<propertyCnt>{}, [&](auto i){
@@ -164,10 +172,16 @@ namespace Serialization{
 
     template<typename T,
             typename std::enable_if_t<std::is_pointer<T>::value>* = nullptr>
-    inline void deserialize(T& obj, const std::string& str){  // object* and normal type*
+    inline void deserialize(T& ptr, const std::string& str){  // object* and normal type*
         typedef typename std::remove_pointer<T>::type U;
-        obj = new U;
-        rdeserialize(*obj, str);
+        ptr = new U;
+        rdeserialize(*ptr, str);
+    }
+
+    template<typename T,
+            typename std::enable_if_t<std::is_enum<T>::value>* = nullptr>
+    inline void deserialize(T& etp, const std::string& str){  // enum
+        etp = static_cast<T>(std::stoi(str));
     }
 
     template<typename T, typename U>
