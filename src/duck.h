@@ -7,9 +7,9 @@
 class Duck : public Entity {
 public:
     bool genderIsMale = true;
-    bool fertilized = false;
+    bool fertilized = false; // will the next egg be fertilized, set after having sex
 
-    void runAction(Action& action, std::vector<Action>& followUpActions) override;
+    void runAction(Action &action, std::vector<Action> &followUpActions) override;
 
     void initModel() override;
 
@@ -20,7 +20,7 @@ public:
     std::string getDescriptionStr() override;
 
     constexpr static auto properties = std::make_tuple(
-        SaveUtilities::property(&Duck::position, "Dk.ps")
+            SaveUtilities::property(&Duck::position, "Dk.ps")
     );
 };
 

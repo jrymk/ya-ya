@@ -39,15 +39,21 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             break;
         }
         case ENTITY_SLIDE_VELOCITY_DISTANCE:
-            position = position + action.argCoord[0] / action.argCoord[0].len() * std::min(action.argCoord[0].len() * elapsedSecs, action.argFloat[0]);
+            position = position + action.argCoord[0] / action.argCoord[0].len() *
+                                  std::min(action.argCoord[0].len() * elapsedSecs, action.argFloat[0]);
             action.argFloat[0] -= action.argCoord[0].len() * elapsedSecs;
-            velocity = velocity / action.argCoord[0].len() * std::max(action.argFloat[0] / 0.5, action.argCoord[0].len() - 0.05 * elapsedSecs); // deccelerate
+            velocity = velocity / action.argCoord[0].len() *
+                       std::max(action.argFloat[0] / 0.5, action.argCoord[0].len() - 0.05 * elapsedSecs); // deccelerate
             if (action.argFloat[0] > 0.) {
                 Action a(action.entity, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
                 a.argCoord[0] = action.argCoord[0];
                 a.argFloat[0] = action.argFloat[0];
                 followUpActions.push_back(a);
             }
+            break;
+        case ENTITY_WALK_INSTANT:
+            position = position + coord(Camera::getAngleVectorUntransformed(action.argFloat[0], heading).x,
+                                        Camera::getAngleVectorUntransformed(action.argFloat[0], heading).y);
             break;
         default:
             runAction(action, followUpActions); // run entity specific actions
@@ -57,11 +63,15 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
 void Entity::initModel() {}
 
 void Entity::pushQuads() {
-    for (auto quad : model) {
-        quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) + position) + UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
-        quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + position) + UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
-        quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + position) + UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
-        quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) + position) + UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
+    for (auto quad: model) {
+        quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) + position) +
+                  UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
+        quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + position) +
+                  UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
+        quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + position) +
+                  UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
+        quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) + position) +
+                  UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
         quad.zDepth += (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
         // quad.c0 = genderIsMale ? sf::Color(230, 230, 255) : sf::Color(255, 230, 230);
         // quad.c1 = genderIsMale ? sf::Color(230, 230, 255) : sf::Color(255, 230, 230);
@@ -71,18 +81,18 @@ void Entity::pushQuads() {
 
         if (Graphics::showWireframe) {
             Graphics::insertUserWireframe(
-                Camera::getScreenPos(position),
-                Camera::getScreenPos(position),
-                Camera::getScreenPos(position) + Camera::getAngleVector(0.3, heading),
-                Camera::getScreenPos(position) + Camera::getAngleVector(0.3, heading),
-                sf::Color::Yellow, sf::Color::Black
+                    Camera::getScreenPos(position),
+                    Camera::getScreenPos(position),
+                    Camera::getScreenPos(position) + Camera::getAngleVector(0.3, heading),
+                    Camera::getScreenPos(position) + Camera::getAngleVector(0.3, heading),
+                    sf::Color::Yellow, sf::Color::Black
             );
             Graphics::insertUserWireframe(
-                Camera::getScreenPos(position) + UIVec(5., 0.) + UIVec(0, -zPosition * Camera::getScale()),
-                Camera::getScreenPos(position) + UIVec(0., 5.) + UIVec(0, -zPosition * Camera::getScale()),
-                Camera::getScreenPos(position) + UIVec(-5., 0.) + UIVec(0, -zPosition * Camera::getScale()),
-                Camera::getScreenPos(position) + UIVec(0., -5.) + UIVec(0, -zPosition * Camera::getScale()),
-                sf::Color::Magenta, sf::Color::Black
+                    Camera::getScreenPos(position) + UIVec(5., 0.) + UIVec(0, -zPosition * Camera::getScale()),
+                    Camera::getScreenPos(position) + UIVec(0., 5.) + UIVec(0, -zPosition * Camera::getScale()),
+                    Camera::getScreenPos(position) + UIVec(-5., 0.) + UIVec(0, -zPosition * Camera::getScale()),
+                    Camera::getScreenPos(position) + UIVec(0., -5.) + UIVec(0, -zPosition * Camera::getScale()),
+                    sf::Color::Magenta, sf::Color::Black
             );
         }
     }

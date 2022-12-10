@@ -34,24 +34,24 @@ int main() {
 
     std::shared_ptr<Player> player(new Player);
     player->id = "player$player";
-    auto& player_e = game.insertEntity(player);
+    auto &player_e = game.insertEntity(player);
     game.setPlayer(player_e);
 
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 4; i++) {
         std::shared_ptr<Duck> duck(new Duck);
         duck->id = game.newId(DUCK);
-        game.insertEntity(duck);
         duck->position.x = i;
         duck->position.y = 2.;
         duck->genderIsMale = i & 0b1;
+        game.insertEntity(duck);
     }
 
     // game.load();
-    
+
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("tilemap.png"))
         debug << "failed to load tilemap.png";
-    else 
+    else
         debug << "maximum texture size: " << sf::Texture::getMaximumSize() << "\n";
     tilemap.setSmooth(true);
 
@@ -62,11 +62,10 @@ int main() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == sf::Event::Resized) 
+            if (event.type == sf::Event::Resized)
                 Graphics::resizeView(event.size.width, event.size.height);
             if (event.type == sf::Event::KeyPressed) {
                 game.controls.handleKeyPress(event.key.code);
-                
             }
             if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code == sf::Keyboard::Right) {
@@ -79,7 +78,7 @@ int main() {
             }
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Button::Left) {
-                    for (auto duck : game.entities) {
+                    for (auto duck: game.entities) {
                         if (duck.second->type == DUCK) {
                             Action a(duck.second, Timer::getNow(), DUCK_DUCKWALK_TO_UNTIL);
                             a.argCoord[0].x = Camera::getMouseCoord().x + (getRand() - .5);
@@ -100,11 +99,11 @@ int main() {
         UIRect rectWindow(sf::FloatRect(0, 0, window.getView().getSize().x, window.getView().getSize().y));
         // UIRect rectWindow(sf::FloatRect(window.getView().getSize().x / 8., window.getView().getSize().y / 8., window.getView().getSize().x / 4. * 3., window.getView().getSize().y / 4. * 3.));
         Camera::setViewport(rectWindow);
-        
+
         Graphics::clearQuadsArray();
 
         Profiler::timeSplit("move");
-        UIVec moveVec;        
+        UIVec moveVec;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
             moveVec.y -= 1.;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
@@ -114,7 +113,8 @@ int main() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
             moveVec.x += 1.;
         if (moveVec.len(UIVec()) > .1)
-            game.player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())) / coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).len() * 4.;
+            game.player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())) /
+                                         coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).len() * 4.;
         else
             game.player->slideVelocity = coord();
 
@@ -126,7 +126,7 @@ int main() {
         //     player->velocity = 0.;
 
         player->heading = player->position.angle(Camera::getMouseCoord());
-        
+
         // player->heading += double(sf::Mouse::getPosition(window).x) / -200.;
         // sf::Mouse::setPosition(sf::Vector2i(0, sf::Mouse::getPosition(window).y), window);
         Profiler::timeSplit("update");
@@ -137,13 +137,13 @@ int main() {
         Profiler::timeSplit("render");
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
 
-        
+
         debugGraphs[0].newGraphEntry(game.entities.size());
         debugGraphs[1].newGraphEntry(game.actionList.size());
         debugGraphs[2].newGraphEntry(Graphics::getQuadCount());
         debugGraphs[3].newGraphEntry(game.updateTime);
         debugGraphs[4].newGraphEntry(game.entities.size());
-        
+
         Profiler::timeSplit("post");
         Graphics::setFont(1);
         Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::White, 24, UIVec(10, 30), 0., sf::Color::Black, 4.);
