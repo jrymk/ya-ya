@@ -322,7 +322,7 @@ void Game::save() {
     std::ofstream fout(defaultFilePath);
     if(!fout.is_open()) std::cerr << "file saving failed";
 
-    fout << Serialization::serialize<std::map<std::string, Entity*> >(entities);
+    fout << Serialization::serialize<std::map<std::string, std::shared_ptr<Entity> > >(entities);
     if(fout.bad()) std::cerr << "file saving failed";
     fout.close();
 }
@@ -334,8 +334,6 @@ void Game::load(const char* filepath) {
     std::string str;
     fin >> str;
     if(fin.bad()) std::cerr << "file loading failed";
-    //Serialization::deserialize<std::map<std::string, Entity*>>(entities, str);
-    //for(auto& p : ducks) entities.insert(p);
 
     fin.close();
 }
