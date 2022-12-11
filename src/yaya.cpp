@@ -3,6 +3,8 @@
 #include "utilities.h"
 #include "game.h"
 #include "player.h"
+#include "duck.h"
+#include "egg.h"
 
 /**
  * Key definitions
@@ -10,8 +12,9 @@
  * F2: reset graph min max
  * F3: clear debug output
  * F4: toggle debug out of sight
- * F5: lay eggs
+ * F5: duckwalk to cursor
  * F6: toggle action list
+ * F7: destroy all ducks
  * F11: toggle fullscreen
  */
 
@@ -31,23 +34,29 @@ int main() {
     debugGraphs.push_back(DebugGraph("entities(long)", 200, 150, 1000000));
 
     Game game;
-    /*
-    std::shared_ptr<Player> player(new Player);
+
+
+    std::shared_ptr<Player> player(new Player(&game));
     player->id = "player$player";
+    player->opacity = 1.;
     auto &player_e = game.insertEntity(player);
     game.setPlayer(player_e);
 
-    for (int i = 0; i < 100; i++){
-        std::shared_ptr<Duck> duck(new Duck);
-        duck->id = game.newId(DUCK);
-        game.insertEntity(duck);
-        duck->position.x = -5.0 + i % 10;
-        duck->position.y = -5.0 + i / 10;
-        duck->genderIsMale = true;
+//    game.load();
+
+
+    for (int i = 0; i < 100; i++) {
+        std::shared_ptr<Egg> egg(new Egg(&game));
+        egg->id = game.newId(EGG);
+        egg->opacity = 1.;
+        egg->position.x = -5.0 + i % 10;
+        egg->position.y = -5.0 + i / 10;
+        egg->genderIsMale = i & 0b1;
+        egg->fertilized = true;
+        game.insertEntity(egg);
     }
-    */
-    game.load();
-    
+
+
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("tilemap.png"))
         debug << "failed to load tilemap.png";
@@ -55,7 +64,7 @@ int main() {
         debug << "maximum texture size: " << sf::Texture::getMaximumSize() << "\n";
     tilemap.setSmooth(true);
 
-    
+
     while (window.isOpen()) {
         Profiler::timeSplit("event");
         sf::Event event;
@@ -77,18 +86,7 @@ int main() {
                 // mouseWheelPosition += event.mouseWheel.delta;
             }
             if (event.type == sf::Event::MouseButtonPressed) {
-                if (event.mouseButton.button == sf::Mouse::Button::Left) {
-                    for (auto duck: game.entities) {
-                        if (duck.second->type == DUCK) {
-                            Action a(duck.second, Timer::getNow(), DUCK_DUCKWALK_TO_UNTIL);
-                            a.argCoord[0].x = Camera::getMouseCoord().x + (getRand() - .5);
-                            a.argCoord[0].y = Camera::getMouseCoord().y + (getRand() - .5);
-                            game.pushAction(a);
-                        }
-                    }
-                    // for (auto duck : game.ducks)
-                    //     duck.second->actions.push_back(Action(Timer::getNow(), "duckwalk_to_until " + toStr(Camera::getMouseCoord().x + (getRand() - .5)) + " " + toStr(Camera::getMouseCoord().y + (getRand() - .5))));
-                }
+
             }
         }
 

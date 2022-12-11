@@ -13,13 +13,11 @@ class Entity;
 
 enum Command {
     INIT,
-    GLOBAL_LAY_UNFERTILIZED_EGG, // entity e
-    GLOBAL_LAY_FERTILIZED_EGG, // entity e, bool gender
-    GLOBAL_HATCH,
-    GLOBAL_DESTROY, // string id
+    UNOWNED, // entity unowned_by, int slot
     GLOBAL_PROCESS_COLLISION, // entity e, entity f
-    GLOBAL_FIND_MATE_FEMALE,
-    GLOBAL_UNTIL_MATE_CONTACT, // entity e, entity mate
+    GLOBAL_DESTROY, // entity e
+    ENTITY_OWN_BY, // entity e, int slot
+    ENTITY_UNOWN,
     ENTITY_MOTION_FROZEN, // bool frozen
     ENTITY_HIGHLIGHTABLE, // bool highlightable
     ENTITY_COLLISION_PUSHABLE, // bool pushable
@@ -36,12 +34,11 @@ enum Command {
     DUCK_LOOP_LAY_EGGS,
     DUCK_LOOP_FIND_MATE,
     DUCK_DEATH,
+    DUCK_DUCKWALK_TO_UNTIL,
+    DUCK_UNTIL_MATE_CONTACT, // entity e, entity mate
     DUCK_HAVE_SEX_WITH, // entity with
     DUCK_FINISH_SEX, // entity with
-    DUCK_DUCKWALK_TO_UNTIL,
-    DUCK_RESULT_FIND_MATE_FEMALE, // entity e, coord pos
-    DUCK_HAVE_MATE_CONTACT, // entity mate
-    EGG_HATCH,
+    EGG_FORM_EMBRYO,
 };
 
 class Action {

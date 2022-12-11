@@ -3,21 +3,31 @@
 #define _EGG_H_
 
 #include "entity.h"
+#include "game.h"
 
 class Egg : public Entity {
 public:
     bool genderIsMale = true;
     bool fertilized = false;
 
-    void runAction(Action& action, std::vector<Action>& followUpActions) override;
+    void runAction(Action &action, std::vector<Action> &followUpActions) override;
 
     void initModel() override;
 
-    Egg();
+    Game* game;
+
+    Egg(Game* game);
+
+    enum InventorySlots {
+        EMBRYO,
+    };
 
     void customUpdate() override;
 
+    void setInventoryProps() override;
+
     std::string getDescriptionStr() override;
+
 };
 
 #endif

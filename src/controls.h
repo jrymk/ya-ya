@@ -13,7 +13,6 @@ class Controls {
     Game* game;
 
 public:
-    std::vector<std::shared_ptr<Entity>> inventory;
 
     Controls(Game* game);
 

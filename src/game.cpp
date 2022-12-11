@@ -12,6 +12,7 @@ Game::Game() :
 void Game::update() {
     Timer updateTimer;
     Profiler::timeSplit("gneighborsfinder");
+
     neighborsFinder.update();
 
     auto facing = controls.getFacingEntity(player);
@@ -30,93 +31,63 @@ void Game::update() {
         );
     }
     if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-        if (controls.inventory[0] == nullptr && facing != nullptr) {
+        if (player->inventory[Player::InventorySlots::LEFT_HAND] == nullptr && facing != nullptr) {
             debug << "picked up " << facing->id << "\n";
-            controls.inventory[0] = facing;
+            player->inventory[Player::InventorySlots::LEFT_HAND] = facing;
             {
-                Action a(controls.inventory[0], Timer::getNow(), ENTITY_MOTION_FROZEN);
+                Action a(player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_MOTION_FROZEN);
                 a.argBool[0] = true;
                 pushAction(a);
             }
             {
-                Action a(controls.inventory[0], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
+                Action a(player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
                 a.argBool[0] = false;
-                pushAction(a);
-            }
-        }
-        if (controls.inventory[0] != nullptr) {
-            coord pos = player->position
-                        + coord(Camera::getAngleVectorUntransformed(0.4, player->heading + PI / 4).x, Camera::getAngleVectorUntransformed(0.4, player->heading + PI / 4).y);
-            {
-                Action a(controls.inventory[0], Timer::getNow(), ENTITY_MOVE_TO_APPROACH);
-                a.argCoord[0] = pos;
-                a.argFloat[0] = .00000005;
-                pushAction(a);
-            }
-            {
-                Action a(controls.inventory[0], Timer::getNow(), ENTITY_HEADING_INSTANT);
-                a.argFloat[0] = player->heading;
                 pushAction(a);
             }
         }
     } else {
-        if (controls.inventory[0] != nullptr) {
+        if (player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr) {
             {
-                Action a(controls.inventory[0], Timer::getNow(), ENTITY_MOTION_FROZEN);
+                Action a(player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_MOTION_FROZEN);
                 a.argBool[0] = false;
                 pushAction(a);
             }
             {
-                Action a(controls.inventory[0], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
+                Action a(player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
                 a.argBool[0] = true;
                 pushAction(a);
             }
-            controls.inventory[0] = nullptr;
+            player->inventory[Player::InventorySlots::LEFT_HAND] = nullptr;
         }
     }
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
-        if (controls.inventory[1] == nullptr && facing != nullptr) {
-            controls.inventory[1] = facing;
+        if (player->inventory[Player::InventorySlots::RIGHT_HAND] == nullptr && facing != nullptr) {
+            player->inventory[Player::InventorySlots::RIGHT_HAND] = facing;
             {
-                Action a(controls.inventory[1], Timer::getNow(), ENTITY_MOTION_FROZEN);
+                Action a(player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_MOTION_FROZEN);
                 a.argBool[0] = true;
                 pushAction(a);
             }
             {
-                Action a(controls.inventory[1], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
+                Action a(player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
                 a.argBool[0] = false;
-                pushAction(a);
-            }
-        }
-        if (controls.inventory[1] != nullptr) {
-            coord pos = player->position
-                        + coord(Camera::getAngleVectorUntransformed(0.4, player->heading - PI / 4).x, Camera::getAngleVectorUntransformed(0.4, player->heading - PI / 4).y);
-            {
-                Action a(controls.inventory[1], Timer::getNow(), ENTITY_MOVE_TO_APPROACH);
-                a.argCoord[0] = pos;
-                a.argFloat[0] = .00000005;
-                pushAction(a);
-            }
-            {
-                Action a(controls.inventory[1], Timer::getNow(), ENTITY_HEADING_INSTANT);
-                a.argFloat[0] = player->heading;
                 pushAction(a);
             }
         }
     } else {
-        if (controls.inventory[1] != nullptr) {
+        if (player->inventory[Player::InventorySlots::RIGHT_HAND] != nullptr) {
             {
-                Action a(controls.inventory[1], Timer::getNow(), ENTITY_MOTION_FROZEN);
+                Action a(player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_MOTION_FROZEN);
                 a.argBool[0] = false;
                 pushAction(a);
             }
             {
-                Action a(controls.inventory[1], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
+                Action a(player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
                 a.argBool[0] = true;
                 pushAction(a);
             }
-            controls.inventory[1] = nullptr;
+            player->inventory[Player::InventorySlots::RIGHT_HAND] = nullptr;
         }
     }
 
@@ -130,6 +101,11 @@ void Game::update() {
     }
     Profiler::timeSplit("grunactions");
     runActions();
+
+    for (auto &entity: entities) {
+        entity.second->setInventoryProps();
+    }
+
     updateTime = updateTimer.elapsed();
 }
 
@@ -201,51 +177,19 @@ void Game::runAction(Action &action, std::vector<Action> &followUpActions) {
     }
     // global actions
     switch (action.command) {
-        case GLOBAL_LAY_UNFERTILIZED_EGG: {
-            std::shared_ptr<Egg> egg(new Egg);
-            egg->id = newId(EGG);
-            egg->position.x = action.argEntity[0]->position.x + 0.2 * (getRand() - .5);
-            egg->position.y = action.argEntity[0]->position.y + 0.2 * (getRand() - .5);
-            auto &egg_ptr = insertEntity(egg);
-            pushAction(Action(egg_ptr, Timer::getNow(), ENTITY_HOP));
-            break;
-        }
-        case GLOBAL_LAY_FERTILIZED_EGG: {
-            std::shared_ptr<Egg> egg(new Egg);
-            egg->id = newId(EGG);
-            egg->position.x = action.argEntity[0]->position.x + 0.2 * (getRand() - .5);
-            egg->position.y = action.argEntity[0]->position.y + 0.2 * (getRand() - .5);
-            egg->genderIsMale = action.argBool[0];
-            egg->fertilized = true;
-            auto &egg_ptr = insertEntity(egg);
-            pushAction(Action(egg_ptr, Timer::getNow(), ENTITY_HOP));
-            pushAction(Action(egg_ptr, Timer::getNow() + getRand() * 10., EGG_HATCH));
-            break;
-        }
-        case GLOBAL_HATCH: { /// TODO: fix hatch logic to egg entity based
-            if (getRand() > .8) // 60% success
-                return;
-            std::shared_ptr<Duck> duck(new Duck);
-            duck->id = newId(DUCK);
-            duck->position = action.argCoord[0] + coord(0.05 * (getRand() - .5), 0.05 * (getRand() - .5));
-            duck->genderIsMale = action.argBool[0];
-            auto &duck_ptr = insertEntity(duck);
-            pushAction(Action(duck_ptr, Timer::getNow(), ENTITY_HOP));
-
-            Action a(duck_ptr, Timer::getNow() + .5, DUCK_DUCKWALK_TO_UNTIL);
-            a.argCoord[0].x = action.argCoord[0].x + 3. * (getRand() - 0.5);
-            a.argCoord[0].y = action.argCoord[0].y + 3. * (getRand() - 0.5);
-            pushAction(a);
-            break;
-        }
-        case GLOBAL_DESTROY: {
-            destroyEntity(action.argString[0]);
-            break;
-        }
         case GLOBAL_PROCESS_COLLISION: {
             if (!action.argEntity[0]->collisionCollidable || !action.argEntity[1]->collisionPushable)
                 return;
+            if (action.argEntity[0]->ownedBy == action.argEntity[1] || action.argEntity[1]->ownedBy == action.argEntity[0])
+                return;
+//            if ((action.argEntity[0]->type == EGG && action.argEntity[1]->type == DUCK) || (action.argEntity[1]->type == EGG && action.argEntity[0]->type == DUCK))
+//                return;
+
             coord delta = action.argEntity[1]->position - action.argEntity[0]->position;
+            if (delta.len() < .00001) {
+                delta = coord::getRandCoord();
+//                debug << "Warning: Processing collision on two stacked entities\n";
+            }
             coord move = delta / delta.len() / delta.len() / 3.;
 //            if (action.argEntity[0]->historyPosition.size() >= 2 &&
 //                (action.argEntity[0]->historyPosition[1].second.len(action.argEntity[0]->historyPosition[0].second)) /  action.argEntity[0]->historyPosition[1].first.elapsed(action.argEntity[0]->historyPosition[0].first) < 0.1) {
@@ -264,44 +208,9 @@ void Game::runAction(Action &action, std::vector<Action> &followUpActions) {
             }
             break;
         }
-        case GLOBAL_FIND_MATE_FEMALE: {
-            auto result = neighborsFinder.findNeighbors(action.argEntity[0]->position, 8.);
-            std::shared_ptr<Entity> closest;
-            std::vector<std::shared_ptr<Entity>> candidates;
-            for (auto f: result) {
-                if (f->type != DUCK)
-                    continue;
-                auto duck = std::dynamic_pointer_cast<Duck>(f);
-                if (!duck)
-                    continue;
-                if (!duck->genderIsMale) {
-                    if (!closest || f->position.len(action.argEntity[0]->position) < closest->position.len(action.argEntity[0]->position))
-                        closest = f;
-                    candidates.push_back(f);
-                }
-            }
-            if (closest) {
-                if (getRand() < .4) // change mate?
-                    closest = candidates[std::min(int(getRand() * candidates.size()), int(candidates.size() - 1))];
-                Action a(action.argEntity[0], Timer::getNow(), DUCK_RESULT_FIND_MATE_FEMALE);
-                a.argEntity[0] = closest;
-                a.argCoord[0] = closest->position;
-                pushAction(a);
-            }
+        case GLOBAL_DESTROY:
+            destroyEntity(action.argEntity[0]->id);
             break;
-        }
-        case GLOBAL_UNTIL_MATE_CONTACT: {
-            if (action.argEntity[0]->position.len(action.argEntity[1]->position) < .2) {
-                Action a(action.argEntity[0], Timer::getNow(), DUCK_HAVE_MATE_CONTACT);
-                a.argEntity[0] = action.argEntity[1];
-                followUpActions.push_back(a);
-            } else {
-                Action a(Timer::getNow() + .1, GLOBAL_UNTIL_MATE_CONTACT);
-                a.argEntity[0] = action.argEntity[0];
-                a.argEntity[1] = action.argEntity[1];
-                followUpActions.push_back(a);
-            }
-        }
     }
 }
 
@@ -331,7 +240,7 @@ std::string Game::newId(EntityType type) {
             id = "duck$" + randomName();
             break;
         case EGG:
-            id = "EGG$" + randomId();
+            id = "egg$" + randomId();
             break;
     }
     if (entities.find(id) == entities.end())
@@ -411,7 +320,7 @@ void Game::save() {
     if (!fout.is_open()) std::cerr << "file saving failed";
 
     fout << Serialization::serialize<Game>(*this);
-    if(fout.bad()) std::cerr << "file saving failed";
+    if (fout.bad()) std::cerr << "file saving failed";
     fout.close();
 }
 
@@ -422,23 +331,23 @@ void Game::load(const char* filepath) {
     std::string str;
     fin >> str;
     Serialization::deserialize(*this, str);
-    if(fin.bad()) std::cerr << "file loading failed";
+    if (fin.bad()) std::cerr << "file loading failed";
 
-    for(auto& e : entities){
-        switch(e.second -> type){
-        case PLAYER: {
-            std::shared_ptr<Player> tmp(new Player(e.second));
-            e.second.reset();
-            e.second = tmp;
-            player = tmp;
-            break;
-        }
-        case DUCK: {
-            std::shared_ptr<Duck> tmp(new Duck(e.second));
-            e.second.reset();
-            e.second = tmp;
-            break;
-        }
+    for (auto &e: entities) {
+        switch (e.second->type) {
+            case PLAYER: {
+                std::shared_ptr<Player> tmp(new Player(this, e.second));
+                e.second.reset();
+                e.second = tmp;
+                player = tmp;
+                break;
+            }
+            case DUCK: {
+                std::shared_ptr<Duck> tmp(new Duck(this, e.second));
+                e.second.reset();
+                e.second = tmp;
+                break;
+            }
         }
         pushAction(Action(e.second, Timer::getNow(), INIT));
     }

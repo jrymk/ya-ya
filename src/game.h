@@ -8,8 +8,6 @@
 #include <queue>
 #include <memory>
 #include "entity.h"
-//#include "duck.h"
-//#include "egg.h"
 #include "serialization.h"
 #include "controls.h"
 #include "neighborsfinder.h"

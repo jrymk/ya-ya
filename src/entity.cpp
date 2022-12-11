@@ -6,6 +6,25 @@
 
 void Entity::runActionEntity(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
+        case ENTITY_OWN_BY:
+            ownedBy = action.argEntity[0];
+            ownedSlot = action.argInt[0];
+            action.argEntity[0]->inventory[action.argInt[0]] = action.entity;
+            break;
+        case ENTITY_UNOWN: {
+            if (ownedBy == nullptr)
+                return;
+            {
+                Action a(action.entity, Timer::getNow(), UNOWNED);
+                a.argEntity[0] = ownedBy;
+                a.argInt[0] = ownedSlot;
+                followUpActions.push_back(a);
+            }
+            ownedBy->inventory[ownedSlot] = nullptr;
+            ownedBy = nullptr;
+            opacity = 1.;
+            break;
+        }
         case ENTITY_MOTION_FROZEN:
             motionFrozen = action.argBool[0];
             break;
@@ -29,7 +48,7 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             break;
         case ENTITY_HOP:
             if (zPosition == 0.)
-                zVelocity = .2;
+                zVelocity = .3;
             break;
         case ENTITY_SLIDE_INSTANT:
             position = position + action.argCoord[0];
@@ -73,10 +92,12 @@ void Entity::pushQuads() {
         quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) + position) +
                   UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
         quad.zDepth += (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
-        // quad.c0 = genderIsMale ? sf::Color(230, 230, 255) : sf::Color(255, 230, 230);
-        // quad.c1 = genderIsMale ? sf::Color(230, 230, 255) : sf::Color(255, 230, 230);
-        // quad.c2 = genderIsMale ? sf::Color(230, 230, 255) : sf::Color(255, 230, 230);
-        // quad.c3 = genderIsMale ? sf::Color(230, 230, 255) : sf::Color(255, 230, 230);
+
+        quad.c0 = sf::Color(255, 255, 255, opacity * 255);
+        quad.c1 = sf::Color(255, 255, 255, opacity * 255);
+        quad.c2 = sf::Color(255, 255, 255, opacity * 255);
+        quad.c3 = sf::Color(255, 255, 255, opacity * 255);
+
         Graphics::insertQuad(quad);
 
         if (Graphics::showWireframe) {
@@ -134,6 +155,10 @@ Entity::~Entity() {
 }
 
 void Entity::runAction(Action &action, std::vector<Action> &followUpActions) {
+
+}
+
+void Entity::setInventoryProps() {
 
 }
 

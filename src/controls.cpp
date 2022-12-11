@@ -1,16 +1,15 @@
 #include "controls.h"
 #include "game.h"
 
-Controls::Controls(Game* game): 
-    game(game),
-    inventory(2, nullptr) {
+Controls::Controls(Game* game) :
+        game(game) {
 }
 
 std::shared_ptr<Entity> Controls::getFacingEntity(std::shared_ptr<Entity> player, EntityType filter) {
     auto nearby = game->neighborsFinder.findNeighbors(player->position, 2., filter);
     std::shared_ptr<Entity> facingEntity = nullptr;
     double bestScore = 1e8;
-    for (auto e : nearby) {
+    for (auto e: nearby) {
         if (e == player)
             continue;
         if (!e->facingHighlightable)
@@ -48,8 +47,24 @@ void Controls::handleKeyPress(enum sf::Keyboard::Key key) {
         debug << "Toggled debug out of sight: " << Graphics::debugOutOfSight << "\n";
     }
     if (key == sf::Keyboard::F6) {
-        // game.showActionList = !game.showActionList;
-        // debug << "Toggled action list: " << game.showActionList << "\n";
+        for (auto duck: game->entities) {
+            if (duck.second->type == DUCK) {
+                Action a(duck.second, Timer::getNow(), DUCK_DUCKWALK_TO_UNTIL);
+                a.argCoord[0].x = Camera::getMouseCoord().x + (getRand() - .5);
+                a.argCoord[0].y = Camera::getMouseCoord().y + (getRand() - .5);
+                game->pushAction(a);
+            }
+        }
+    }
+    if (key == sf::Keyboard::F7) {
+        for (auto &e: game->entities) {
+            if (e.second->type == EntityType::DUCK) {
+                Action a(Timer::getNow(), GLOBAL_DESTROY);
+                a.argEntity[0] = e.second;
+                game->pushAction(a);
+//                game->destroyEntity(e.second->id);
+            }
+        }
     }
     if (key == sf::Keyboard::F11) {
         graphicsIsFullscreen = !graphicsIsFullscreen;

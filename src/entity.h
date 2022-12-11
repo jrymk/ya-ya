@@ -12,7 +12,7 @@
 #include <deque>
 
 #define OUT_OF_SIGHT 500
-#define GRAVITY -1.
+#define GRAVITY -2.
 
 enum EntityType {
     ENTITY,
@@ -36,6 +36,10 @@ public:
     double lastUpdate = -1.;
     double elapsedSecs = 0.;
 
+    std::vector<std::shared_ptr<Entity>> inventory;
+    std::shared_ptr<Entity> ownedBy = nullptr;
+    int ownedSlot = 0;
+
     bool motionFrozen = false;
     bool collisionPushable = true;
     bool collisionCollidable = true;
@@ -51,6 +55,7 @@ public:
     bool facingHighlightable = true;
     bool selectable = true;
 
+    float opacity = 0.;
     std::vector<Graphics::Quad> model;
 
     void runActionEntity(Action &action, std::vector<Action> &followUpActions);
@@ -68,6 +73,8 @@ public:
     virtual std::string getDescriptionStr();
 
     virtual void customUpdate();
+
+    virtual void setInventoryProps();
 
     ~Entity();
 
