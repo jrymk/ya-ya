@@ -8,8 +8,8 @@
 #include <queue>
 #include <memory>
 #include "entity.h"
-#include "duck.h"
-#include "egg.h"
+//#include "duck.h"
+//#include "egg.h"
 #include "serialization.h"
 #include "controls.h"
 #include "neighborsfinder.h"
@@ -30,22 +30,22 @@ public:
 
     void update();
 
-    void setPlayer(std::shared_ptr<Entity>& player);
+    void setPlayer(std::shared_ptr<Entity> &player);
 
     void processCollisions();
 
     void runActions();
 
-    virtual void runAction(Action& action, std::vector<Action>& followUpActions);
+    virtual void runAction(Action &action, std::vector<Action> &followUpActions);
 
     std::shared_ptr<Entity> findEntity(std::string id);
 
-    void pushAction(const Action& action);
+    void pushAction(const Action &action);
 
     std::string newId(EntityType type);
 
     template<class T>
-    inline std::shared_ptr<Entity>& insertEntity(std::shared_ptr<T>& childPtr) {
+    inline std::shared_ptr<Entity> &insertEntity(std::shared_ptr<T> &childPtr) {
         if (childPtr->id == "undefined") {
             debug << "Entity insertion failed because name is undefined\n";
             return entities.end()->second;
@@ -54,8 +54,7 @@ public:
             auto ret = entities.insert({childPtr->id, childPtr});
             pushAction(Action(ret.first->second, Timer::getNow(), INIT));
             return ret.first->second;
-        }
-        else {
+        } else {
             debug << "Entity insertion failed because name \"" << childPtr->id << "\" is already taken\n";
             return entities.end()->second;
         }
@@ -66,14 +65,14 @@ public:
     void render();
 
     static constexpr const char* defaultFilePath = ".\\save.ya";
-    
+
     void save();
 
     void load(const char* filepath = defaultFilePath);
 
     constexpr static auto properties = std::make_tuple(
-        SaveUtilities::property(&Game::entities, "Gm.et"),
-        SaveUtilities::property(&Game::player, "Gm.pl")
+            SaveUtilities::property(&Game::entities, "Gm.et"),
+            SaveUtilities::property(&Game::player, "Gm.pl")
     );
 };
 

@@ -21,13 +21,15 @@ enum EntityType {
     EGG,
 };
 
+class Game;
+
 /// @brief Renderer and motion control for entities
 class Entity {
 public:
     std::string id = "undefined";
     EntityType type = ENTITY;
     std::pair<int, int> neighborsFinderMyTile = {-1e8, 1e8};
-    
+
     bool deleted = false;
 
     Timer entityTimer; // get elapsed per update
@@ -45,15 +47,15 @@ public:
     coord slideVelocity; // TODO: get rid of this
     double heading = 0.;
     double headingRotationSpeed = 0.;
-    
+
     bool facingHighlightable = true;
     bool selectable = true;
 
     std::vector<Graphics::Quad> model;
 
-    void runActionEntity(Action& action, std::vector<Action>& followUpActions);
+    void runActionEntity(Action &action, std::vector<Action> &followUpActions);
 
-    virtual void runAction(Action& action, std::vector<Action>& followUpActions);
+    virtual void runAction(Action &action, std::vector<Action> &followUpActions);
 
     virtual void initModel();
 
@@ -70,10 +72,10 @@ public:
     ~Entity();
 
     constexpr static auto properties = std::make_tuple(
-        SaveUtilities::property(&Entity::id, "Ey.id"),
-        SaveUtilities::property(&Entity::type, "Ey.tp"),
-        SaveUtilities::property(&Entity::position, "Ey.ps"),
-        SaveUtilities::property(&Entity::deleted, "Ey.dl")
+            SaveUtilities::property(&Entity::id, "Ey.id"),
+            SaveUtilities::property(&Entity::type, "Ey.tp"),
+            SaveUtilities::property(&Entity::position, "Ey.ps"),
+            SaveUtilities::property(&Entity::deleted, "Ey.dl")
     );
 };
 

@@ -1,5 +1,6 @@
 #include "duck.h"
 #include <iomanip>
+#include "game.h"
 
 void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
@@ -140,8 +141,8 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
         }
         case DUCK_DUCKWALK_TO_UNTIL: {
             if (position.len(action.argCoord[0]) > 2.) {
-                coord randTarget = action.argCoord[0] + coord((getRand() * 2. - 1.), (getRand() * 2. - 1.));
-                if (std::abs(subtractAngle(heading, randTarget.angle(position))) > 1)
+                coord randTarget = action.argCoord[0] + coord((getRand() * .3 - .15), (getRand() * .3 - .15));
+                if (std::abs(subtractAngle(heading, position.angle(randTarget))) > 1.)
                     heading = position.angle(randTarget) + .2 * (getRand() * .4 - .2);
                 headingRotationSpeed = -0.2 * subtractAngle(heading, position.angle(randTarget)) + (getRand() * .1 - .05);
                 velocity = 4. + (getRand() * 2. - 1.);
