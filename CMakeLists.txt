@@ -27,14 +27,10 @@ add_executable(yaya
         src/utilities.cpp
         )
 
-option(BUILD_SHARED_LIBS OFF)
-
 target_link_libraries(yaya PRIVATE sfml-graphics)
 target_compile_features(yaya PRIVATE cxx_std_17)
 
-if (WIN32 AND BUILD_SHARED_LIBS)
-    add_custom_command(TARGET yaya POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:yaya> $<TARGET_FILE_DIR:yaya> COMMAND_EXPAND_LISTS)
-endif()
+add_custom_command(TARGET yaya POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:yaya> $<TARGET_FILE_DIR:yaya> COMMAND_EXPAND_LISTS)
 
 install(TARGETS yaya)

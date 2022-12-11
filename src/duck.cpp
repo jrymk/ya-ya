@@ -172,7 +172,6 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                 a.argEntity[1] = action.argEntity[0];
                 followUpActions.push_back(a);
             }
-
             break;
         }
         case DUCK_HAVE_MATE_CONTACT: {
@@ -228,11 +227,11 @@ Duck::Duck() {
     initModel();
 }
 
-Duck::Duck(std::shared_ptr<Entity>& entity){
-    id = entity -> id;
-    type = entity -> type;
-    position = entity -> position;
-    deleted = entity -> deleted;
+Duck::Duck(std::shared_ptr<Entity> &entity) {
+    id = entity->id;
+    type = entity->type;
+    position = entity->position;
+    deleted = entity->deleted;
     initModel();
 }
 
