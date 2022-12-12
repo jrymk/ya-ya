@@ -40,6 +40,8 @@ struct coord {
 
     inline double len(const coord &r) { return std::sqrt(double((x - r.x) * (x - r.x) + (y - r.y) * (y - r.y))); }
 
+    inline coord unit() { return (*this) / (*this).len(); }
+
     inline double angle(const coord &r) { return std::acos(double(r.x - x) / len(r)) * ((r.y - y >= 0) ? double(1) : double(-1)); }
 
     inline static coord getRandCoord() { return coord(.01 * (getRand() - .5), .01 * (getRand() - .5)); }
