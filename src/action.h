@@ -35,6 +35,7 @@ enum Command {
     DUCK_LOOP_FIND_MATE,
     DUCK_DEATH,
     DUCK_DUCKWALK_TO_UNTIL,
+    DUCK_DUCKWALK_TO_DUCK,
     DUCK_UNTIL_MATE_CONTACT, // entity e, entity mate
     DUCK_HAVE_SEX_WITH, // entity with
     DUCK_FINISH_SEX, // entity with
@@ -46,6 +47,7 @@ public:
     bool ranFlag = false;
     bool deleteFlag = false;
     Timer time;
+    std::string caller = "";
 
     bool isGlobal = false;
     std::shared_ptr<Entity> entity;
@@ -57,8 +59,16 @@ public:
             : isGlobal(true), time(time), command(command) {
     }
 
+    inline Action(const Timer &time, Command command, const std::string &caller)
+            : isGlobal(true), time(time), command(command), caller(caller) {
+    }
+
     inline Action(std::shared_ptr<Entity> &entity, const Timer &time, Command command)
             : isGlobal(false), entity(entity), time(time), command(command) {
+    }
+
+    inline Action(std::shared_ptr<Entity> &entity, const Timer &time, Command command, const std::string &caller)
+            : isGlobal(false), entity(entity), time(time), command(command), caller(caller) {
     }
 
     bool argBool[8] = {0};
@@ -69,7 +79,7 @@ public:
     std::shared_ptr<Entity> argEntity[8];
     std::string argString[8];
 
-    inline bool operator<(const Action rhs) const {
+    inline bool operator<(const Action &rhs) const {
         if (deleteFlag != rhs.deleteFlag)
             return rhs.deleteFlag;
         return !(time < rhs.time);
