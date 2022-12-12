@@ -5,7 +5,7 @@
 
 void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
-        case ON_CREATION:
+        case ON_CREATION: // actual creation
             followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 25., DUCK_LOOP_WANDER);
             if (genderIsMale) {
                 followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 20., DUCK_LOOP_FIND_MATE);
@@ -13,16 +13,18 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                 followUpActions.emplace_back(action.entity, Timer::getNow() + 10. + getRand() * 40., DUCK_LOOP_LAY_EGGS);
             }
             followUpActions.emplace_back(action.entity, Timer::getNow(), ENTITY_HOP);
-            followUpActions.emplace_back(action.entity, Timer::getNow() + 50. + getRand() * 200., DUCK_DEATH);
+            followUpActions.emplace_back(action.entity, Timer::getNow() + 50. + getRand() * 200., DUCK_DEATH, "creation " + action.entity->id);
 
-//            position = action.argEntity[0]->position + coord::getRandCoord();
             {
                 Action a(action.entity, Timer::getNow() + .3, DUCK_DUCKWALK_TO_UNTIL);
                 a.argCoord[0].x = position.x + 3. * (getRand() - 0.5);
                 a.argCoord[0].y = position.y + 3. * (getRand() - 0.5);
                 followUpActions.push_back(a);
             }
+            opacity = 1.; // this is actual creation
             selectable = true;
+            collisionPushable = true;
+            collisionCollidable = true;
             break;
         case ON_UNOWNED:
 
@@ -37,7 +39,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
         }
         case DUCK_LOOP_LAY_EGGS: { // female only
             if (fertilized) {
-                {
+                if (inventory[InventorySlots::EGG_0] == nullptr) {
                     std::shared_ptr<Egg> egg(new Egg(game));
                     egg->id = game->newId(EGG);
                     egg->position = position + coord::getRandCoord();
@@ -56,7 +58,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                     }
                 }
 
-                if (getRand() < .1) {// 10% a twin!
+                if (getRand() < .1 && inventory[InventorySlots::EGG_1] == nullptr) {// 10% a twin!
                     std::shared_ptr<Egg> egg(new Egg(game));
                     egg->id = game->newId(EGG);
                     egg->position = position + coord::getRandCoord();
@@ -117,12 +119,12 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                         closest = candidates[std::min(int(getRand() * candidates.size()), int(candidates.size() - 1))];
 
                     {
-                        Action a(action.entity, Timer::getNow() + .1, DUCK_DUCKWALK_TO_UNTIL);
-                        a.argCoord[0] = closest->position;
+                        Action a(action.entity, Timer::getNow() + .1, DUCK_DUCKWALK_TO_DUCK);
+                        a.argEntity[0] = closest;
                         followUpActions.push_back(a);
                     }
                     {
-                        Action a(Timer::getNow() + .1, DUCK_UNTIL_MATE_CONTACT);
+                        Action a(action.entity, Timer::getNow() + .1, DUCK_UNTIL_MATE_CONTACT);
                         a.argEntity[0] = closest;
                         followUpActions.push_back(a);
                     }
@@ -132,7 +134,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
             break;
         }
         case DUCK_UNTIL_MATE_CONTACT: {
-            if (position.len(action.argEntity[0]->position) < .2) { // have contact
+            if (position.len(action.argEntity[0]->position) < .35) { // have contact (minimal sexage distance)
                 {
                     Action a(action.argEntity[0], Timer::getNow() + .3, DUCK_HAVE_SEX_WITH);
                     a.argEntity[0] = action.entity; // me
@@ -144,10 +146,11 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                     followUpActions.push_back(a);
                 }
             } else {
-                Action a(Timer::getNow() + .1, DUCK_UNTIL_MATE_CONTACT);
+                Action a(action.entity, Timer::getNow() + .1, DUCK_UNTIL_MATE_CONTACT);
                 a.argEntity[0] = action.argEntity[0];
                 followUpActions.push_back(a);
             }
+            break;
         }
         case DUCK_DEATH: {
             for (int i = 0; i < 10; i++) {
@@ -165,18 +168,14 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                 followUpActions.push_back(d);
             }
             {
-                Action a(Timer::getNow() + .5, GLOBAL_DESTROY);
+                Action a(Timer::getNow() + .5, GLOBAL_DESTROY, "death " + action.entity->id);
                 a.argEntity[0] = action.entity;
                 followUpActions.push_back(a);
             }
             break;
         }
         case DUCK_HAVE_SEX_WITH: {
-            {
-                Action a(action.entity, Timer::getNow(), ENTITY_MOTION_FROZEN);
-                a.argBool[0] = true;
-                followUpActions.push_back(a);
-            }
+            motionFrozen = true;
 //            for (int i = 0; i < 20; i++) {
 //                Action a(action.entity, Timer::getNow() + .1 * i, ENTITY_SLIDE_INSTANT);
 //                a.argCoord[0] = coord(0.05, 0.);
@@ -256,6 +255,28 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
             }
             break;
         }
+        case DUCK_DUCKWALK_TO_DUCK: {
+            if (position.len(action.argEntity[0]->position) > 2.) {
+                coord randTarget = action.argEntity[0]->position;
+                if (std::abs(subtractAngle(heading, position.angle(randTarget))) > 1.)
+                    heading = position.angle(randTarget) + .2 * (getRand() * .4 - .2);
+                headingRotationSpeed = -0.2 * subtractAngle(heading, position.angle(randTarget)) + (getRand() * .1 - .05);
+                velocity = 4. + (getRand() * 2. - 1.);
+            } else {
+                heading = position.angle(action.argEntity[0]->position);
+                velocity = 3. + (getRand() * 2. - 1.);
+            }
+
+            if (position.len(action.argEntity[0]->position) < .3) {
+                velocity = 0.;
+                headingRotationSpeed = 0.;
+            } else {
+                Action a(action.entity, Timer::getNow() + 0.2 * std::sqrt(position.len(action.argEntity[0]->position)), DUCK_DUCKWALK_TO_DUCK);
+                a.argEntity[0] = action.argEntity[0];
+                followUpActions.push_back(a);
+            }
+            break;
+        }
     }
 }
 
@@ -319,6 +340,65 @@ void Duck::customUpdate() {
     }
 }
 
+void Duck::setInventoryProps() {
+    if (inventory.size() == inventory_last.size()) {
+        for (int slot = 0; slot < inventory.size(); slot++) {
+            if (!(!inventory_last[slot] && inventory[slot]))
+                continue;
+            /// ON CAPTURE
+            switch (slot) {
+                case InventorySlots::EGG_0:
+                case InventorySlots::EGG_1:
+                    inventory[slot]->motionFrozen = true;
+                    inventory[slot]->selectable = false;
+                    inventory[slot]->opacity = .3;
+                    inventory[slot]->scale = .6;
+                    break;
+            }
+        }
+    }
+    for (int slot = 0; slot < inventory.size(); slot++) {
+        if (!inventory[slot])
+            continue;
+        /// ON HOLD
+        switch (slot) {
+            case InventorySlots::EGG_0:
+            case InventorySlots::EGG_1:
+                coord pos = position + coord::getAngleVec((slot == InventorySlots::EGG_0) ? -.1 : -.2, heading);
+                {
+                    Action a(inventory[slot], Timer::getNow(), ENTITY_MOVE_TO_APPROACH);
+                    a.argCoord[0] = pos;
+                    a.argFloat[0] = .0000000005;
+                    game->pushAction(a);
+                }
+                {
+                    Action a(inventory[slot], Timer::getNow(), ENTITY_HEADING_INSTANT);
+                    a.argFloat[0] = heading;
+                    game->pushAction(a);
+                }
+                break;
+        }
+    }
+    if (inventory.size() == inventory_last.size()) {
+        for (int slot = 0; slot < inventory.size(); slot++) {
+            if (!(inventory_last[slot] && !inventory[slot]))
+                continue;
+            /// ON RELEASE
+            switch (slot) {
+                case InventorySlots::EGG_0:
+                case InventorySlots::EGG_1:
+                    inventory_last[slot]->motionFrozen = false;
+                    inventory_last[slot]->selectable = true;
+                    inventory_last[slot]->opacity = 1.;
+                    inventory_last[slot]->scale = 1.;
+                    break;
+            }
+        }
+    }
+
+    inventory_last = inventory;
+}
+
 std::string Duck::getDescriptionStr() {
     std::stringstream ss;
     ss << "id: " << id << "\n";
@@ -329,3 +409,4 @@ std::string Duck::getDescriptionStr() {
     ss << "fertilized: " << (fertilized ? "true" : "false") << "\n";
     return ss.str();
 }
+

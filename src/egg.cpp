@@ -10,6 +10,7 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
             break;
         case ON_UNOWNED: // pop out of duck's ass
             followUpActions.push_back(Action(action.entity, Timer::getNow(), ENTITY_HOP));
+            opacity = 1.;
             break;
         case EGG_FORM_EMBRYO:
             if (getRand() > .9) { // 90% success
@@ -20,9 +21,12 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
             {
                 std::shared_ptr<Duck> duck(new Duck(game)); // this is a duck that shouldn't look like a duck yet at all
                 duck->id = game->newId(DUCK);
+//                duck->opacity = 1.;
                 duck->position = position + coord::getRandCoord();
                 duck->genderIsMale = genderIsMale;
                 duck->selectable = false;
+                duck->collisionPushable = false;
+                duck->collisionCollidable = false;
                 auto &duck_ptr = game->insertEntity(duck, true); // it will be the creator's responsibility to suppress init if the entity is being pregenerated
                 {
                     Action a(duck_ptr, Timer::getNow(), ENTITY_OWN_BY);
@@ -43,7 +47,7 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
                 } else {
                     double t = 4. + 4. * getRand();
                     {
-                        Action a(Timer::getNow() + t, GLOBAL_DESTROY); // DIE
+                        Action a(Timer::getNow() + t, GLOBAL_DESTROY, "egg " + duck_ptr->id); // DIE
                         a.argEntity[0] = duck_ptr;
                         followUpActions.push_back(a);
                     }

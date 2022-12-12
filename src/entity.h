@@ -58,6 +58,7 @@ public:
     bool selectable = true;
 
     float opacity = 0.;
+    float scale = 1.;
     std::vector<Graphics::Quad> model;
 
     void runActionEntity(Action &action, std::vector<Action> &followUpActions);

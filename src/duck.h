@@ -27,6 +27,8 @@ public:
 
     void customUpdate() override;
 
+    void setInventoryProps() override;
+
     std::string getDescriptionStr() override;
 
     constexpr static auto properties = std::make_tuple(  // reminder: update constructor

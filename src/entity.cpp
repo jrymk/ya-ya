@@ -82,13 +82,13 @@ void Entity::initModel() {}
 
 void Entity::pushQuads() {
     for (auto quad: model) {
-        quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) + position) +
+        quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) * scale + position) +
                   UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
-        quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + position) +
+        quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) * scale + position) +
                   UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
-        quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + position) +
+        quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) * scale + position) +
                   UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
-        quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) + position) +
+        quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) * scale + position) +
                   UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
         quad.zDepth += (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
 
