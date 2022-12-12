@@ -75,7 +75,8 @@ void Game::runActions() {
     while (!actionList.empty()) {
         Action action = actionList.top();
         if (action.time.elapsed() >= 0 && !actionList.top().ranFlag) { // started
-//            std::cerr << std::right << std::setw(10) << std::setprecision(3) << std::fixed << Timer::getGlobalStart().elapsed(action.time) << "s  " << std::left << std::setw(20) << (action.isGlobal ? "global" : action.entity->id) << "  " << action.command << "\n";
+//            std::cerr << std::right << std::setw(10) << std::setprecision(3) << std::fixed << Timer::getGlobalStart().elapsed(action.time) << "s  " << std::left << std::setw(20)
+//                      << (action.isGlobal ? "global" : action.entity->id) << "  " << std::setw(5) << action.command << "  " << action.caller << "\n";
             runAction(action, followUpActions);
             actionList.pop();
         } else
@@ -86,7 +87,6 @@ void Game::runActions() {
 }
 
 void Game::runAction(Action &action, std::vector<Action> &followUpActions) {
-    // debug << std::setw(100) << action.action << std::setw(20) << action.entity << "\t" << (action.entity == nullptr ? "global" : action.entity->id) << std::endl;
     if (!action.isGlobal) {
         action.entity->runActionEntity(action, followUpActions); // first go through entity
         return;
@@ -127,6 +127,8 @@ void Game::runAction(Action &action, std::vector<Action> &followUpActions) {
         case GLOBAL_DESTROY:
             destroyEntity(action.argEntity[0]->id);
             break;
+        default:
+            debug << "Error: unknown command for global action\n";
     }
 }
 

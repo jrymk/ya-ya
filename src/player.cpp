@@ -109,7 +109,12 @@ void Player::customUpdate() {
         position.x += velocity * std::cos(heading) * elapsedSecs;
         position.y += velocity * std::sin(heading) * elapsedSecs;
         position = position + slideVelocity * elapsedSecs;
+        if (zPosition > 0)
+            zVelocity += GRAVITY * elapsedSecs;
+        zPosition += zVelocity;
+        zPosition = std::max(zPosition, 0.);
+        if (zPosition == 0.)
+            zVelocity = 0.;
 //    debug << "custom updated " << slideVelocity.x << ", " << slideVelocity.y << "\n";
     }
 }
-

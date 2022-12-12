@@ -15,6 +15,7 @@ class Controls {
     std::shared_ptr<Entity> getFacingEntity(std::shared_ptr<Entity> player, EntityType filter = ENTITY);
 
 public:
+    int dirPadPress = 0b0000; // right left down up
     std::shared_ptr<Entity> facingEntity;
 
     Controls(Game* game);

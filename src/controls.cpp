@@ -80,6 +80,36 @@ void Controls::handleKeyPress(sf::Event &event) {
                 graphicsIsFullscreen = !graphicsIsFullscreen;
                 Graphics::createWindow(graphicsIsFullscreen);
                 break;
+
+            case sf::Keyboard::W:
+                dirPadPress |= 0b0001;
+                break;
+            case sf::Keyboard::S:
+                dirPadPress |= 0b0010;
+                break;
+            case sf::Keyboard::A:
+                dirPadPress |= 0b0100;
+                break;
+            case sf::Keyboard::D:
+                dirPadPress |= 0b1000;
+                break;
+        }
+    }
+    if (event.type == sf::Event::KeyReleased) {
+        switch (event.key.code) {
+
+            case sf::Keyboard::W:
+                dirPadPress &= ~0b0001;
+                break;
+            case sf::Keyboard::S:
+                dirPadPress &= ~0b0010;
+                break;
+            case sf::Keyboard::A:
+                dirPadPress &= ~0b0100;
+                break;
+            case sf::Keyboard::D:
+                dirPadPress &= ~0b1000;
+                break;
         }
     }
 }

@@ -112,18 +112,17 @@ int main() {
 
         Graphics::clearQuadsArray();
 
-        UIVec moveVec;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        UIVec moveVec; // on screen vec
+        if (game.controls.dirPadPress & 0b0001)
             moveVec.y -= 1.;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        if (game.controls.dirPadPress & 0b0010)
             moveVec.y += 1.;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        if (game.controls.dirPadPress & 0b0100)
             moveVec.x -= 1.;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        if (game.controls.dirPadPress & 0b1000)
             moveVec.x += 1.;
         if (moveVec.len(UIVec()) > .1)
-            game.player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())) /
-                                         coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).len() * 4.;
+            game.player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).unit() * 4.;
         else
             game.player->slideVelocity = coord();
 
