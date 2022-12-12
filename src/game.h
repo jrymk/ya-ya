@@ -43,14 +43,15 @@ public:
     std::string newId(EntityType type);
 
     template<class T>
-    inline std::shared_ptr<Entity> &insertEntity(std::shared_ptr<T> &childPtr) {
+    inline std::shared_ptr<Entity> &insertEntity(std::shared_ptr<T> &childPtr, bool noInit = false) {
         if (childPtr->id == "undefined") {
             debug << "Entity insertion failed because name is undefined\n";
             return entities.end()->second;
         }
         if (entities.find(childPtr->id) == entities.end()) {
             auto ret = entities.insert({childPtr->id, childPtr});
-            pushAction(Action(ret.first->second, Timer::getNow(), INIT));
+            if (!noInit)
+                pushAction(Action(ret.first->second, Timer::getNow(), ON_CREATION));
             return ret.first->second;
         } else {
             debug << "Entity insertion failed because name \"" << childPtr->id << "\" is already taken\n";

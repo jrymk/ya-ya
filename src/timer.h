@@ -12,7 +12,9 @@ class Timer {
 
 public:
     Timer();
-    Timer(const Timer& timer);
+
+    Timer(const Timer &timer);
+
     Timer(std::chrono::steady_clock::time_point tp);
 
     static Timer getNow();
@@ -25,16 +27,7 @@ public:
 
     void increment(double seconds);
 
-    bool operator<(const Timer& rhs) const;
-};
-
-class Profiler {
-    inline static std::vector<std::pair<Timer, std::string>> splits;
-
-public:
-    static void timeSplit(const std::string& title);
-
-    static void drawBarAndClear();
+    bool operator<(const Timer &rhs) const;
 };
 
 #endif

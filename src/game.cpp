@@ -11,95 +11,31 @@ Game::Game() :
 
 void Game::update() {
     Timer updateTimer;
-    Profiler::timeSplit("gneighborsfinder");
 
     neighborsFinder.update();
+    controls.update();
 
-    auto facing = controls.getFacingEntity(player);
-    if (facing) {
-        Graphics::drawText(facing->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(facing->position) + UIVec(0., 40.), 0., sf::Color(255, 255, 255, 140), 3.);
+    if (controls.facingEntity) {
+        Graphics::drawText(controls.facingEntity->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(controls.facingEntity->position) + UIVec(0., 40.), 0.,
+                           sf::Color(255, 255, 255, 140), 3.);
         Graphics::insertUserWireframe(
-                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) +
-                UIVec(0, -facing->zPosition * Camera::getScale()),
-                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) +
-                UIVec(0, -facing->zPosition * Camera::getScale()),
-                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) +
-                UIVec(0, -facing->zPosition * Camera::getScale()),
-                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) +
-                UIVec(0, -facing->zPosition * Camera::getScale()),
+                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) +
+                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
+                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) +
+                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
+                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) +
+                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
+                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) +
+                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
                 sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
         );
     }
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-        if (player->inventory[Player::InventorySlots::LEFT_HAND] == nullptr && facing != nullptr) {
-            debug << "picked up " << facing->id << "\n";
-            player->inventory[Player::InventorySlots::LEFT_HAND] = facing;
-            {
-                Action a(player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_MOTION_FROZEN);
-                a.argBool[0] = true;
-                pushAction(a);
-            }
-            {
-                Action a(player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
-                a.argBool[0] = false;
-                pushAction(a);
-            }
-        }
-    } else {
-        if (player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr) {
-            {
-                Action a(player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_MOTION_FROZEN);
-                a.argBool[0] = false;
-                pushAction(a);
-            }
-            {
-                Action a(player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
-                a.argBool[0] = true;
-                pushAction(a);
-            }
-            player->inventory[Player::InventorySlots::LEFT_HAND] = nullptr;
-        }
-    }
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
-        if (player->inventory[Player::InventorySlots::RIGHT_HAND] == nullptr && facing != nullptr) {
-            player->inventory[Player::InventorySlots::RIGHT_HAND] = facing;
-            {
-                Action a(player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_MOTION_FROZEN);
-                a.argBool[0] = true;
-                pushAction(a);
-            }
-            {
-                Action a(player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
-                a.argBool[0] = false;
-                pushAction(a);
-            }
-        }
-    } else {
-        if (player->inventory[Player::InventorySlots::RIGHT_HAND] != nullptr) {
-            {
-                Action a(player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_MOTION_FROZEN);
-                a.argBool[0] = false;
-                pushAction(a);
-            }
-            {
-                Action a(player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_HIGHLIGHTABLE);
-                a.argBool[0] = true;
-                pushAction(a);
-            }
-            player->inventory[Player::InventorySlots::RIGHT_HAND] = nullptr;
-        }
-    }
-
-
-    Profiler::timeSplit("gprocesscollisions");
     processCollisions();
 
-    Profiler::timeSplit("gentitiesupdate");
     for (auto &entity: entities) {
         entity.second->update();
     }
-    Profiler::timeSplit("grunactions");
     runActions();
 
     for (auto &entity: entities) {
@@ -136,37 +72,17 @@ void Game::processCollisions() {
 void Game::runActions() {
     std::vector<Action> followUpActions;
 
-    Profiler::timeSplit("sort");
-    // std::sort(actionList.begin(), actionList.end());
-    // std::vector<std::thread> threadPool;
-    Profiler::timeSplit("run");
-    // for (int i = actionList.size() - 1; i >= 0; i--) {
     while (!actionList.empty()) {
         Action action = actionList.top();
         if (action.time.elapsed() >= 0 && !actionList.top().ranFlag) { // started
 //            std::cerr << std::right << std::setw(10) << std::setprecision(3) << std::fixed << Timer::getGlobalStart().elapsed(action.time) << "s  " << std::left << std::setw(20) << (action.isGlobal ? "global" : action.entity->id) << "  " << action.command << "\n";
-            // threadPool.push_back(std::thread(&Game::runAction, this, actionList[i], followUpActions));
             runAction(action, followUpActions);
-            // actionList[i].ranFlag = true;
-            // actionList[i].deleteFlag = true;
             actionList.pop();
         } else
             break;
     }
-    // for (std::thread& t : threadPool) {
-    //     t.join();
-    // }
-    Profiler::timeSplit("followup");
     for (auto &action: followUpActions)
         actionList.push(action); // will run next update
-
-    Profiler::timeSplit("ssort");
-    // std::sort(actionList.begin(), actionList.end());
-    Profiler::timeSplit("resize");
-    // for (int i = actionList.size() - 1; i >= 0; i--) {
-    //     if (actionList[i].deleteFlag)
-    //         actionList.resize(i);
-    // }
 }
 
 void Game::runAction(Action &action, std::vector<Action> &followUpActions) {
@@ -264,7 +180,6 @@ void Game::destroyEntity(std::string id) {
 }
 
 void Game::render() {
-    Profiler::timeSplit("pushquads");
     for (auto entity: entities) {
         entity.second->pushQuads();
         //        switch (entity.second->type) {
@@ -279,35 +194,22 @@ void Game::render() {
 //                break;
 //        }
     }
-    Profiler::timeSplit("showactionlist");
-    // if (showActionList) {
-    //     std::stringstream ss;
-    //     for (int i = actionList.size() - 1; i >= 0; i--) {
-    //         ss << std::right << std::setw(10) << std::setprecision(3) << std::fixed << actionList[i].time.elapsed() << "s  " << std::left << std::setw(20) << (actionList[i].entity == nullptr ? "global" : actionList[i].entity->id) << "  " << actionList[i].command << "\n";
-    //         if (i <= int(actionList.size()) - 101) {
-    //             ss << "... (truncated)\n";
-    //             break;
-    //         }
-    //     }
-    //     Graphics::drawText(ss.str(), sf::Color::Cyan, 12, UIVec(2., 55.), 0., sf::Color(0, 0, 0, 100), 2.);
-    // }
 
     // for (auto entity : entities) {
     //     Graphics::drawText(entity.first, sf::Color::Black, 14, Camera::getScreenPos(entity.second->position) + UIVec(0., 30.), .5, sf::Color(255, 255, 255, 100), 3.);
     // }
-    Profiler::timeSplit("getfacingentity");
-    auto facing = controls.getFacingEntity(player);
-    if (facing) {
-        Graphics::drawText(facing->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(facing->position) + UIVec(0., 40.), 0., sf::Color(255, 255, 255, 140), 3.);
+    if (controls.facingEntity) {
+        Graphics::drawText(controls.facingEntity->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(controls.facingEntity->position) + UIVec(0., 40.), 0.,
+                           sf::Color(255, 255, 255, 140), 3.);
         Graphics::insertUserWireframe(
-                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) +
-                UIVec(0, -facing->zPosition * Camera::getScale()),
-                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) +
-                UIVec(0, -facing->zPosition * Camera::getScale()),
-                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) +
-                UIVec(0, -facing->zPosition * Camera::getScale()),
-                Camera::getScreenPos(facing->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) +
-                UIVec(0, -facing->zPosition * Camera::getScale()),
+                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) +
+                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
+                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) +
+                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
+                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) +
+                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
+                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) +
+                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
                 sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
         );
     }
@@ -349,7 +251,7 @@ void Game::load(const char* filepath) {
                 break;
             }
         }
-        pushAction(Action(e.second, Timer::getNow(), INIT));
+        pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
     }
 
     fin.close();

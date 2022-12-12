@@ -4,17 +4,17 @@
 
 void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
-        case INIT:
+        case ON_CREATION:
             if (fertilized)
                 followUpActions.push_back(Action(action.entity, Timer::getNow() + 3. + getRand() * 10., EGG_FORM_EMBRYO));
             break;
-        case UNOWNED: // pop out of duck's ass
+        case ON_UNOWNED: // pop out of duck's ass
             followUpActions.push_back(Action(action.entity, Timer::getNow(), ENTITY_HOP));
             break;
         case EGG_FORM_EMBRYO:
             if (getRand() > .9) { // 90% success
                 fertilized = false;
-                followUpActions.push_back(Action(action.entity, Timer::getNow(), INIT)); // be an unfertilized egg I guess
+                followUpActions.push_back(Action(action.entity, Timer::getNow(), ON_CREATION)); // be an unfertilized egg I guess (reinit)
                 return;
             }
             {
@@ -22,7 +22,8 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
                 duck->id = game->newId(DUCK);
                 duck->position = position + coord::getRandCoord();
                 duck->genderIsMale = genderIsMale;
-                auto &duck_ptr = game->insertEntity(duck);
+                duck->selectable = false;
+                auto &duck_ptr = game->insertEntity(duck, true); // it will be the creator's responsibility to suppress init if the entity is being pregenerated
                 {
                     Action a(duck_ptr, Timer::getNow(), ENTITY_OWN_BY);
                     a.argEntity[0] = action.entity;
@@ -31,10 +32,8 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
                 }
                 if (getRand() < .8) { // 80% success
                     double t = 3. + 4. * getRand();
-                    {
-                        Action a(duck_ptr, Timer::getNow() + t, ENTITY_UNOWN); // HATCH
-                        followUpActions.push_back(a);
-                    }
+                    followUpActions.emplace_back(duck_ptr, Timer::getNow() + t, ENTITY_UNOWN); // HATCH
+                    followUpActions.emplace_back(duck_ptr, Timer::getNow() + t, ON_CREATION);
                     {
                         Action a(Timer::getNow() + t + 2., GLOBAL_DESTROY); // destroy egg
                         a.argEntity[0] = action.entity;

@@ -12,7 +12,7 @@ void Graphics::loadFont(int idx, std::string path) {
 }
 
 void Graphics::setFont(int idx) {
-    if (idx >= isFontValid.size()) 
+    if (idx >= isFontValid.size())
         debug << "Index out of range\n";
     else if (!isFontValid[idx])
         debug << "Font is invalid (didn't load or failed)\n";
@@ -20,7 +20,7 @@ void Graphics::setFont(int idx) {
         selectedFont = idx;
 }
 
-void Graphics::fillRect(const sf::Color& fillColor, UIVec pos1, UIVec pos2) {
+void Graphics::fillRect(const sf::Color &fillColor, UIVec pos1, UIVec pos2) {
     sf::RectangleShape rect;
     rect.setPosition(pos1.min(pos2).getVec2f());
     rect.setSize(((pos1.max(pos2)) - (pos1.min(pos2))).getVec2f());
@@ -28,7 +28,7 @@ void Graphics::fillRect(const sf::Color& fillColor, UIVec pos1, UIVec pos2) {
     window->draw(rect);
 }
 
-void Graphics::drawRect(const sf::Color& strokeColor, float strokeWidth, UIVec pos1, UIVec pos2) {
+void Graphics::drawRect(const sf::Color &strokeColor, float strokeWidth, UIVec pos1, UIVec pos2) {
     sf::RectangleShape rect;
     rect.setPosition(pos1.min(pos2).getVec2f());
     rect.setSize(((pos1.max(pos2)) - (pos1.min(pos2))).getVec2f());
@@ -38,7 +38,7 @@ void Graphics::drawRect(const sf::Color& strokeColor, float strokeWidth, UIVec p
     window->draw(rect);
 }
 
-void Graphics::drawLine(const sf::Color& strokeColor, float strokeWidth, UIVec pos1, UIVec pos2) {
+void Graphics::drawLine(const sf::Color &strokeColor, float strokeWidth, UIVec pos1, UIVec pos2) {
     sf::RectangleShape rect;
     rect.setSize(sf::Vector2f(pos1.len(pos2), strokeWidth));
     rect.setOrigin(pos1.len(pos2) / 2., strokeWidth / 2.);
@@ -48,7 +48,7 @@ void Graphics::drawLine(const sf::Color& strokeColor, float strokeWidth, UIVec p
     window->draw(rect);
 }
 
-void Graphics::drawText(const std::string& str, const sf::Color& fillColor, int size, UIVec pos, float align, const sf::Color& outlineColor, float outlineStrokeWidth) {
+void Graphics::drawText(const std::string &str, const sf::Color &fillColor, int size, UIVec pos, float align, const sf::Color &outlineColor, float outlineStrokeWidth) {
     sf::Text text;
     text.setPosition(0, 0);
     text.setFont(fonts[selectedFont]);
@@ -63,13 +63,14 @@ void Graphics::drawText(const std::string& str, const sf::Color& fillColor, int 
 
     if (showWireframe) {
         // magenta rectangle: actual bounds
-        drawRect(sf::Color::Magenta, 1, pos + UIVec(bounds.width * -align, -size + bounds.top), pos + UIVec(bounds.width * -align, -size + bounds.top) + UIVec(bounds.width, bounds.height));
+        drawRect(sf::Color::Magenta, 1, pos + UIVec(bounds.width * -align, -size + bounds.top),
+                 pos + UIVec(bounds.width * -align, -size + bounds.top) + UIVec(bounds.width, bounds.height));
         // cyan rectangle: baseline(input y coord) and size for reference
         drawRect(sf::Color::Cyan, 1, pos + UIVec(bounds.width * -align, -size), pos + UIVec(bounds.width * -align, -size) + UIVec(bounds.width, size));
     }
 }
 
-void Graphics::drawTextBatch(sf::VertexArray& va, const std::string& str, const sf::Color& fillColor, int size, UIVec pos, float align) {
+void Graphics::drawTextBatch(sf::VertexArray &va, const std::string &str, const sf::Color &fillColor, int size, UIVec pos, float align) {
     sf::Text text;
     text.setPosition(0, 0);
     text.setFont(fonts[selectedFont]);
@@ -82,13 +83,14 @@ void Graphics::drawTextBatch(sf::VertexArray& va, const std::string& str, const 
 
     if (showWireframe) {
         // magenta rectangle: actual bounds
-        drawRect(sf::Color::Magenta, 1, pos + UIVec(bounds.width * -align, -size + bounds.top), pos + UIVec(bounds.width * -align, -size + bounds.top) + UIVec(bounds.width, bounds.height));
+        drawRect(sf::Color::Magenta, 1, pos + UIVec(bounds.width * -align, -size + bounds.top),
+                 pos + UIVec(bounds.width * -align, -size + bounds.top) + UIVec(bounds.width, bounds.height));
         // cyan rectangle: baseline(input y coord) and size for reference
         drawRect(sf::Color::Cyan, 1, pos + UIVec(bounds.width * -align, -size), pos + UIVec(bounds.width * -align, -size) + UIVec(bounds.width, size));
     }
 }
 
-void Graphics::appendWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color& color, const sf::Color& bgcolor) {
+void Graphics::appendWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color &color, const sf::Color &bgcolor) {
     wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
     wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
     wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
@@ -139,11 +141,11 @@ void Graphics::clearQuadsArray() {
     quadsArray.clear();
 }
 
-void Graphics::insertQuad(const Graphics::Quad& quad) {
+void Graphics::insertQuad(const Graphics::Quad &quad) {
     quadsArray.push_back(quad);
 }
 
-void Graphics::insertUserWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color& color, const sf::Color& bgcolor) {
+void Graphics::insertUserWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color &color, const sf::Color &bgcolor) {
     userWireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
     userWireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
     userWireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
@@ -190,7 +192,7 @@ void Graphics::insertUserWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const
     userWireframeVertexArray.append(sf::Vertex(v0.getVec2f(), color));
 }
 
-void Graphics::renderQuads(sf::RenderWindow& window, sf::Texture& texture, UIRect viewport) {
+void Graphics::renderQuads(sf::RenderWindow &window, sf::Texture &texture, UIRect viewport) {
     vertexArray.clear();
     vertexArray.setPrimitiveType(sf::PrimitiveType::Quads);
     wireframeVertexArray.clear();
@@ -199,20 +201,20 @@ void Graphics::renderQuads(sf::RenderWindow& window, sf::Texture& texture, UIRec
     std::sort(quadsArray.begin(), quadsArray.end());
     outOfSightQuads = 0;
 
-    for (auto& quad : quadsArray) {
-        if ((quad.v0.x < viewport.pos.x || quad.v0.x > (viewport.pos.x + viewport.size.x) ||
-            quad.v0.y < viewport.pos.y || quad.v0.y > (viewport.pos.y + viewport.size.y)) &&
-            (quad.v1.x < viewport.pos.x || quad.v1.x > (viewport.pos.x + viewport.size.x) ||
-            quad.v1.y < viewport.pos.y || quad.v1.y > (viewport.pos.y + viewport.size.y)) &&
-            (quad.v2.x < viewport.pos.x || quad.v2.x > (viewport.pos.x + viewport.size.x) ||
-            quad.v2.y < viewport.pos.y || quad.v2.y > (viewport.pos.y + viewport.size.y)) &&
-            (quad.v3.x < viewport.pos.x || quad.v3.x > (viewport.pos.x + viewport.size.x) ||
-            quad.v3.y < viewport.pos.y || quad.v3.y > (viewport.pos.y + viewport.size.y))) {
-                
+    for (auto &quad: quadsArray) {
+        if ((quad.v0.x<viewport.pos.x || quad.v0.x>(viewport.pos.x + viewport.size.x) ||
+             quad.v0.y<viewport.pos.y || quad.v0.y>(viewport.pos.y + viewport.size.y)) &&
+            (quad.v1.x<viewport.pos.x || quad.v1.x>(viewport.pos.x + viewport.size.x) ||
+             quad.v1.y<viewport.pos.y || quad.v1.y>(viewport.pos.y + viewport.size.y)) &&
+            (quad.v2.x<viewport.pos.x || quad.v2.x>(viewport.pos.x + viewport.size.x) ||
+             quad.v2.y<viewport.pos.y || quad.v2.y>(viewport.pos.y + viewport.size.y)) &&
+            (quad.v3.x<viewport.pos.x || quad.v3.x>(viewport.pos.x + viewport.size.x) ||
+             quad.v3.y<viewport.pos.y || quad.v3.y>(viewport.pos.y + viewport.size.y))) {
+
             if (debugOutOfSight) {
                 UIVec center = (quad.v0 + quad.v1 + quad.v2 + quad.v3) / 4.;
-                center.x = std::min(std::max(center.x, (float)5.), viewport.size.x - (float)5.);
-                center.y = std::min(std::max(center.y, (float)5.), viewport.size.y - (float)5.);
+                center.x = std::min(std::max(center.x, (float) 5.), viewport.size.x - (float) 5.);
+                center.y = std::min(std::max(center.y, (float) 5.), viewport.size.y - (float) 5.);
                 appendWireframe(center + UIVec(3., 0.),
                                 center + UIVec(0., 3.),
                                 center + UIVec(-3., 0.),
@@ -220,8 +222,7 @@ void Graphics::renderQuads(sf::RenderWindow& window, sf::Texture& texture, UIRec
                                 sf::Color::Yellow, sf::Color::Black);
             }
             outOfSightQuads++;
-        }
-        else {
+        } else {
             vertexArray.append(sf::Vertex(quad.v0.getVec2f(), quad.c0, quad.t0));
             vertexArray.append(sf::Vertex(quad.v1.getVec2f(), quad.c1, quad.t1));
             vertexArray.append(sf::Vertex(quad.v2.getVec2f(), quad.c2, quad.t2));
@@ -258,7 +259,7 @@ void Graphics::resizeView(unsigned int width, unsigned int height) {
 sf::ContextSettings Graphics::getContextSettings() {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 4;
-    return settings;    
+    return settings;
 }
 
 void Graphics::setupWindow() {

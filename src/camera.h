@@ -44,6 +44,10 @@ struct coord {
 
     inline static coord getRandCoord() { return coord(.01 * (getRand() - .5), .01 * (getRand() - .5)); }
 
+    inline static coord getAngleVec(double len, double angle) {
+        return coord(std::cos(angle), std::sin(angle)) * len;
+    }
+
     inline constexpr static auto properties = std::make_tuple(
             SaveUtilities::property(&coord::x, "cd.x"),
             SaveUtilities::property(&coord::y, "cd.y")

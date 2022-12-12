@@ -66,16 +66,30 @@ int main() {
 
 
     while (window.isOpen()) {
-        Profiler::timeSplit("event");
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::Resized)
-                Graphics::resizeView(event.size.width, event.size.height);
-            if (event.type == sf::Event::KeyPressed) {
-                game.controls.handleKeyPress(event.key.code);
+            switch (event.type) {
+                case sf::Event::Closed:
+                    window.close();
+                    break;
+                case sf::Event::Resized:
+                    Graphics::resizeView(event.size.width, event.size.height);
+                    break;
+                case sf::Event::KeyPressed:
+                case sf::Event::KeyReleased:
+                    game.controls.handleKeyPress(event);
+                    break;
+                case sf::Event::MouseButtonPressed:
+                case sf::Event::MouseButtonReleased:
+                    game.controls.handleMousePress(event);
+                    break;
             }
+
+
+            if (event.type == sf::Event::Closed)
+                if (event.type == sf::Event::Resized)
+                    if (event.type == sf::Event::KeyPressed) {
+                    }
             if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code == sf::Keyboard::Right) {
                 }
@@ -86,11 +100,9 @@ int main() {
                 // mouseWheelPosition += event.mouseWheel.delta;
             }
             if (event.type == sf::Event::MouseButtonPressed) {
-
             }
         }
 
-        Profiler::timeSplit("clear window");
         // handleEvents(window);
         window.clear(sf::Color(129, 214, 131));
 
@@ -100,7 +112,6 @@ int main() {
 
         Graphics::clearQuadsArray();
 
-        Profiler::timeSplit("move");
         UIVec moveVec;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
             moveVec.y -= 1.;
@@ -116,48 +127,24 @@ int main() {
         else
             game.player->slideVelocity = coord();
 
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        //     player->velocity = 3.;
-        // else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        //     player->velocity = -2.;
-        // else
-        //     player->velocity = 0.;
-
         game.player->heading = game.player->position.angle(Camera::getMouseCoord());
 
-        // player->heading += double(sf::Mouse::getPosition(window).x) / -200.;
-        // sf::Mouse::setPosition(sf::Vector2i(0, sf::Mouse::getPosition(window).y), window);
-        Profiler::timeSplit("update");
         game.update();
-        Profiler::timeSplit("gamerender");
         game.render();
 
-        Profiler::timeSplit("render");
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
 
-
-        debugGraphs[0].newGraphEntry(game.entities.size());
-        debugGraphs[1].newGraphEntry(game.actionList.size());
-        debugGraphs[2].newGraphEntry(Graphics::getQuadCount());
-        debugGraphs[3].newGraphEntry(game.updateTime);
-        debugGraphs[4].newGraphEntry(game.entities.size());
-
-        Profiler::timeSplit("post");
         Graphics::setFont(1);
-        Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::White, 24, UIVec(10, 30), 0., sf::Color::Black, 4.);
+        Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::Black, 12, UIVec(6, 17), 0., sf::Color(255, 255, 255, 200), 2.);
 
         Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.08);
 
         Camera::printCameraInfo();
 
         // Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
-        // Graphics::drawText("[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y), 
+        // Graphics::drawText("[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y),
         //     sf::Color::White, 16, rectWindow.pos + UIVec(0, -10), 0., sf::Color::Black, 1.);
 
-        Profiler::timeSplit("renderdebugoverlay");
-        renderDebugOverlay(window);
-        Profiler::drawBarAndClear();
-        Profiler::timeSplit("display");
         window.display();
     }
     game.save();

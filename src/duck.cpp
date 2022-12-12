@@ -5,33 +5,30 @@
 
 void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
-        case INIT: {
-
-            // followUpActions.push_back(Action(action.entity, Timer::getNow() + 50. + getRand() * 200., "death"));
-            break;
-        }
-        case UNOWNED:
-            if (action.argEntity[0] != nullptr && action.argEntity[0]->type == EGG) { // hatch
-                followUpActions.push_back(Action(action.entity, Timer::getNow() + 5. + getRand() * 25., DUCK_LOOP_WANDER));
-                if (genderIsMale) {
-                    followUpActions.push_back(Action(action.entity, Timer::getNow() + 5. + getRand() * 20., DUCK_LOOP_FIND_MATE));
-                } else {
-                    followUpActions.push_back(Action(action.entity, Timer::getNow() + 10. + getRand() * 40., DUCK_LOOP_LAY_EGGS));
-                }
-                followUpActions.push_back(Action(action.entity, Timer::getNow(), ENTITY_HOP));
-
-                position = action.argEntity[0]->position + coord::getRandCoord();
-//                debug << position.x << ", " << position.y << "\n";
-                {
-                    Action a(action.entity, Timer::getNow() + .3, DUCK_DUCKWALK_TO_UNTIL);
-                    a.argCoord[0].x = position.x + 3. * (getRand() - 0.5);
-                    a.argCoord[0].y = position.y + 3. * (getRand() - 0.5);
-                    followUpActions.push_back(a);
-                }
+        case ON_CREATION:
+            followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 25., DUCK_LOOP_WANDER);
+            if (genderIsMale) {
+                followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 20., DUCK_LOOP_FIND_MATE);
+            } else {
+                followUpActions.emplace_back(action.entity, Timer::getNow() + 10. + getRand() * 40., DUCK_LOOP_LAY_EGGS);
             }
+            followUpActions.emplace_back(action.entity, Timer::getNow(), ENTITY_HOP);
+            followUpActions.emplace_back(action.entity, Timer::getNow() + 50. + getRand() * 200., DUCK_DEATH);
+
+//            position = action.argEntity[0]->position + coord::getRandCoord();
+            {
+                Action a(action.entity, Timer::getNow() + .3, DUCK_DUCKWALK_TO_UNTIL);
+                a.argCoord[0].x = position.x + 3. * (getRand() - 0.5);
+                a.argCoord[0].y = position.y + 3. * (getRand() - 0.5);
+                followUpActions.push_back(a);
+            }
+            selectable = true;
+            break;
+        case ON_UNOWNED:
+
             break;
         case DUCK_LOOP_WANDER: {
-            followUpActions.push_back(Action(action.entity, Timer::getNow() + 5. + getRand() * 25., DUCK_LOOP_WANDER));
+            followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 25., DUCK_LOOP_WANDER);
             Action a(action.entity, Timer::getNow(), DUCK_DUCKWALK_TO_UNTIL);
             a.argCoord[0].x = position.x + getRand() * 3.;
             a.argCoord[0].y = position.y + getRand() * 3.;
@@ -95,7 +92,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                     followUpActions.push_back(a);
                 }
             }
-            followUpActions.push_back(Action(action.entity, Timer::getNow() + 10. + getRand() * 40., DUCK_LOOP_LAY_EGGS));
+            followUpActions.emplace_back(action.entity, Timer::getNow() + 10. + getRand() * 40., DUCK_LOOP_LAY_EGGS);
             break;
         }
         case DUCK_LOOP_FIND_MATE: { // male only
@@ -131,7 +128,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                     }
                 }
             }
-            followUpActions.push_back(Action(action.entity, Timer::getNow() + 5. + getRand() * 20., DUCK_LOOP_FIND_MATE));
+            followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 20., DUCK_LOOP_FIND_MATE);
             break;
         }
         case DUCK_UNTIL_MATE_CONTACT: {
@@ -168,7 +165,6 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                 followUpActions.push_back(d);
             }
             {
-                game->destroyEntity(action.entity->id);
                 Action a(Timer::getNow() + .5, GLOBAL_DESTROY);
                 a.argEntity[0] = action.entity;
                 followUpActions.push_back(a);
@@ -199,20 +195,20 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                 heading = position.angle(action.argEntity[0]->position);
                 for (int i = 0; i < 20; i++) {
                     Action a(action.entity, Timer::getNow() + .1 * i, ENTITY_SLIDE_INSTANT);
-                    a.argCoord[0] = coord(Camera::getAngleVectorUntransformed(.1, heading).x, Camera::getAngleVectorUntransformed(.1, heading).y);
+                    a.argCoord[0] = coord::getAngleVec(.1, heading);
                     followUpActions.push_back(a);
                     Action c(action.entity, Timer::getNow() + .1 * i + .05, ENTITY_SLIDE_INSTANT);
-                    c.argCoord[0] = coord(-Camera::getAngleVectorUntransformed(.1, heading).x, -Camera::getAngleVectorUntransformed(.1, heading).y);
+                    c.argCoord[0] = coord::getAngleVec(-.1, heading);
                     followUpActions.push_back(c);
                 }
             } else {
                 heading = action.argEntity[0]->position.angle(position);
                 for (int i = 0; i < 20; i++) {
                     Action a(action.entity, Timer::getNow() + .1 * i, ENTITY_SLIDE_INSTANT);
-                    a.argCoord[0] = coord(Camera::getAngleVectorUntransformed(.02, heading).x, Camera::getAngleVectorUntransformed(.02, heading).y);
+                    a.argCoord[0] = coord::getAngleVec(.02, heading);
                     followUpActions.push_back(a);
                     Action c(action.entity, Timer::getNow() + .1 * i + .05, ENTITY_SLIDE_INSTANT);
-                    c.argCoord[0] = coord(-Camera::getAngleVectorUntransformed(.02, heading).x, -Camera::getAngleVectorUntransformed(.02, heading).y);
+                    c.argCoord[0] = coord::getAngleVec(-.02, heading);
                     followUpActions.push_back(c);
                 }
             }
@@ -264,32 +260,29 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
 }
 
 void Duck::initModel() {
-    model.push_back(
-            Graphics::Quad(
-                    0.80,
-                    UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 7, 90.5 + 90.5 * 1),
-                    UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 7, 0 + 90.5 * 1),
-                    UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 7, 271.5 + 90.5 * 1),
-                    UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 7, 362 + 90.5 * 1)
-            )
+    model.emplace_back(
+            0.80,
+            UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 7, 90.5 + 90.5 * 1),
+            UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 7, 0 + 90.5 * 1),
+            UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 7, 271.5 + 90.5 * 1),
+            UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 7, 362 + 90.5 * 1)
+
     );
-    model.push_back(
-            Graphics::Quad(
-                    0.90,
-                    UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 4, 90.5 + 90.5 * 2),
-                    UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 4, 0 + 90.5 * 2),
-                    UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 4, 271.5 + 90.5 * 2),
-                    UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 4, 362 + 90.5 * 2)
-            )
+    model.emplace_back(
+            0.90,
+            UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 4, 90.5 + 90.5 * 2),
+            UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 4, 0 + 90.5 * 2),
+            UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 4, 271.5 + 90.5 * 2),
+            UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 4, 362 + 90.5 * 2)
+
     );
-    model.push_back(
-            Graphics::Quad(
-                    0.91,
-                    UIVec(-0.5, 0.5), sf::Vector2f(0 + 128, 90.5 + 90.5 * 3),
-                    UIVec(0.5, 0.5), sf::Vector2f(384 + 128, 0 + 90.5 * 3),
-                    UIVec(0.5, -0.5), sf::Vector2f(512 + 128, 271.5 + 90.5 * 3),
-                    UIVec(-0.5, -0.5), sf::Vector2f(128 + 128, 362 + 90.5 * 3)
-            )
+    model.emplace_back(
+            0.91,
+            UIVec(-0.5, 0.5), sf::Vector2f(0 + 128, 90.5 + 90.5 * 3),
+            UIVec(0.5, 0.5), sf::Vector2f(384 + 128, 0 + 90.5 * 3),
+            UIVec(0.5, -0.5), sf::Vector2f(512 + 128, 271.5 + 90.5 * 3),
+            UIVec(-0.5, -0.5), sf::Vector2f(128 + 128, 362 + 90.5 * 3)
+
     );
     model[0].zPosScale = 0.; // shadow stays on the ground
 }

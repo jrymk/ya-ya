@@ -12,13 +12,18 @@ class Game;
 class Controls {
     Game* game;
 
+    std::shared_ptr<Entity> getFacingEntity(std::shared_ptr<Entity> player, EntityType filter = ENTITY);
+
 public:
+    std::shared_ptr<Entity> facingEntity;
 
     Controls(Game* game);
 
-    std::shared_ptr<Entity> getFacingEntity(std::shared_ptr<Entity> player, EntityType filter = ENTITY);
+    void update();
 
-    void handleKeyPress(enum sf::Keyboard::Key key);
+    void handleKeyPress(sf::Event &event);
+
+    void handleMousePress(sf::Event &event);
 };
 
 #endif

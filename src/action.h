@@ -12,14 +12,14 @@
 class Entity;
 
 enum Command {
-    INIT,
-    UNOWNED, // entity unowned_by, int slot
+    ON_CREATION,
+    ON_UNOWNED, // entity unowned_by, int slot
     GLOBAL_PROCESS_COLLISION, // entity e, entity f
     GLOBAL_DESTROY, // entity e
     ENTITY_OWN_BY, // entity e, int slot
     ENTITY_UNOWN,
     ENTITY_MOTION_FROZEN, // bool frozen
-    ENTITY_HIGHLIGHTABLE, // bool highlightable
+    ENTITY_SELECTABLE, // bool selectable
     ENTITY_COLLISION_PUSHABLE, // bool pushable
     ENTITY_COLLISION_COLLIDABLE, // bool collidable
     ENTITY_MOVE_TO_INSTANT, // coord pos
@@ -51,7 +51,7 @@ public:
     std::shared_ptr<Entity> entity;
     Command command;
 
-    inline Action() {}
+    inline Action() = default;
 
     inline Action(const Timer &time, Command command)
             : isGlobal(true), time(time), command(command) {
@@ -61,9 +61,9 @@ public:
             : isGlobal(false), entity(entity), time(time), command(command) {
     }
 
-    bool argBool[8];
-    int argInt[8];
-    double argFloat[8];
+    bool argBool[8] = {0};
+    int argInt[8] = {0};
+    double argFloat[8] = {0};
     coord argCoord[8];
     UIVec argUIVec[8];
     std::shared_ptr<Entity> argEntity[8];

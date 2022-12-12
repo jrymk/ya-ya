@@ -25,6 +25,9 @@ class Game;
 
 /// @brief Renderer and motion control for entities
 class Entity {
+protected:
+    std::vector<std::shared_ptr<Entity>> inventory_last;
+
 public:
     std::string id = "undefined";
     EntityType type = ENTITY;
@@ -52,7 +55,6 @@ public:
     double heading = 0.;
     double headingRotationSpeed = 0.;
 
-    bool facingHighlightable = true;
     bool selectable = true;
 
     float opacity = 0.;

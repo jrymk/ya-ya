@@ -15,7 +15,7 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             if (ownedBy == nullptr)
                 return;
             {
-                Action a(action.entity, Timer::getNow(), UNOWNED);
+                Action a(action.entity, Timer::getNow(), ON_UNOWNED);
                 a.argEntity[0] = ownedBy;
                 a.argInt[0] = ownedSlot;
                 followUpActions.push_back(a);
@@ -28,8 +28,8 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
         case ENTITY_MOTION_FROZEN:
             motionFrozen = action.argBool[0];
             break;
-        case ENTITY_HIGHLIGHTABLE:
-            facingHighlightable = action.argBool[0];
+        case ENTITY_SELECTABLE:
+            selectable = action.argBool[0];
             break;
         case ENTITY_COLLISION_PUSHABLE:
             collisionPushable = action.argBool[0];
@@ -71,8 +71,7 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             }
             break;
         case ENTITY_WALK_INSTANT:
-            position = position + coord(Camera::getAngleVectorUntransformed(action.argFloat[0], heading).x,
-                                        Camera::getAngleVectorUntransformed(action.argFloat[0], heading).y);
+            position = position + coord::getAngleVec(action.argFloat[0], heading);
             break;
         default:
             runAction(action, followUpActions); // run entity specific actions
