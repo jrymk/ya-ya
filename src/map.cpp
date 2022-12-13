@@ -2,7 +2,7 @@
 #include "model.h"
 #include "camera.h"
 
-void Map::Tile::pushQuads(int x, int y) {
+void Map::Tile::pushQuads() {
     for (auto quad: modelTile) {
         quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) + coord(x, y));
         quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + coord(x, y));
@@ -29,15 +29,22 @@ void Map::Tile::pushQuads(int x, int y) {
     }
 }
 
-Map::Chunk::Chunk() : tiles(256, Tile()) {
+void Map::Tile::setCoord(int x, int y) {
+    this->x = x;
+    this->y = y;
+}
 
+Map::Chunk::Chunk(int bx, int by) : basex(bx), basey(by) {
+    tiles.resize(256);
+    for (int i = 0; i < 256; i++)
+        tiles[i].setCoord(basex + (i & 0b1111), basey + ((i >> 4) & 0b1111));
 }
 
 Map::Tile &Map::getTile(int x, int y) {
     auto c = std::make_pair(x & ~0b1111, y & ~0b1111);
     auto res = mapData.find(c);
     if (res == mapData.end()) {
-        mapData.insert(std::make_pair(c, Chunk()));
+        mapData.insert(std::make_pair(c, Chunk(c.first, c.second)));
         res = mapData.find(c);
     }
     return res->second.tiles[((y & 0b1111) << 4) + (x & 0b1111)];

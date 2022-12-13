@@ -7,15 +7,16 @@ Controls::Controls(Game* game) :
 }
 
 void Controls::update() {
-    facingEntity = getFacingEntity(game->player);
+    facingEntity = getFacingEntity();
+    facingTile = &getFacingTile();
 }
 
-std::shared_ptr<Entity> Controls::getFacingEntity(std::shared_ptr<Entity> player, EntityType filter) {
+std::shared_ptr<Entity> Controls::getFacingEntity(EntityType filter) {
     auto nearby = game->neighborsFinder.findNeighbors(game->player->position, 2., filter);
     std::shared_ptr<Entity> facingEntity = nullptr;
     double bestScore = 1e8;
     for (auto e: nearby) {
-        if (e == player)
+        if (e == game->player)
             continue;
         if (!e->selectable)
             continue;
@@ -34,6 +35,27 @@ std::shared_ptr<Entity> Controls::getFacingEntity(std::shared_ptr<Entity> player
     }
     return facingEntity;
 }
+
+Map::Tile &Controls::getFacingTile() {
+    coord refPnt = game->player->position + coord::getAngleVec(1., game->player->heading);
+//    Graphics::insertUserWireframe(
+//            Camera::getScreenPos(refPnt) + UIVec(3, 0),
+//            Camera::getScreenPos(refPnt) + UIVec(0, 3),
+//            Camera::getScreenPos(refPnt) + UIVec(-3, 0),
+//            Camera::getScreenPos(refPnt) + UIVec(0, -3),
+//            sf::Color(255, 255, 255, 255), sf::Color(0, 0, 0, 100)
+//    );
+    std::pair<int, int> tile = {std::floor(refPnt.x), std::floor(refPnt.y)};
+    Graphics::insertUserWireframe(
+            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.1, 0.1)),
+            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.9, 0.1)),
+            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.9, 0.9)),
+            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.1, 0.9)),
+            sf::Color(100, 255, 255, 255), sf::Color(0, 0, 0, 100)
+    );
+    return game->map.getTile(tile.first, tile.second);
+}
+
 
 void Controls::handleKeyPress(sf::Event &event) {
     if (!Graphics::getRenderWindow().hasFocus())
@@ -163,3 +185,4 @@ void Controls::handleMousePress(sf::Event &event) {
         }
     }
 }
+

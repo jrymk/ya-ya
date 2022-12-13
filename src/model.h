@@ -4,6 +4,8 @@
 #include "graphics.h"
 #include <vector>
 
+#define TILEMAP_COORD(x, y) sf::Vector2f(384 * x + 128 * y, 90.5 - 90.5 * x + 271.5 * y)
+
 const std::vector<Graphics::Quad> modelEntity = {
 
 };
@@ -11,24 +13,24 @@ const std::vector<Graphics::Quad> modelEntity = {
 const std::vector<Graphics::Quad> modelPlayer = {
         Graphics::Quad(
                 0.80,
-                UIVec(0.5, -0.5), sf::Vector2f(0 + 128 * 7, 90.5 + 90.5 * 1),
-                UIVec(-0.5, -0.5), sf::Vector2f(384 + 128 * 7, 0 + 90.5 * 1),
-                UIVec(-0.5, 0.5), sf::Vector2f(512 + 128 * 7, 271.5 + 90.5 * 1),
-                UIVec(0.5, 0.5), sf::Vector2f(128 + 128 * 7, 362 + 90.5 * 1)
+                UIVec(-0.5, 0.5), TILEMAP_COORD(2, 1),
+                UIVec(0.5, 0.5), TILEMAP_COORD(3, 1),
+                UIVec(0.5, -0.5), TILEMAP_COORD(3, 2),
+                UIVec(-0.5, -0.5), TILEMAP_COORD(2, 2)
         ),
         Graphics::Quad(
                 0.91,
-                UIVec(-0.5, 1.5), sf::Vector2f(0 + 128 * 2, 90.5 + 90.5 * 6),
-                UIVec(0.5, 1.5), sf::Vector2f(384 + 128 * 2, 0 + 90.5 * 6),
-                UIVec(0.5, 0.5), sf::Vector2f(512 + 128 * 2, 271.5 + 90.5 * 6),
-                UIVec(-0.5, 0.5), sf::Vector2f(128 + 128 * 2, 362 + 90.5 * 6)
-        ),
-        Graphics::Quad(
-                0.91,
-                UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 3, 90.5 + 90.5 * 9),
-                UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 3, 0 + 90.5 * 9),
-                UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 3, 271.5 + 90.5 * 9),
-                UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 3, 362 + 90.5 * 9)
+                UIVec(-0.5, 1.5), TILEMAP_COORD(0, 2),
+                UIVec(0.5, 1.5), TILEMAP_COORD(1, 2),
+//                UIVec(0.5, 0.5), TILEMAP_COORD(1, 3),
+//                UIVec(-0.5, 0.5), TILEMAP_COORD(0, 3)
+//        ),
+//        Graphics::Quad(
+//                0.91,
+//                UIVec(-0.5, 0.5), TILEMAP_COORD(0, 3),
+//                UIVec(0.5, 0.5), TILEMAP_COORD(1, 3),
+                UIVec(0.5, -0.5), TILEMAP_COORD(1, 4),
+                UIVec(-0.5, -0.5), TILEMAP_COORD(0, 4)
         )
 };
 
@@ -64,10 +66,10 @@ const std::vector<Graphics::Quad> modelEgg = {
 const std::vector<Graphics::Quad> modelTile = {
         Graphics::Quad(
                 0.0,
-                UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 8, 90.5 + 90.5 * 4),
-                UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 8, 0 + 90.5 * 4),
-                UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 8, 271.5 + 90.5 * 4),
-                UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 8, 362 + 90.5 * 4)
+                UIVec(0., 0.), sf::Vector2f(0 + 128 * 8, 90.5 + 90.5 * 4),
+                UIVec(1., 0.), sf::Vector2f(384 + 128 * 8, 0 + 90.5 * 4),
+                UIVec(1., 1.), sf::Vector2f(512 + 128 * 8, 271.5 + 90.5 * 4),
+                UIVec(0., 1.), sf::Vector2f(128 + 128 * 8, 362 + 90.5 * 4)
         )
 };
 

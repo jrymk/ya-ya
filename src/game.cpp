@@ -227,7 +227,7 @@ void Game::renderMap() {
 
     for (int x = std::floor(minX); x <= std::floor(maxX + 1.); x++) {
         for (int y = std::floor(minY); y <= std::floor(maxY + 1.); y++) {
-            map.getTile(x, y).pushQuads(x, y);
+            map.getTile(x, y).pushQuads();
         }
     }
 

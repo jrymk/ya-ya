@@ -45,16 +45,16 @@ int main() {
 //    game.load();
 
 
-//    for (int i = 0; i < 100; i++) {
-//        std::shared_ptr<Egg> egg(new Egg(&game));
-//        egg->id = game.newId(EGG);
-//        egg->opacity = 1.;
-//        egg->position.x = -5.0 + i % 10;
-//        egg->position.y = -5.0 + i / 10;
-//        egg->genderIsMale = i & 0b1;
-//        egg->fertilized = true;
-//        game.insertEntity(egg);
-//    }
+    for (int i = 0; i < 100; i++) {
+        std::shared_ptr<Egg> egg(new Egg(&game));
+        egg->id = game.newId(EGG);
+        egg->opacity = 1.;
+        egg->position.x = -4.5 + i % 10;
+        egg->position.y = -4.5 + i / 10;
+        egg->genderIsMale = i & 0b1;
+        egg->fertilized = true;
+        game.insertEntity(egg);
+    }
 
 
     sf::Texture tilemap;
