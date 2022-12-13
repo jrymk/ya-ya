@@ -5,16 +5,19 @@
 #include <map>
 #include "camera.h"
 
+// not really a reason for this to be here
+struct CollideBox {
+    coord center;
+    coord size;
+    bool isCircle = false;
+
+    inline CollideBox(coord center, coord size, bool isCircle = false) : center(center), size(size), isCircle(isCircle) {}
+
+    coord collide(const CollideBox &rhs, coord myOffset, coord rhsOffset) const;
+};
+
 class Map {
 public:
-    struct CollideBox {
-        coord center;
-        coord size;
-        bool isCircle = false;
-
-        inline CollideBox(coord center, coord size, bool isCircle = false) : center(center), size(size), isCircle(isCircle) {}
-    };
-
     class Tile {
         Map* map = nullptr;
 
