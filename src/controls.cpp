@@ -138,35 +138,10 @@ void Controls::handleKeyPress(sf::Event &event) {
 }
 
 void Controls::handleMousePress(sf::Event &event) {
-    // since left and right is symetric...
-//    if (event.type == sf::Event::MouseButtonPressed) {
-//        if (facingEntity) {
-//            if (event.mouseButton.button == sf::Mouse::Button::Left) {
-//                Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
-//                a.argEntity[0] = game->player;
-//                a.argInt[0] = Player::InventorySlots::LEFT_HAND;
-//                game->pushAction(a);
-//            }
-//            if (event.mouseButton.button == sf::Mouse::Button::Right) {
-//                Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
-//                a.argEntity[0] = game->player;
-//                a.argInt[0] = Player::InventorySlots::RIGHT_HAND;
-//                game->pushAction(a);
-//            }
-//        }
-//    }
-//    if (event.type == sf::Event::MouseButtonReleased) {
-//        if (event.mouseButton.button == sf::Mouse::Button::Left) {
-//            game->pushAction(Action(game->player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_UNOWN));
-//        }
-//        if (event.mouseButton.button == sf::Mouse::Button::Right) {
-//            game->pushAction(Action(game->player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_UNOWN));
-//        }
-//    }
     if (event.type == sf::Event::MouseButtonPressed) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) {
             if (facingTile != nullptr) {
-                facingTile->tileType = Map::Tile::STONE;
+                facingTile->setTileType(Map::Tile::STONE);
             }
         } else {
             if (event.mouseButton.button == sf::Mouse::Button::Left) {

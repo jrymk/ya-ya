@@ -48,7 +48,7 @@ void Map::Tile::setCoord(int x, int y) {
     this->y = y;
 }
 
-void Map::Tile::update() { // for adapting to neighbor tiles and so on
+void Map::Tile::neighborUpdate() { // for adapting to neighbor tiles and so on
     switch (tileType) {
 //        case STONE:
 //            if (!map->exists(x, y + 1))
@@ -62,6 +62,25 @@ void Map::Tile::update() { // for adapting to neighbor tiles and so on
 
 void Map::Tile::setMap(Map* map) {
     this->map = map;
+}
+
+void Map::Tile::setTileType(Map::Tile::TileType type) {
+    tileType = type;
+    switch (tileType) {
+        case GRASS:
+        case DIRT:
+            collideBoxes = {};
+            break;
+        case STONE:
+            collideBoxes = {
+                    CollideBox({.5, .5}, {.7, .7}, true)
+            };
+            break;
+    }
+    map->getTile(x - 1, y).neighborUpdate();
+    map->getTile(x + 1, y).neighborUpdate();
+    map->getTile(x, y - 1).neighborUpdate();
+    map->getTile(x, y + 1).neighborUpdate();
 }
 
 bool Map::exists(int x, int y) {

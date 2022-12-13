@@ -11,6 +11,8 @@ public:
         coord center;
         coord size;
         bool isCircle = false;
+
+        inline CollideBox(coord center, coord size, bool isCircle = false) : center(center), size(size), isCircle(isCircle) {}
     };
 
     class Tile {
@@ -19,6 +21,7 @@ public:
     public:
         int x = 0;
         int y = 0;
+        std::vector<CollideBox> collideBoxes;
 
         void setCoord(int x, int y);
 
@@ -32,7 +35,9 @@ public:
 
         void pushQuads();
 
-        void update();
+        void neighborUpdate();
+
+        void setTileType(TileType type);
     };
 
     // the map will be divided into 16x16 chunks

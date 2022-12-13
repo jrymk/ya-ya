@@ -47,39 +47,46 @@ void Game::update() {
 }
 
 void Game::mapUpdate() {
-    double minX = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(0., 1.)).x;
-    double maxX = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(1., 0.)).x;
-    double minY = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(1., 1.)).y;
-    double maxY = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(0., 0.)).y;
 
-    for (int x = std::floor(minX); x <= std::floor(maxX + 1.); x++) {
-        for (int y = std::floor(minY); y <= std::floor(maxY + 1.); y++) {
-            map.getTile(x, y).update();
-        }
-    }
+//    double minX = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(0., 1.)).x;
+//    double maxX = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(1., 0.)).x;
+//    double minY = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(1., 1.)).y;
+//    double maxY = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(0., 0.)).y;
+//
+//    for (int x = std::floor(minX); x <= std::floor(maxX + 1.); x++) {
+//        for (int y = std::floor(minY); y <= std::floor(maxY + 1.); y++) {
+////            map.getTile(x, y).update();
+//        }
+//    }
 }
 
 void Game::processCollisions() {
-    for (auto e: entities) {
-        // auto eid = splitId(e.first);
-        if (!e.second->collisionCollidable)
+    for (auto eit: entities) {
+        auto &e = eit.second;
+        // entity collision
+        if (!e->collisionCollidable)
             continue;
-
-        auto result = neighborsFinder.findNeighbors(e.second->position, .3, DUCK);
-
+        auto result = neighborsFinder.findNeighbors(e->position, .3, DUCK);
         for (auto f: result) {
-            if (e.second == f)
+            if (e == f)
                 continue;
             if (!f->collisionPushable)
                 continue;
 
-            if (e.second->position.len(f->position) < .3) {
+            if (e->position.len(f->position) < .3) {
                 Action a(Timer::getNow(), GLOBAL_PROCESS_COLLISION);
-                a.argEntity[0] = e.second;
+                a.argEntity[0] = e;
                 a.argEntity[1] = f;
                 pushAction(a);
             }
         }
+        // map collision
+        for (int tx = int(std::floor(e->position.x) - e->footprint.x / 2 - 1.); tx <= (std::floor(e->position.x) + e->footprint.x / 2 + 1.); tx++) {
+            for (int ty = int(std::floor(e->position.y) - e->footprint.y / 2 - 1.); ty <= (std::floor(e->position.y) + e->footprint.y / 2 + 1.); ty++) {
+//                for (auto )
+            }
+        }
+
     }
 }
 

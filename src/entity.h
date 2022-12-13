@@ -31,18 +31,26 @@ protected:
 public:
     std::string id = "undefined";
     EntityType type = ENTITY;
-    std::pair<int, int> neighborsFinderMyTile = {-1e8, 1e8};
-
     bool deleted = false;
+
+    // game logic
+    std::vector<std::shared_ptr<Entity>> inventory;
+    std::shared_ptr<Entity> ownedBy = nullptr;
+    int ownedSlot = 0;
 
     Timer entityTimer; // get elapsed per update
     double lastUpdate = -1.;
     double elapsedSecs = 0.;
 
-    std::vector<std::shared_ptr<Entity>> inventory;
-    std::shared_ptr<Entity> ownedBy = nullptr;
-    int ownedSlot = 0;
+    // interaction and appearance
+    std::vector<Graphics::Quad> const* model;
+    const coord footprint = coord(1, 1);
+    bool selectable = true;
+    std::pair<int, int> neighborsFinderMyTile = {-1e8, 1e8};
+    float opacity = 0.;
+    float scale = 1.;
 
+    // motion
     bool motionFrozen = false;
     bool collisionPushable = true;
     bool collisionCollidable = true;
@@ -55,11 +63,6 @@ public:
     double heading = 0.;
     double headingRotationSpeed = 0.;
 
-    bool selectable = true;
-
-    float opacity = 0.;
-    float scale = 1.;
-    std::vector<Graphics::Quad> const* model;
 
     void runActionEntity(Action &action, std::vector<Action> &followUpActions);
 
