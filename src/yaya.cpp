@@ -6,6 +6,7 @@
 #include "duck.h"
 #include "egg.h"
 
+#define TESTLOAD
 /**
  * Key definitions
  * F1: toggle wireframe
@@ -35,16 +36,13 @@ int main() {
 
     Game game;
 
-
+    #ifndef TESTLOAD
     std::shared_ptr<Player> player(new Player(&game));
     player->id = "player$player";
     player->opacity = 1.;
     auto &player_e = game.insertEntity(player);
     game.setPlayer(player_e);
-
-//    game.load();
-
-
+    
     for (int i = 0; i < 100; i++) {
         std::shared_ptr<Egg> egg(new Egg(&game));
         egg->id = game.newId(EGG);
@@ -55,7 +53,9 @@ int main() {
         egg->fertilized = true;
         game.insertEntity(egg);
     }
-
+    #else
+    game.load();
+    #endif
 
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("tilemap.png"))
@@ -149,6 +149,6 @@ int main() {
         window.display();
     }
     game.save();
-
+    
     return 0;
 }

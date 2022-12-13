@@ -4,6 +4,7 @@
 #include "player.h"
 #include "duck.h"
 #include "egg.h"
+#include "serializationExtended.h"
 
 Game::Game() :
         neighborsFinder(this),
@@ -282,20 +283,21 @@ void Game::load(const char* filepath) {
     for (auto &e: entities) {
         switch (e.second->type) {
             case PLAYER: {
-                std::shared_ptr<Player> tmp(new Player(this, e.second));
-                e.second.reset();
-                e.second = tmp;
-                player = tmp;
+                setPlayer(e.second);
+                std::dynamic_pointer_cast<Player>(e.second)->game = this;
                 break;
             }
             case DUCK: {
-                std::shared_ptr<Duck> tmp(new Duck(this, e.second));
-                e.second.reset();
-                e.second = tmp;
+                std::dynamic_pointer_cast<Duck>(e.second)->game = this;
+                pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
+                break;
+            }
+            case EGG: {
+                std::dynamic_pointer_cast<Egg>(e.second)->game = this;
+                pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
                 break;
             }
         }
-        pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
     }
 
     fin.close();

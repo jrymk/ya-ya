@@ -285,20 +285,16 @@ void Duck::loadModel() {
     model = &modelDuck;
 }
 
+Duck::Duck() {
+    inventory.resize(3, nullptr);
+    loadModel();
+}
+
 Duck::Duck(Game* game) : game(game) {
     // auto shared = std::make_shared<Duck>(this);
     // Entity::childClassPtr = std::dynamic_pointer_cast<Entity>(shared);
     inventory.resize(3, nullptr);
     type = DUCK;
-    loadModel();
-}
-
-Duck::Duck(Game* game, std::shared_ptr<Entity> &entity) : game(game) {
-    inventory.resize(3, nullptr);
-    id = entity->id;
-    type = entity->type;
-    position = entity->position;
-    deleted = entity->deleted;
     loadModel();
 }
 

@@ -11,9 +11,9 @@ private:
 public:
     void loadModel() override;
 
-    Player(Game* game);
+    Player();
 
-    Player(Game* game, std::shared_ptr<Entity> &entity);
+    Player(Game* game);
 
     Game* game;
 
@@ -28,11 +28,12 @@ public:
 
     void environmentUpdate() override;
 
-    constexpr static auto properties = std::make_tuple(  // reminder: update constructor
+    constexpr static auto properties = std::make_tuple(  // reminder: set game*
             SaveUtilities::property(&Player::id, "Pl.id"),
             SaveUtilities::property(&Player::type, "Pl.tp"),
             SaveUtilities::property(&Player::position, "Pl.ps"),
-            SaveUtilities::property(&Player::deleted, "Pl.dl")
+            SaveUtilities::property(&Player::deleted, "Pl.dl"),
+            SaveUtilities::property(&Player::opacity, "Pl.op")
     );
 };
 

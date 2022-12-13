@@ -8,7 +8,7 @@
 #include "camera.h"
 #include "timer.h"
 #include "action.h"
-#include "serialization.h"
+#include "saveUtilities.h"
 #include <deque>
 
 #define OUT_OF_SIGHT 500
@@ -90,7 +90,8 @@ public:
             SaveUtilities::property(&Entity::id, "Ey.id"),
             SaveUtilities::property(&Entity::type, "Ey.tp"),
             SaveUtilities::property(&Entity::position, "Ey.ps"),
-            SaveUtilities::property(&Entity::deleted, "Ey.dl")
+            SaveUtilities::property(&Entity::deleted, "Ey.dl"),
+            SaveUtilities::property(&Entity::opacity, "Ey.op")
     );
 };
 
