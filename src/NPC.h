@@ -1,32 +1,32 @@
 #pragma once
-#ifndef _NPC_H_
-#define _NPC_H_
+#ifndef YAYA_NPC_H
+#define YAYA_NPC_H
 
 #include "entity.h"
 #include "game.h"
 
 class NPC : public Entity {
-public : 
-	bool genderIsMale = true;
-	bool fertilized = false;
+public :
+    bool genderIsMale = true;
+    bool fertilized = false;
 
-	void runAction(Action& action, std::vector<Action>& followUpActions) override;
+    void runAction(Action &action, std::vector<Action> &followUpActions) override;
 
-	void loadModel() override;
+    void loadModel() override;
 
-	Game* game;
+    Game* game;
 
-	NPC(Game* game);
+    NPC(Game* game);
 
-	void customUpdate() override;
+    void customUpdate() override;
 
-	enum InventorySlots {
-		LANSEHYAOJI,
-	};
+    enum InventorySlots {
+        LANSEHYAOJI,
+    };
 
-	void setInventoryProps() override;
+    void setInventoryProps() override;
 
-	std::string getDescriptionStr() override;
+    std::string getDescriptionStr() override;
 };
 
 #endif

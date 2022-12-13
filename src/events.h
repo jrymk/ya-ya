@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _EVENTS_H_
-#define _EVENTS_H_
+#ifndef YAYA_EVENTS_H
+#define YAYA_EVENTS_H
 
 #include <SFML/Graphics.hpp>
 #include "debugger.h"
@@ -12,6 +12,7 @@ int mouseWheelPosition = 0;
 Timer rightArrowButton;
 Timer leftArrowButton;
 bool updatePhysics = false;
-void handleEvents(sf::RenderWindow& window);
+
+void handleEvents(sf::RenderWindow &window);
 
 #endif

@@ -1,6 +1,7 @@
 #pragma once
-#ifndef _DEBUGGER_H_
-#define _DEBUGGER_H_
+#ifndef YAYA_DEBUGGER_H
+#define YAYA_DEBUGGER_H
+
 #include <iostream>
 #include <sstream>
 #include <cmath>
@@ -26,7 +27,7 @@ class DebugGraph {
     float graphMin = -.01;
 
 public:
-    DebugGraph(const std::string& name, float graphWidth, float graphHeight, int ms);
+    DebugGraph(const std::string &name, float graphWidth, float graphHeight, int ms);
 
     void resetRange();
 
@@ -34,11 +35,11 @@ public:
 
     void newGraphEntry(float value);
 
-    float drawGraph(sf::RenderWindow& window, float y);
+    float drawGraph(sf::RenderWindow &window, float y);
 };
 
 extern std::vector<DebugGraph> debugGraphs;
 
-void renderDebugOverlay(sf::RenderWindow& window);
+void renderDebugOverlay(sf::RenderWindow &window);
 
 #endif

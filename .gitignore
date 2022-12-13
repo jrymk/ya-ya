@@ -7,3 +7,4 @@ build/libwinpthread-1.dll
 /.idea/
 /out/
 /.vs/
+/build/_deps/

@@ -25,7 +25,9 @@ add_executable(yaya
         src/egg.cpp
         src/timer.cpp
         src/utilities.cpp
-        src/map.cpp src/model.h)
+        src/map.cpp
+        src/model.h
+        )
 
 target_link_libraries(yaya PRIVATE sfml-graphics)
 target_compile_features(yaya PRIVATE cxx_std_17)

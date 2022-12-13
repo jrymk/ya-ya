@@ -3,7 +3,21 @@
 #include "camera.h"
 
 void Map::Tile::pushQuads() {
-    for (auto quad: modelTile) {
+    std::vector<Graphics::Quad> const* model = &modelGrass;
+
+    switch (tileType) {
+        case GRASS:
+            model = &modelGrass;
+            break;
+        case DIRT:
+            model = &modelDirt;
+            break;
+        case STONE:
+            model = &modelStone;
+            break;
+    }
+
+    for (auto quad: *model) {
         quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) + coord(x, y));
         quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + coord(x, y));
         quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + coord(x, y));
@@ -34,18 +48,41 @@ void Map::Tile::setCoord(int x, int y) {
     this->y = y;
 }
 
-Map::Chunk::Chunk(int bx, int by) : basex(bx), basey(by) {
-    tiles.resize(256);
-    for (int i = 0; i < 256; i++)
-        tiles[i].setCoord(basex + (i & 0b1111), basey + ((i >> 4) & 0b1111));
+void Map::Tile::update() { // for adapting to neighbor tiles and so on
+    switch (tileType) {
+//        case STONE:
+//            if (!map->exists(x, y + 1))
+//                break;
+//            Map::Tile &tile = map->getTile(x, y + 1);
+//            if (tile.tileType != STONE)
+//                tile.tileType = STONE;
+//            break;
+    }
 }
+
+void Map::Tile::setMap(Map* map) {
+    this->map = map;
+}
+
+bool Map::exists(int x, int y) {
+    return tileData.find(std::make_pair(x & ~0b1111, y & ~0b1111)) != tileData.end();
+}
+
+Map::Chunk::Chunk(int bx, int by, Map* map) : basex(bx), basey(by), map(map) {
+    tiles.resize(256);
+    for (int i = 0; i < 256; i++) {
+        tiles[i].setCoord(basex + (i & 0b1111), basey + ((i >> 4) & 0b1111));
+        tiles[i].setMap(map);
+    }
+}
+
 
 Map::Tile &Map::getTile(int x, int y) {
     auto c = std::make_pair(x & ~0b1111, y & ~0b1111);
-    auto res = mapData.find(c);
-    if (res == mapData.end()) {
-        mapData.insert(std::make_pair(c, Chunk(c.first, c.second)));
-        res = mapData.find(c);
+    auto res = tileData.find(c);
+    if (res == tileData.end()) {
+        tileData.insert(std::make_pair(c, Chunk(c.first, c.second, this)));
+        res = tileData.find(c);
     }
     return res->second.tiles[((y & 0b1111) << 4) + (x & 0b1111)];
 }

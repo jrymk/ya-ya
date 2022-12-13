@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _ACTION_H_
-#define _ACTION_H_
+#ifndef YAYA_ACTION_H
+#define YAYA_ACTION_H
 
 #include <vector>
 #include <stdarg.h>

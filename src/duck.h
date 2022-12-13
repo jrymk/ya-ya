@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _DUCK_H_
-#define _DUCK_H_
+#ifndef YAYA_DUCK_H
+#define YAYA_DUCK_H
 
 #include "entity.h"
 
@@ -24,6 +24,8 @@ public:
         EGG_1,
         BEAK,
     };
+
+    void environmentUpdate() override;
 
     void customUpdate() override;
 

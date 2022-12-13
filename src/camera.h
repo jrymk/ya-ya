@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _CAMERA_H_
-#define _CAMERA_H_
+#ifndef YAYA_CAMERA_H
+#define YAYA_CAMERA_H
 
 #include "utilities.h"
 #include "graphics.h"

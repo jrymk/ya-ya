@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GAME_H_
-#define _GAME_H_
+#ifndef YAYA_GAME_H
+#define YAYA_GAME_H
 
 #include <fstream>
 #include <map>
@@ -30,6 +30,8 @@ public:
     Game();
 
     void update();
+
+    void mapUpdate();
 
     void setPlayer(std::shared_ptr<Entity> &player);
 

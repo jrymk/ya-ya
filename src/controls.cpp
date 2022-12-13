@@ -37,14 +37,15 @@ std::shared_ptr<Entity> Controls::getFacingEntity(EntityType filter) {
 }
 
 Map::Tile &Controls::getFacingTile() {
-    coord refPnt = game->player->position + coord::getAngleVec(1., game->player->heading);
-//    Graphics::insertUserWireframe(
-//            Camera::getScreenPos(refPnt) + UIVec(3, 0),
-//            Camera::getScreenPos(refPnt) + UIVec(0, 3),
-//            Camera::getScreenPos(refPnt) + UIVec(-3, 0),
-//            Camera::getScreenPos(refPnt) + UIVec(0, -3),
-//            sf::Color(255, 255, 255, 255), sf::Color(0, 0, 0, 100)
-//    );
+    /// TODO: implement obstruction
+    coord refPnt = game->player->position + (Camera::getMouseCoord() - game->player->position).unit() * std::min((Camera::getMouseCoord() - game->player->position).len(), 2.);
+    Graphics::insertUserWireframe(
+            Camera::getScreenPos(refPnt) + UIVec(3, 0),
+            Camera::getScreenPos(refPnt) + UIVec(0, 3),
+            Camera::getScreenPos(refPnt) + UIVec(-3, 0),
+            Camera::getScreenPos(refPnt) + UIVec(0, -3),
+            sf::Color(255, 255, 255, 255), sf::Color(0, 0, 0, 100)
+    );
     std::pair<int, int> tile = {std::floor(refPnt.x), std::floor(refPnt.y)};
     Graphics::insertUserWireframe(
             Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.1, 0.1)),
@@ -163,24 +164,30 @@ void Controls::handleMousePress(sf::Event &event) {
 //        }
 //    }
     if (event.type == sf::Event::MouseButtonPressed) {
-        if (event.mouseButton.button == sf::Mouse::Button::Left) {
-            if (game->player->inventory[Player::InventorySlots::LEFT_HAND] == nullptr && facingEntity) {
-                Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
-                a.argEntity[0] = game->player;
-                a.argInt[0] = Player::InventorySlots::LEFT_HAND;
-                game->pushAction(a);
-            } else if (game->player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr) {
-                game->pushAction(Action(game->player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_UNOWN));
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) {
+            if (facingTile != nullptr) {
+                facingTile->tileType = Map::Tile::STONE;
             }
-        }
-        if (event.mouseButton.button == sf::Mouse::Button::Right) {
-            if (game->player->inventory[Player::InventorySlots::RIGHT_HAND] == nullptr && facingEntity) {
-                Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
-                a.argEntity[0] = game->player;
-                a.argInt[0] = Player::InventorySlots::RIGHT_HAND;
-                game->pushAction(a);
-            } else if (game->player->inventory[Player::InventorySlots::RIGHT_HAND] != nullptr) {
-                game->pushAction(Action(game->player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_UNOWN));
+        } else {
+            if (event.mouseButton.button == sf::Mouse::Button::Left) {
+                if (game->player->inventory[Player::InventorySlots::LEFT_HAND] == nullptr && facingEntity) {
+                    Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
+                    a.argEntity[0] = game->player;
+                    a.argInt[0] = Player::InventorySlots::LEFT_HAND;
+                    game->pushAction(a);
+                } else if (game->player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr) {
+                    game->pushAction(Action(game->player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_UNOWN));
+                }
+            }
+            if (event.mouseButton.button == sf::Mouse::Button::Right) {
+                if (game->player->inventory[Player::InventorySlots::RIGHT_HAND] == nullptr && facingEntity) {
+                    Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
+                    a.argEntity[0] = game->player;
+                    a.argInt[0] = Player::InventorySlots::RIGHT_HAND;
+                    game->pushAction(a);
+                } else if (game->player->inventory[Player::InventorySlots::RIGHT_HAND] != nullptr) {
+                    game->pushAction(Action(game->player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_UNOWN));
+                }
             }
         }
     }

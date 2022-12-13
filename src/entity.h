@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _ENTITY_H_
-#define _ENTITY_H_
+#ifndef YAYA_ENTITY_H
+#define YAYA_ENTITY_H
 
 #include <memory>
 #include "utilities.h"
@@ -72,6 +72,8 @@ public:
     void updateTimer();
 
     void update();
+
+    virtual void environmentUpdate();
 
     virtual std::string getDescriptionStr();
 

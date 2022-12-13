@@ -22,13 +22,6 @@ const std::vector<Graphics::Quad> modelPlayer = {
                 0.91,
                 UIVec(-0.5, 1.5), TILEMAP_COORD(0, 2),
                 UIVec(0.5, 1.5), TILEMAP_COORD(1, 2),
-//                UIVec(0.5, 0.5), TILEMAP_COORD(1, 3),
-//                UIVec(-0.5, 0.5), TILEMAP_COORD(0, 3)
-//        ),
-//        Graphics::Quad(
-//                0.91,
-//                UIVec(-0.5, 0.5), TILEMAP_COORD(0, 3),
-//                UIVec(0.5, 0.5), TILEMAP_COORD(1, 3),
                 UIVec(0.5, -0.5), TILEMAP_COORD(1, 4),
                 UIVec(-0.5, -0.5), TILEMAP_COORD(0, 4)
         )
@@ -67,13 +60,33 @@ const std::vector<Graphics::Quad> modelNPC = {
         // Why not use texture ... ?
 };
 
-const std::vector<Graphics::Quad> modelTile = {
+const std::vector<Graphics::Quad> modelGrass = {
         Graphics::Quad(
                 0.0,
-                UIVec(0., 0.), sf::Vector2f(0 + 128 * 8, 90.5 + 90.5 * 4),
-                UIVec(1., 0.), sf::Vector2f(384 + 128 * 8, 0 + 90.5 * 4),
-                UIVec(1., 1.), sf::Vector2f(512 + 128 * 8, 271.5 + 90.5 * 4),
-                UIVec(0., 1.), sf::Vector2f(128 + 128 * 8, 362 + 90.5 * 4)
+                UIVec(0., 1.), TILEMAP_COORD(2, 2),
+                UIVec(1., 1.), TILEMAP_COORD(3, 2),
+                UIVec(1., 0.), TILEMAP_COORD(3, 3),
+                UIVec(0., 0.), TILEMAP_COORD(2, 3)
+        )
+};
+
+const std::vector<Graphics::Quad> modelDirt = {
+        Graphics::Quad(
+                0.0,
+                UIVec(0., 1.), TILEMAP_COORD(2, 3),
+                UIVec(1., 1.), TILEMAP_COORD(3, 3),
+                UIVec(1., 0.), TILEMAP_COORD(3, 4),
+                UIVec(0., 0.), TILEMAP_COORD(2, 4)
+        )
+};
+
+const std::vector<Graphics::Quad> modelStone = {
+        Graphics::Quad(
+                0.0,
+                UIVec(0., 2.), TILEMAP_COORD(3, 2),
+                UIVec(1., 2.), TILEMAP_COORD(4, 2),
+                UIVec(1., 0.), TILEMAP_COORD(4, 4),
+                UIVec(0., 0.), TILEMAP_COORD(3, 4)
         )
 };
 

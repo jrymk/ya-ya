@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _CONTROLS_HPP_
-#define _CONTROLS_HPP_
+#ifndef YAYA_CONTROLS_H
+#define YAYA_CONTROLS_H
 
 #include <map>
 #include "map.h"

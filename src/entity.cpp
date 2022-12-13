@@ -135,9 +135,11 @@ void Entity::update() {
     while (!historyPosition.empty() && historyPosition.front().first.elapsed() >= 1.0)
         historyPosition.pop_back();
 
-
     customUpdate();
+    environmentUpdate();
 }
+
+void Entity::environmentUpdate() {}
 
 std::string Entity::getDescriptionStr() {
     std::stringstream ss;

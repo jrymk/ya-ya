@@ -14,6 +14,7 @@ void Game::update() {
 
     neighborsFinder.update();
     controls.update();
+    mapUpdate();
 
     if (controls.facingEntity) {
         Graphics::drawText(controls.facingEntity->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(controls.facingEntity->position) + UIVec(0., 40.), 0.,
@@ -43,6 +44,19 @@ void Game::update() {
     }
 
     updateTime = updateTimer.elapsed();
+}
+
+void Game::mapUpdate() {
+    double minX = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(0., 1.)).x;
+    double maxX = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(1., 0.)).x;
+    double minY = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(1., 1.)).y;
+    double maxY = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(0., 0.)).y;
+
+    for (int x = std::floor(minX); x <= std::floor(maxX + 1.); x++) {
+        for (int y = std::floor(minY); y <= std::floor(maxY + 1.); y++) {
+            map.getTile(x, y).update();
+        }
+    }
 }
 
 void Game::processCollisions() {

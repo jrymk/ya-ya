@@ -26,6 +26,8 @@ public:
 
     void customUpdate() override;
 
+    void environmentUpdate() override;
+
     constexpr static auto properties = std::make_tuple(  // reminder: update constructor
             SaveUtilities::property(&Player::id, "Pl.id"),
             SaveUtilities::property(&Player::type, "Pl.tp"),

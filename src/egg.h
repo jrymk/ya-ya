@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _EGG_H_
-#define _EGG_H_
+#ifndef YAYA_EGG_H
+#define YAYA_EGG_H
 
 #include "entity.h"
 #include "game.h"

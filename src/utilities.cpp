@@ -1,6 +1,6 @@
 #include "utilities.h"
 #include "graphics.h"
-#include "names.hpp"
+#include "names.h"
 #include <iomanip>
 
 std::string toStr(int a) {
@@ -34,7 +34,7 @@ int FramerateCounter::getFramerateAndUpdate() {
 }
 
 float FramerateCounter::getFrametimeMs() {
-    return (float)frametime / 1000;
+    return (float) frametime / 1000;
 }
 
 FramerateCounter::FramerateCounter() {
@@ -44,7 +44,7 @@ FramerateCounter::FramerateCounter() {
 std::mt19937 rng(time(0));
 
 double getRand() {
-    return std::max(0., std::min(1., (double)rng() / rng.max()));
+    return std::max(0., std::min(1., (double) rng() / rng.max()));
 }
 
 double subtractAngle(double l, double r) {

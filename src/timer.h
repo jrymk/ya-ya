@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef YAYA_TIMER_H
+#define YAYA_TIMER_H
 
 #include <string>
 #include <vector>

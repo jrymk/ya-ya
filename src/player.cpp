@@ -93,3 +93,43 @@ void Player::customUpdate() {
 //    debug << "custom updated " << slideVelocity.x << ", " << slideVelocity.y << "\n";
     }
 }
+
+void Player::environmentUpdate() {
+    int x = std::floor(position.x);
+    int y = std::floor(position.y);
+    Map::Tile &t = game->map.getTile(x, y);
+    if (t.tileType == Map::Tile::TileType::STONE) {
+        if (position.x > x + .9 && game->map.getTile(x + 1, y).tileType != Map::Tile::STONE) {
+            position.x = x + 1;
+        }
+        if (position.x < x + .1 && game->map.getTile(x - 1, y).tileType != Map::Tile::STONE) {
+            position.x = x;
+        }
+        if (position.y > y + .9 && game->map.getTile(x, y + 1).tileType != Map::Tile::STONE) {
+            position.y = y + 1;
+        }
+        if (position.y < y + .1 && game->map.getTile(x, y - 1).tileType != Map::Tile::STONE) {
+            position.y = y;
+        }
+
+    }
+
+
+//    for (int i = 0; i < 9; i++) {
+//        Map::Tile &t = game->map.getTile(std::floor(position.x) + (i % 3) - 1, std::floor(position.y) + (i / 3) - 1);
+//        coord tc = coord(t.x + .5, t.y + .5);
+//        if (t.tileType == Map::Tile::TileType::STONE) {
+////            if (position.x > t.x && position.x < t.x + .5)
+////                position.x = t.x;
+////            if (position.x < t.x + 1 && position.x > t.x + .5)
+////                position.x = t.x + 1;
+////            if (position.y > t.y && position.y < t.y + .5)
+////                position.y = t.y;
+////            if (position.y < t.y + 1 && position.y > t.y + .5)
+////                position.y = t.y + 1;
+//            if (position.len(tc) < .6) {
+//                position = position + (tc - position).unit() * ((tc - position).len() - .6);
+//            }
+//        }
+//    }
+}

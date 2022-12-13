@@ -1,6 +1,7 @@
 #pragma once
-#ifndef _UTILITIES_H_
-#define _UTILITIES_H_
+#ifndef YAYA_UTILITIES_H
+#define YAYA_UTILITIES_H
+
 #include <string>
 #include <queue>
 #include <chrono>

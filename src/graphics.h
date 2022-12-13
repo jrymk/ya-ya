@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GRAPHICS_H_
-#define _GRAPHICS_H_
+#ifndef YAYA_GRAPHICS_H
+#define YAYA_GRAPHICS_H
 
 #include <iostream>
 #include <vector>
