@@ -98,8 +98,8 @@ void Game::processCollisions() {
         if (e->collisionNoEnv)
             continue;
         // map collision
-        for (int tx = int(std::round(e->position.x) - e->footprint.x / 2 - 1.); tx <= (std::round(e->position.x) + e->footprint.x / 2); tx++) {
-            for (int ty = int(std::round(e->position.y) - e->footprint.y / 2 - 1.); ty <= (std::round(e->position.y) + e->footprint.y / 2); ty++) {
+        for (int tx = int(std::round(e->position.x) - e->footprint.x / 2 - 1.); tx <= int(std::round(e->position.x) + e->footprint.x / 2 + 1.); tx++) {
+            for (int ty = int(std::round(e->position.y) - e->footprint.y / 2 - 1.); ty <= int(std::round(e->position.y) + e->footprint.y / 2 + 1.); ty++) {
                 for (auto &cb: map.getTile(tx, ty).collideBoxes) {
                     e->position = e->position + e->collideBox.collide(cb, e->position, coord(tx, ty));
 

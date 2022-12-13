@@ -119,9 +119,19 @@ void Map::Tile::setCoord(int x, int y) {
 
 void Map::Tile::neighborUpdate() { // for adapting to neighbor tiles and so on
     switch (tileType) {
-//        case STONE:
-//            if (!map->exists(x, y + 1))
-//                break;
+        case STONE:
+            collideBoxes = {CollideBox({.5, .5}, {.6, .6}, false)};
+            if (map->exists(x - 1, y) && map->getTile(x - 1, y).tileType == STONE)
+                collideBoxes.push_back(CollideBox({.1, .5}, {.2, .4}, false));
+            if (map->exists(x + 1, y) && map->getTile(x + 1, y).tileType == STONE)
+                collideBoxes.push_back(CollideBox({.9, .5}, {.2, .4}, false));
+            if (map->exists(x, y - 1) && map->getTile(x, y - 1).tileType == STONE)
+                collideBoxes.push_back(CollideBox({.5, .1}, {.4, .2}, false));
+            if (map->exists(x, y + 1) && map->getTile(x, y + 1).tileType == STONE)
+                collideBoxes.push_back(CollideBox({.5, .9}, {.4, .2}, false));
+
+
+//            break;
 //            Map::Tile &tile = map->getTile(x, y + 1);
 //            if (tile.tileType != STONE)
 //                tile.tileType = STONE;
@@ -150,6 +160,7 @@ void Map::Tile::setTileType(Map::Tile::TileType type) {
     map->getTile(x + 1, y).neighborUpdate();
     map->getTile(x, y - 1).neighborUpdate();
     map->getTile(x, y + 1).neighborUpdate();
+    map->getTile(x, y).neighborUpdate(); // chain update is not allowed (only neighbors, just for those simple fences and shit)
 }
 
 bool Map::exists(int x, int y) {
