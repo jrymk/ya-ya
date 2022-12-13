@@ -5,3 +5,8 @@ build/libwinpthread-1.dll
 /cmake-build-release/
 /.vscode/
 /.idea/
+/.vs/ya-ya/v16/Browse.VC.db
+/.vs/ya-ya/v16/Browse.VC.db-shm
+/.vs/ya-ya/v16/Browse.VC.db-wal
+/.vs/ya-ya/v16/Browse.VC.opendb
+/.vs/slnx.sqlite

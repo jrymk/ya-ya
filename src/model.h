@@ -63,6 +63,10 @@ const std::vector<Graphics::Quad> modelEgg = {
         )
 };
 
+const std::vector<Graphics::Quad> modelNPC = {
+        // Why not use texture ... ?
+};
+
 const std::vector<Graphics::Quad> modelTile = {
         Graphics::Quad(
                 0.0,
