@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <tuple>
 #include <string>
 #include <cstring>
@@ -41,6 +42,22 @@ namespace SaveUtilities{
     inline constexpr void forSequence(std::integer_sequence<T, IdxSeq...>, FuncType&& f){
         (static_cast<void>(f(std::integral_constant<T, IdxSeq>{})), ...);
     }
+
+    std::unordered_map<std::uintptr_t, void*> objectTracker;                        // track deserialized objects
+    std::unordered_map<std::uintptr_t, std::shared_ptr<void> > smartObjectTracker;  // track deserialized objects
+
+    template<typename T>
+    inline std::string getAddress(const T* ptr){  // get pointer address string
+        std::string nameStr = typeid(T).name();
+        std::uintptr_t typeCode = nameStr.size();
+        for(char& c : nameStr) typeCode += c;
+        return "<Addr>" + std::to_string(reinterpret_cast<std::uintptr_t>(ptr) + typeCode)  + "</Addr>";
+    }
+
+    inline void clearObjTracker(){  // VITAL: clear temporary pointers for deserialization
+        objectTracker.clear();
+        smartObjectTracker.clear();
+    }
 }
 
 
@@ -71,7 +88,7 @@ namespace Serialization{
     template<typename T,
             typename std::enable_if_t<std::is_pointer<T>::value>* = nullptr>
     inline std::string serialize(const T ptr){  // object* and normal type*
-        return rserialize(*ptr);
+        return SaveUtilities::getAddress(ptr) + rserialize(*ptr);
     }
 
     template<typename T,
@@ -82,7 +99,7 @@ namespace Serialization{
 
     template<typename T, typename U>  // shared_ptr
     inline std::string serialize(const std::shared_ptr<U>& ptr){
-        return rserialize(*ptr);
+        return SaveUtilities::getAddress(ptr.get()) + rserialize(*ptr);
     }
 
     template<typename T, typename U, typename A>  // vector<object>
@@ -97,19 +114,6 @@ namespace Serialization{
         return str;
     }
 
-    template<typename T, typename U, typename A>  // vector<object*>
-    inline std::string serialize(const std::vector<U*, A>& obj){
-        std::string str;
-        str.append("<VecSize>" + std::to_string(obj.size()) + "</VecSize>[");
-        for(const U* element : obj)
-            str.append(rserialize(*element) + ",");
-    
-        if(obj.size()) str.pop_back();
-        str.append("]");
-
-        return str;
-    }
-
     template<typename T, typename K, typename V, typename C, typename A>
     inline std::string serialize(const std::map<K, V, C, A>& obj){  // map<key, object>
         std::string str;
@@ -119,19 +123,6 @@ namespace Serialization{
 
         if(obj.size()) str.pop_back();
             str.append("}");
-
-        return str;
-    }
-
-    template<typename T, typename K, typename V, typename C, typename A>
-    inline std::string serialize(const std::map<K, V*, C, A>& obj){  // map<key, object*>
-        std::string str;
-        str.append("<MapSize>" + std::to_string(obj.size()) + "</MapSize>{");
-        for(const std::pair<const K, V*>& kvpair : obj)
-            str.append(rserialize(kvpair.first) + ":" + rserialize(*kvpair.second) + ";");
-
-        if(obj.size()) str.pop_back();
-        str.append("}");
 
         return str;
     }
@@ -178,8 +169,17 @@ namespace Serialization{
             typename std::enable_if_t<std::is_pointer<T>::value>* = nullptr>
     inline void deserialize(T& ptr, const std::string& str){  // object* and normal type*
         typedef typename std::remove_pointer<T>::type U;
-        ptr = new U;
-        rdeserialize(*ptr, str);
+        int addrStart = str.find("<Addr>"),
+            addrEnd = str.find("</Addr>");
+        std::uintptr_t oldAddress = std::stoull(str.substr(addrStart + 6, addrEnd - addrStart - 6));
+
+        if(SaveUtilities::objectTracker[oldAddress])
+            ptr = static_cast<T>(SaveUtilities::objectTracker[oldAddress]);
+        else{
+            ptr = new U;
+            SaveUtilities::objectTracker[oldAddress] = ptr;
+            rdeserialize(*ptr, str.substr(addrEnd + 7));
+        }
     }
 
     template<typename T,
@@ -189,9 +189,17 @@ namespace Serialization{
     }
 
     template<typename T, typename U>
-    inline void deserialize(std::shared_ptr<U>& obj, const std::string& str){  // shared_ptr
-        obj = std::make_shared<U>();
-        rdeserialize(*obj, str);
+    inline void deserialize(std::shared_ptr<U>& ptr, const std::string& str){  // shared_ptr
+        int addrStart = str.find("<Addr>"),
+            addrEnd = str.find("</Addr>");
+        std::uintptr_t oldAddress = std::stoull(str.substr(addrStart + 6, addrEnd - addrStart - 6));
+        if(SaveUtilities::smartObjectTracker[oldAddress])
+            ptr = std::static_pointer_cast<U>(SaveUtilities::smartObjectTracker[oldAddress]);
+        else{
+            ptr = std::make_shared<U>();
+            SaveUtilities::smartObjectTracker[oldAddress] = ptr;
+            rdeserialize(*ptr, str.substr(addrEnd + 7));
+        }
     }
     
     template<typename T, typename U, typename A>  // vector<object>
@@ -214,31 +222,6 @@ namespace Serialization{
                 }
             }
             rdeserialize(obj[i], str.substr(searchIdx, nxtIdx - searchIdx));
-            searchIdx = nxtIdx + 1;
-        }
-    }
-
-    template<typename T, typename U, typename A>  // vector<object*>
-    inline void deserialize(std::vector<U*, A>& obj, const std::string& str){
-        int sizeTagStart = str.find("<VecSize>"),
-            sizeTagEnd = str.find("</VecSize>");
-        int vecSize = std::stoi(str.substr(sizeTagStart + 9, sizeTagEnd - sizeTagStart - 9)),
-            searchIdx = str.find("[") + 1;
-
-        obj.resize(vecSize);
-        for(size_t i = 0; i < vecSize; i++){
-            int nxtIdx = searchIdx;
-            if(i == vecSize - 1) nxtIdx = str.size() - 1;
-            else{
-                int brackets = 0;
-                while(brackets || str[nxtIdx] != ','){
-                    if(str[nxtIdx] == '[') brackets++;
-                    if(str[nxtIdx] == ']') brackets--;
-                    nxtIdx++;
-                }
-            }
-            obj[i] = new U;
-            rdeserialize(*obj[i], str.substr(searchIdx, nxtIdx - searchIdx));
             searchIdx = nxtIdx + 1;
         }
     }
@@ -271,40 +254,6 @@ namespace Serialization{
             K key; V value;
             rdeserialize(key, str.substr(searchIdx, sepIdx - searchIdx));
             rdeserialize(value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
-            obj[key] = value;
-            searchIdx = nxtIdx + 1;
-        }
-    }
-
-
-    template<typename T, typename K, typename V, typename C, typename A>  // map<key, object*>
-    inline void deserialize(std::map<K, V*, C, A>& obj, const std::string& str){
-        int sizeTagStart = str.find("<MapSize>"),
-            sizeTagEnd = str.find("</MapSize>");
-        int mapSize = std::stoi(str.substr(sizeTagStart + 9, sizeTagEnd - sizeTagStart - 9)),
-            searchIdx = str.find("{") + 1;
-
-        obj.clear();
-        for(size_t i = 0; i < mapSize; i++){
-            int nxtIdx = searchIdx, sepIdx = 0, brackets = 0;
-            if(i == mapSize - 1){
-                nxtIdx = str.size() - 1;
-                sepIdx = searchIdx;
-                while(brackets || str[sepIdx] != ':'){
-                    if(str[sepIdx] == '{') brackets++;
-                    if(str[sepIdx] == '}') brackets--;
-                    sepIdx++;
-                }
-            }
-            else while(brackets || str[nxtIdx] != ';'){
-                if(str[nxtIdx] == '{') brackets++;
-                if(str[nxtIdx] == '}') brackets--;
-                if((!brackets) && str[nxtIdx] == ':') sepIdx = nxtIdx;
-                nxtIdx++;
-            }
-            K key; V* value = new V;
-            rdeserialize(key, str.substr(searchIdx, sepIdx - searchIdx));
-            rdeserialize(*value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
             obj[key] = value;
             searchIdx = nxtIdx + 1;
         }
