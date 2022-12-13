@@ -22,29 +22,29 @@ struct coord {
         this->y = v2.y;
     }
 
-    inline coord operator+(const coord &r) { return {x + r.x, y + r.y}; }
+    inline coord operator+(const coord &r) const { return {x + r.x, y + r.y}; }
 
-    inline coord operator-(const coord &r) { return {x - r.x, y - r.y}; }
+    inline coord operator-(const coord &r) const { return {x - r.x, y - r.y}; }
 
-    inline coord operator*(const coord &r) { return {x * r.x, y * r.y}; }
+    inline coord operator*(const coord &r) const { return {x * r.x, y * r.y}; }
 
-    inline coord operator*(const double r) { return {x * r, y * r}; }
+    inline coord operator*(const double r) const { return {x * r, y * r}; }
 
-    inline coord operator/(const double r) { return {x / r, y / r}; }
+    inline coord operator/(const double r) const { return {x / r, y / r}; }
 
-    inline coord min(const coord &r) { return {std::min(x, r.x), std::min(y, r.y)}; }
+    inline coord min(const coord &r) const { return {std::min(x, r.x), std::min(y, r.y)}; }
 
-    inline coord max(const coord &r) { return {std::max(x, r.x), std::max(y, r.y)}; }
+    inline coord max(const coord &r) const { return {std::max(x, r.x), std::max(y, r.y)}; }
 
-    inline double len() { return std::sqrt(double(x * x + y * y)); }
+    inline double len() const { return std::sqrt(double(x * x + y * y)); }
 
-    inline double len(const coord &r) { return std::sqrt(double((x - r.x) * (x - r.x) + (y - r.y) * (y - r.y))); }
+    inline double len(const coord &r) const { return std::sqrt(double((x - r.x) * (x - r.x) + (y - r.y) * (y - r.y))); }
 
-    inline coord unit() { return (*this) / (*this).len(); }
+    inline coord unit() const { return (*this) / (*this).len(); }
 
     inline double angle(const coord &r) { return std::acos(double(r.x - x) / len(r)) * ((r.y - y >= 0) ? double(1) : double(-1)); }
 
-    inline static coord getRandCoord() { return coord(.01 * (getRand() - .5), .01 * (getRand() - .5)); }
+    inline static coord getRandCoord() { return {.01 * (getRand() - .5), .01 * (getRand() - .5)}; }
 
     inline static coord getAngleVec(double len, double angle) {
         return coord(std::cos(angle), std::sin(angle)) * len;

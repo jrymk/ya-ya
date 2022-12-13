@@ -3,7 +3,6 @@
 #define YAYA_ACTION_H
 
 #include <vector>
-#include <stdarg.h>
 #include <memory>
 #include "timer.h"
 #include "graphics.h"
