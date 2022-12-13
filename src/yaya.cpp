@@ -44,7 +44,7 @@ int main() {
 
 //    game.load();
 
-
+//
     for (int i = 0; i < 100; i++) {
         std::shared_ptr<Egg> egg(new Egg(&game));
         egg->id = game.newId(EGG);

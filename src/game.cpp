@@ -74,19 +74,49 @@ void Game::processCollisions() {
                 continue;
 
             if (e->position.len(f->position) < .3) {
-                Action a(Timer::getNow(), GLOBAL_PROCESS_COLLISION);
-                a.argEntity[0] = e;
-                a.argEntity[1] = f;
-                pushAction(a);
+                if (!f->collisionPushable)
+                    continue;
+                if (e->ownedBy == f || f->ownedBy == e)
+                    continue;
+
+                coord delta = f->position - e->position;
+                if (delta.len() < .00001)
+                    delta = coord::getRandCoord();
+                coord move = delta / delta.len() / delta.len() / 3.;
+                if (f->historyPosition.size() >= 2 &&
+                    (f->historyPosition[1].second.len(f->historyPosition[0].second)) / f->historyPosition[1].first.elapsed(f->historyPosition[0].first) < 0.1) {
+                    Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
+                    a.argCoord[0] = move;
+                    a.argFloat[0] = 0.1;
+                    pushAction(a);
+                }
             }
         }
+    }
+    for (auto eit: entities) {
+        auto &e = eit.second;
+        if (e->collisionNoEnv)
+            continue;
         // map collision
-        for (int tx = int(std::floor(e->position.x) - e->footprint.x / 2 - 1.); tx <= (std::floor(e->position.x) + e->footprint.x / 2 + 1.); tx++) {
-            for (int ty = int(std::floor(e->position.y) - e->footprint.y / 2 - 1.); ty <= (std::floor(e->position.y) + e->footprint.y / 2 + 1.); ty++) {
-//                for (auto )
+        for (int tx = int(std::round(e->position.x) - e->footprint.x / 2 - 1.); tx <= (std::round(e->position.x) + e->footprint.x / 2); tx++) {
+            for (int ty = int(std::round(e->position.y) - e->footprint.y / 2 - 1.); ty <= (std::round(e->position.y) + e->footprint.y / 2); ty++) {
+                for (auto &cb: map.getTile(tx, ty).collideBoxes) {
+                    e->position = e->position + e->collideBox.collide(cb, e->position, coord(tx, ty));
+
+                    Graphics::insertUserWireframe(Camera::getScreenPos(coord(tx, ty) + cb.center + coord(-cb.size.x / 2., -cb.size.y / 2.)),
+                                                  Camera::getScreenPos(coord(tx, ty) + cb.center + coord(cb.size.x / 2., -cb.size.y / 2.)),
+                                                  Camera::getScreenPos(coord(tx, ty) + cb.center + coord(cb.size.x / 2., cb.size.y / 2.)),
+                                                  Camera::getScreenPos(coord(tx, ty) + cb.center + coord(-cb.size.x / 2., cb.size.y / 2.)),
+                                                  (cb.isCircle ? sf::Color::Magenta : sf::Color::Blue), sf::Color::Transparent);
+                }
             }
         }
 
+        Graphics::insertUserWireframe(Camera::getScreenPos(e->position + e->collideBox.center + coord(-e->collideBox.size.x / 2., -e->collideBox.size.y / 2.)),
+                                      Camera::getScreenPos(e->position + e->collideBox.center + coord(e->collideBox.size.x / 2., -e->collideBox.size.y / 2.)),
+                                      Camera::getScreenPos(e->position + e->collideBox.center + coord(e->collideBox.size.x / 2., e->collideBox.size.y / 2.)),
+                                      Camera::getScreenPos(e->position + e->collideBox.center + coord(-e->collideBox.size.x / 2., e->collideBox.size.y / 2.)),
+                                      (e->collideBox.isCircle ? sf::Color::Magenta : sf::Color::Blue), sf::Color::Transparent);
     }
 }
 
@@ -114,37 +144,6 @@ void Game::runAction(Action &action, std::vector<Action> &followUpActions) {
     }
     // global actions
     switch (action.command) {
-        case GLOBAL_PROCESS_COLLISION: {
-            if (!action.argEntity[0]->collisionCollidable || !action.argEntity[1]->collisionPushable)
-                return;
-            if (action.argEntity[0]->ownedBy == action.argEntity[1] || action.argEntity[1]->ownedBy == action.argEntity[0])
-                return;
-//            if ((action.argEntity[0]->type == EGG && action.argEntity[1]->type == DUCK) || (action.argEntity[1]->type == EGG && action.argEntity[0]->type == DUCK))
-//                return;
-
-            coord delta = action.argEntity[1]->position - action.argEntity[0]->position;
-            if (delta.len() < .00001) {
-                delta = coord::getRandCoord();
-//                debug << "Warning: Processing collision on two stacked entities\n";
-            }
-            coord move = delta / delta.len() / delta.len() / 3.;
-//            if (action.argEntity[0]->historyPosition.size() >= 2 &&
-//                (action.argEntity[0]->historyPosition[1].second.len(action.argEntity[0]->historyPosition[0].second)) /  action.argEntity[0]->historyPosition[1].first.elapsed(action.argEntity[0]->historyPosition[0].first) < 0.1) {
-//                Action a(action.argEntity[0], Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
-//                a.argCoord[0] = move * -1.;
-//                a.argFloat[0] = 0.1;
-//                pushAction(a);
-//            }
-            if (action.argEntity[1]->historyPosition.size() >= 2 &&
-                (action.argEntity[1]->historyPosition[1].second.len(action.argEntity[1]->historyPosition[0].second)) /
-                action.argEntity[1]->historyPosition[1].first.elapsed(action.argEntity[1]->historyPosition[0].first) < 0.1) {
-                Action a(action.argEntity[1], Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
-                a.argCoord[0] = move;
-                a.argFloat[0] = 0.1;
-                pushAction(a);
-            }
-            break;
-        }
         case GLOBAL_DESTROY:
             destroyEntity(action.argEntity[0]->id);
             break;

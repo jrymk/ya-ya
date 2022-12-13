@@ -9,6 +9,7 @@
 #include "timer.h"
 #include "action.h"
 #include "serialization.h"
+#include "map.h"
 #include <deque>
 
 #define OUT_OF_SIGHT 500
@@ -45,6 +46,7 @@ public:
     // interaction and appearance
     std::vector<Graphics::Quad> const* model;
     const coord footprint = coord(1, 1);
+    const CollideBox collideBox = CollideBox({0., 0.}, {.7, .7}, true); // yes each entity only gets one collidable shape
     bool selectable = true;
     std::pair<int, int> neighborsFinderMyTile = {-1e8, 1e8};
     float opacity = 0.;
@@ -54,6 +56,7 @@ public:
     bool motionFrozen = false;
     bool collisionPushable = true;
     bool collisionCollidable = true;
+    bool collisionNoEnv = false;
     coord position;
     std::deque<std::pair<Timer, coord>> historyPosition;
     double zPosition = 0.;

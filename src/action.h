@@ -13,7 +13,6 @@ class Entity;
 enum Command {
     ON_CREATION,
     ON_UNOWNED, // entity unowned_by, int slot
-    GLOBAL_PROCESS_COLLISION, // entity e, entity f
     GLOBAL_DESTROY, // entity e
     ENTITY_OWN_BY, // entity e, int slot
     ENTITY_UNOWN,

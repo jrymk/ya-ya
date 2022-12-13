@@ -95,24 +95,24 @@ void Player::customUpdate() {
 }
 
 void Player::environmentUpdate() {
-    int x = std::floor(position.x);
-    int y = std::floor(position.y);
-    Map::Tile &t = game->map.getTile(x, y);
-    if (t.tileType == Map::Tile::TileType::STONE) {
-        if (position.x > x + .9 && game->map.getTile(x + 1, y).tileType != Map::Tile::STONE) {
-            position.x = x + 1;
-        }
-        if (position.x < x + .1 && game->map.getTile(x - 1, y).tileType != Map::Tile::STONE) {
-            position.x = x;
-        }
-        if (position.y > y + .9 && game->map.getTile(x, y + 1).tileType != Map::Tile::STONE) {
-            position.y = y + 1;
-        }
-        if (position.y < y + .1 && game->map.getTile(x, y - 1).tileType != Map::Tile::STONE) {
-            position.y = y;
-        }
+//    int x = std::floor(position.x);
+//    int y = std::floor(position.y);
+//    Map::Tile &t = game->map.getTile(x, y);
+//    if (t.tileType == Map::Tile::TileType::STONE) {
+//        if (position.x > x + .9 && game->map.getTile(x + 1, y).tileType != Map::Tile::STONE) {
+//            position.x = x + 1;
+//        }
+//        if (position.x < x + .1 && game->map.getTile(x - 1, y).tileType != Map::Tile::STONE) {
+//            position.x = x;
+//        }
+//        if (position.y > y + .9 && game->map.getTile(x, y + 1).tileType != Map::Tile::STONE) {
+//            position.y = y + 1;
+//        }
+//        if (position.y < y + .1 && game->map.getTile(x, y - 1).tileType != Map::Tile::STONE) {
+//            position.y = y;
+//        }
 
-    }
+//    }
 
 
 //    for (int i = 0; i < 9; i++) {
