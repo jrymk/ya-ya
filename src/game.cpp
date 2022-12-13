@@ -182,6 +182,8 @@ void Game::destroyEntity(std::string id) {
 }
 
 void Game::render() {
+    renderMap();
+
     for (auto entity: entities) {
         entity.second->pushQuads();
         //        switch (entity.second->type) {
@@ -215,6 +217,25 @@ void Game::render() {
                 sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
         );
     }
+}
+
+void Game::renderMap() {
+    double minX = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(0., 1.)).x;
+    double maxX = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(1., 0.)).x;
+    double minY = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(1., 1.)).y;
+    double maxY = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(0., 0.)).y;
+
+    for (int x = std::floor(minX); x <= std::floor(maxX + 1.); x++) {
+        for (int y = std::floor(minY); y <= std::floor(maxY + 1.); y++) {
+            map.getTile(x, y).pushQuads(x, y);
+        }
+    }
+
+//    for (int x = int(minX) & ~0b1111; x <= (int(maxX + 1.) & ~0b1111) + 0b1111; x += 0b1) {
+//        for (int y = int(minY) & ~0b1111; y <= (int(maxY + 1.) & ~0b1111) + 0b1111; y += 0b1) {
+//            map.getTile(0, 0).pushQuads(x, y);
+//        }
+//    }
 }
 
 static constexpr const char* defaultFilePath = ".\\save.ya";

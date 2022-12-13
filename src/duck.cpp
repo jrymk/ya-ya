@@ -2,6 +2,7 @@
 #include <iomanip>
 #include "game.h"
 #include "egg.h"
+#include "model.h"
 
 void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
@@ -280,32 +281,8 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
     }
 }
 
-void Duck::initModel() {
-    model.emplace_back(
-            0.80,
-            UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 7, 90.5 + 90.5 * 1),
-            UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 7, 0 + 90.5 * 1),
-            UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 7, 271.5 + 90.5 * 1),
-            UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 7, 362 + 90.5 * 1)
-
-    );
-    model.emplace_back(
-            0.90,
-            UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 4, 90.5 + 90.5 * 2),
-            UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 4, 0 + 90.5 * 2),
-            UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 4, 271.5 + 90.5 * 2),
-            UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 4, 362 + 90.5 * 2)
-
-    );
-    model.emplace_back(
-            0.91,
-            UIVec(-0.5, 0.5), sf::Vector2f(0 + 128, 90.5 + 90.5 * 3),
-            UIVec(0.5, 0.5), sf::Vector2f(384 + 128, 0 + 90.5 * 3),
-            UIVec(0.5, -0.5), sf::Vector2f(512 + 128, 271.5 + 90.5 * 3),
-            UIVec(-0.5, -0.5), sf::Vector2f(128 + 128, 362 + 90.5 * 3)
-
-    );
-    model[0].zPosScale = 0.; // shadow stays on the ground
+void Duck::loadModel() {
+    model = &modelDuck;
 }
 
 Duck::Duck(Game* game) : game(game) {
@@ -313,7 +290,7 @@ Duck::Duck(Game* game) : game(game) {
     // Entity::childClassPtr = std::dynamic_pointer_cast<Entity>(shared);
     inventory.resize(3, nullptr);
     type = DUCK;
-    initModel();
+    loadModel();
 }
 
 Duck::Duck(Game* game, std::shared_ptr<Entity> &entity) : game(game) {
@@ -322,7 +299,7 @@ Duck::Duck(Game* game, std::shared_ptr<Entity> &entity) : game(game) {
     type = entity->type;
     position = entity->position;
     deleted = entity->deleted;
-    initModel();
+    loadModel();
 }
 
 void Duck::customUpdate() {

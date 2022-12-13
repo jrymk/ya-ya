@@ -3,6 +3,7 @@
 #include "player.h"
 #include "duck.h"
 #include "egg.h"
+#include "model.h"
 
 void Entity::runActionEntity(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
@@ -78,10 +79,12 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
     }
 };
 
-void Entity::initModel() {}
+void Entity::loadModel() {
+    model = &modelEntity;
+}
 
 void Entity::pushQuads() {
-    for (auto quad: model) {
+    for (auto quad: *model) {
         quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) * scale + position) +
                   UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
         quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) * scale + position) +

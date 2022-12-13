@@ -1,6 +1,7 @@
 #include "egg.h"
 #include <iomanip>
 #include "duck.h"
+#include "model.h"
 
 void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
@@ -62,23 +63,15 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
     }
 }
 
-void Egg::initModel() {
-    model.push_back(
-            Graphics::Quad(
-                    0.85,
-                    UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 10, 90.5 + 90.5 * 0),
-                    UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 10, 0 + 90.5 * 0),
-                    UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 10, 271.5 + 90.5 * 0),
-                    UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 10, 362 + 90.5 * 0)
-            )
-    );
+void Egg::loadModel() {
+    model = &modelEgg;
 }
 
 Egg::Egg(Game* game) : game(game) {
     // auto shared = std::make_shared<Egg>(this);
     inventory.resize(1, nullptr);
     type = EGG;
-    initModel();
+    loadModel();
     collisionPushable = false;
 }
 

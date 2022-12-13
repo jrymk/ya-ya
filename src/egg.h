@@ -12,7 +12,7 @@ public:
 
     void runAction(Action &action, std::vector<Action> &followUpActions) override;
 
-    void initModel() override;
+    void loadModel() override;
 
     Game* game;
 

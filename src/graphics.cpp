@@ -210,7 +210,6 @@ void Graphics::renderQuads(sf::RenderWindow &window, sf::Texture &texture, UIRec
              quad.v2.y<viewport.pos.y || quad.v2.y>(viewport.pos.y + viewport.size.y)) &&
             (quad.v3.x<viewport.pos.x || quad.v3.x>(viewport.pos.x + viewport.size.x) ||
              quad.v3.y<viewport.pos.y || quad.v3.y>(viewport.pos.y + viewport.size.y))) {
-
             if (debugOutOfSight) {
                 UIVec center = (quad.v0 + quad.v1 + quad.v2 + quad.v3) / 4.;
                 center.x = std::min(std::max(center.x, (float) 5.), viewport.size.x - (float) 5.);

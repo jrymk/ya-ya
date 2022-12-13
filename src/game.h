@@ -11,6 +11,7 @@
 #include "serialization.h"
 #include "controls.h"
 #include "neighborsfinder.h"
+#include "map.h"
 
 class Game {
 public:
@@ -23,6 +24,8 @@ public:
     double updateTime;
     std::map<std::string, std::shared_ptr<Entity>> entities;
     std::shared_ptr<Entity> player;
+
+    Map map;
 
     Game();
 
@@ -62,6 +65,8 @@ public:
     void destroyEntity(std::string id);
 
     void render();
+
+    void renderMap();
 
     static constexpr const char* defaultFilePath = ".\\save.ya";
 

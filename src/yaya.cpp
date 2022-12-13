@@ -45,16 +45,16 @@ int main() {
 //    game.load();
 
 
-    for (int i = 0; i < 100; i++) {
-        std::shared_ptr<Egg> egg(new Egg(&game));
-        egg->id = game.newId(EGG);
-        egg->opacity = 1.;
-        egg->position.x = -5.0 + i % 10;
-        egg->position.y = -5.0 + i / 10;
-        egg->genderIsMale = i & 0b1;
-        egg->fertilized = true;
-        game.insertEntity(egg);
-    }
+//    for (int i = 0; i < 100; i++) {
+//        std::shared_ptr<Egg> egg(new Egg(&game));
+//        egg->id = game.newId(EGG);
+//        egg->opacity = 1.;
+//        egg->position.x = -5.0 + i % 10;
+//        egg->position.y = -5.0 + i / 10;
+//        egg->genderIsMale = i & 0b1;
+//        egg->fertilized = true;
+//        game.insertEntity(egg);
+//    }
 
 
     sf::Texture tilemap;
@@ -106,8 +106,9 @@ int main() {
         // handleEvents(window);
         window.clear(sf::Color(129, 214, 131));
 
-        UIRect rectWindow(sf::FloatRect(0, 0, window.getView().getSize().x, window.getView().getSize().y));
-        // UIRect rectWindow(sf::FloatRect(window.getView().getSize().x / 8., window.getView().getSize().y / 8., window.getView().getSize().x / 4. * 3., window.getView().getSize().y / 4. * 3.));
+//        UIRect rectWindow(sf::FloatRect(0, 0, window.getView().getSize().x, window.getView().getSize().y));
+        UIRect rectWindow(sf::FloatRect(window.getView().getSize().x / 8., window.getView().getSize().y / 8., window.getView().getSize().x / 4. * 3.,
+                                        window.getView().getSize().y / 4. * 3.));
         Camera::setViewport(rectWindow);
 
         Graphics::clearQuadsArray();
@@ -140,9 +141,10 @@ int main() {
 
         Camera::printCameraInfo();
 
-        // Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
-        // Graphics::drawText("[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y),
-        //     sf::Color::White, 16, rectWindow.pos + UIVec(0, -10), 0., sf::Color::Black, 1.);
+        Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
+        Graphics::drawText(
+                "[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y),
+                sf::Color::White, 16, rectWindow.pos + UIVec(0, -10), 0., sf::Color::Black, 1.);
 
         window.display();
     }

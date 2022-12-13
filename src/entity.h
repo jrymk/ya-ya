@@ -59,13 +59,13 @@ public:
 
     float opacity = 0.;
     float scale = 1.;
-    std::vector<Graphics::Quad> model;
+    std::vector<Graphics::Quad> const* model;
 
     void runActionEntity(Action &action, std::vector<Action> &followUpActions);
 
     virtual void runAction(Action &action, std::vector<Action> &followUpActions);
 
-    virtual void initModel();
+    virtual void loadModel();
 
     void pushQuads();
 
