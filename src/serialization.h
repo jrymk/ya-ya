@@ -44,8 +44,8 @@ namespace SaveUtilities {
         (static_cast<void>(f(std::integral_constant<T, IdxSeq>{})), ...);
     }
 
-    std::unordered_map<std::uintptr_t, void*> objectTracker;                        // track deserialized objects
-    std::unordered_map<std::uintptr_t, std::shared_ptr<void> > smartObjectTracker;  // track deserialized objects
+    inline std::unordered_map<std::uintptr_t, void*> objectTracker;                        // track deserialized objects
+    inline std::unordered_map<std::uintptr_t, std::shared_ptr<void> > smartObjectTracker;  // track deserialized objects
 
     template<typename T>
     inline std::string getAddress(const T* ptr) {  // get pointer address string
