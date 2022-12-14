@@ -20,6 +20,7 @@ enum EntityType {
     PLAYER,
     DUCK,
     EGG,
+    EGG_CARTON
 };
 
 class Game;
@@ -46,6 +47,8 @@ public:
 
     // interaction and appearance
     std::vector<Graphics::Quad> const* model;
+    float zDepthOverride = -1e8; // threshold -100.
+    float zDepthOffset = 0.;
     coord footprint = coord(1, 1);
     CollideBox collideBox = CollideBox({0., 0.}, {.7, .7}, true); // yes each entity only gets one collidable shape
     bool selectable = true;

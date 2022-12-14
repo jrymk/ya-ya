@@ -67,7 +67,7 @@ void Game::processCollisions() {
         // entity collision
         if (!e->collisionCollidable)
             continue;
-        auto result = neighborsFinder.findNeighbors(e->position, .3, DUCK);
+        auto result = neighborsFinder.findNeighbors(e->position, .3);
         for (auto f: result) {
             if (e == f)
                 continue;
@@ -181,6 +181,11 @@ std::string Game::newId(EntityType type) {
         case EGG:
             id = "egg$" + randomId();
             break;
+        case EGG_CARTON:
+            id = "eggcarton$" + randomId();
+            break;
+        default:
+            debug << "hey you forgot me\n";
     }
     if (entities.find(id) == entities.end())
         return id;

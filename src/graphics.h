@@ -8,7 +8,7 @@
 #include <SFML/Graphics.hpp>
 #include "debugger.h"
 
-#define ZDEPTH_LAYER 0.00001
+#define ZDEPTH_LAYER 0.00001 // on-screen y position causes +-0.005 zdepth offset
 #define ZDEPTH_BG 0.
 #define ZDEPTH_GROUND 0.1
 #define ZDEPTH_GROUND_OVERLAY 0.2
@@ -22,7 +22,7 @@ struct UIVec { // pixel space
     float x = 0.;
     float y = 0.;
 
-    inline UIVec() {};
+    inline UIVec() = default;
 
     inline UIVec(float x, float y) {
         this->x = x;
@@ -34,23 +34,25 @@ struct UIVec { // pixel space
         this->y = v2.y;
     }
 
-    inline UIVec operator+(const UIVec r) { return {x + r.x, y + r.y}; }
+    inline UIVec operator+(const UIVec r) const { return {x + r.x, y + r.y}; }
 
-    inline UIVec operator-(const UIVec r) { return {x - r.x, y - r.y}; }
+    inline UIVec operator-(const UIVec r) const { return {x - r.x, y - r.y}; }
 
-    inline UIVec operator*(const UIVec r) { return {x * r.x, y * r.y}; }
+    inline UIVec operator*(const UIVec r) const { return {x * r.x, y * r.y}; }
 
-    inline UIVec operator*(const float r) { return {x * r, y * r}; }
+    inline UIVec operator*(const float r) const { return {x * r, y * r}; }
 
-    inline UIVec operator/(const float r) { return {x / r, y / r}; }
+    inline UIVec operator/(const float r) const { return {x / r, y / r}; }
 
-    inline sf::Vector2f getVec2f() { return sf::Vector2f(x, y); }
+    inline sf::Vector2f getVec2f() const { return {x, y}; }
 
-    inline UIVec min(const UIVec r) { return {std::min(x, r.x), std::min(y, r.y)}; }
+    inline UIVec min(const UIVec r) const { return {std::min(x, r.x), std::min(y, r.y)}; }
 
-    inline UIVec max(const UIVec r) { return {std::max(x, r.x), std::max(y, r.y)}; }
+    inline UIVec max(const UIVec r) const { return {std::max(x, r.x), std::max(y, r.y)}; }
 
-    inline float len(const UIVec r) { return std::sqrt(float((x - r.x) * (x - r.x) + (y - r.y) * (y - r.y))); }
+    inline float len() const { return std::sqrt(float(x * x + y * y)); }
+
+    inline float len(const UIVec r) const { return std::sqrt(float((x - r.x) * (x - r.x) + (y - r.y) * (y - r.y))); }
 
     inline float angle(const UIVec r) { return std::acos(float(r.x - x) / len(r)) * ((r.y - y >= 0) ? float(1) : float(-1)); }
 };
@@ -59,9 +61,9 @@ struct UIRect {
     UIVec pos;
     UIVec size;
 
-    inline UIVec operator*(const UIVec r) { return {pos + size * r}; }
+    inline UIRect() = default;
 
-    inline UIRect() {}
+    inline UIVec operator*(const UIVec r) const { return {pos + size * r}; }
 
     inline UIRect(float l, float t, float w, float h) {
         pos.x = l;
@@ -98,7 +100,7 @@ public:
                 : zDepth(zDepth), v0(v0), t0(t0), v1(v1), t1(t1), v2(v2), t2(t2), v3(v3), t3(t3) {}
 
         inline Quad(float zDepth, UIVec v0, sf::Vector2f t0, UIVec v1, sf::Vector2f t1, UIVec v2, sf::Vector2f t2, UIVec v3, sf::Vector2f t3, const sf::Color &gc)
-                : zDepth(zDepth), v0(v0), t0(t0), c0(gc), v1(v1), t1(t1), c1(gc), v2(v2), t2(t2), c2(c2), v3(v3), t3(t3), c3(gc) {}
+                : zDepth(zDepth), v0(v0), t0(t0), c0(gc), v1(v1), t1(t1), c1(gc), v2(v2), t2(t2), c2(gc), v3(v3), t3(t3), c3(gc) {}
 
         inline Quad(float zDepth, UIVec v0, sf::Vector2f t0, const sf::Color &c0, UIVec v1, sf::Vector2f t1, const sf::Color &c1, UIVec v2, sf::Vector2f t2, const sf::Color &c2,
                     UIVec v3, sf::Vector2f t3, const sf::Color &c3)
@@ -108,7 +110,7 @@ public:
                 : zDepth(zDepth), v0(v0), t0(t0), v1(v1), t1(t1), v2(v2), t2(t2), v3(v3), t3(t3), zPosScale(zPos) {}
 
         inline Quad(float zDepth, UIVec v0, sf::Vector2f t0, UIVec v1, sf::Vector2f t1, UIVec v2, sf::Vector2f t2, UIVec v3, sf::Vector2f t3, const sf::Color &gc, float zPos)
-                : zDepth(zDepth), v0(v0), t0(t0), c0(gc), v1(v1), t1(t1), c1(gc), v2(v2), t2(t2), c2(c2), v3(v3), t3(t3), c3(gc), zPosScale(zPos) {}
+                : zDepth(zDepth), v0(v0), t0(t0), c0(gc), v1(v1), t1(t1), c1(gc), v2(v2), t2(t2), c2(gc), v3(v3), t3(t3), c3(gc), zPosScale(zPos) {}
 
         inline Quad(float zDepth, UIVec v0, sf::Vector2f t0, const sf::Color &c0, UIVec v1, sf::Vector2f t1, const sf::Color &c1, UIVec v2, sf::Vector2f t2, const sf::Color &c2,
                     UIVec v3, sf::Vector2f t3, const sf::Color &c3, float zPos)

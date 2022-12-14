@@ -6,6 +6,7 @@
 #include "duck.h"
 #include "egg.h"
 #include "ui.h"
+#include "eggcarton.h"
 
 //#define TESTLOAD
 
@@ -38,17 +39,43 @@ int main() {
     player->opacity = 1.;
     auto &player_e = game.insertEntity(player);
     game.setPlayer(player_e);
+//
+//    for (int i = 0; i < 100; i++) {
+//        std::shared_ptr<Egg> egg(new Egg(&game));
+//        egg->id = game.newId(EGG);
+//        egg->opacity = 1.;
+//        egg->position.x = -4.5 + i % 10;
+//        egg->position.y = -4.5 + i / 10;
+//        egg->genderIsMale = i & 0b1;
+//        egg->fertilized = true;
+//        game.insertEntity(egg);
+//    }
 
-    for (int i = 0; i < 100; i++) {
-        std::shared_ptr<Egg> egg(new Egg(&game));
-        egg->id = game.newId(EGG);
-        egg->opacity = 1.;
-        egg->position.x = -4.5 + i % 10;
-        egg->position.y = -4.5 + i / 10;
-        egg->genderIsMale = i & 0b1;
-        egg->fertilized = true;
-        game.insertEntity(egg);
+    for (int j = 0; j < 50; j++) {
+        std::shared_ptr<EggCarton> eggcarton(new EggCarton(&game));
+        eggcarton->id = game.newId(EGG_CARTON);
+        eggcarton->opacity = 1.;
+        eggcarton->position.x = -2.5 + j % 5;
+        eggcarton->position.y = -2.5 + (j / 5) * 0.5;
+        auto cptr = game.insertEntity(eggcarton);
+
+        for (int i = 0; i < 10; i++) {
+            std::shared_ptr<Egg> egg(new Egg(&game));
+            egg->id = game.newId(EGG);
+            egg->opacity = 1.;
+            egg->genderIsMale = i & 0b1;
+            egg->fertilized = true;
+            auto eptr = game.insertEntity(egg);
+
+            {
+                Action a(eptr, Timer::getNow(), ENTITY_OWN_BY);
+                a.argEntity[0] = cptr;
+                a.argInt[0] = i;
+                game.pushAction(a);
+            }
+        }
     }
+
 #else
     game.load();
 #endif

@@ -58,7 +58,6 @@ public:
 
         std::vector<Tile> tiles; // yyyyxxxx (x = lsb)
 
-
         Chunk(int bx, int by, Map* map);
     };
 

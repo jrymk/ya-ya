@@ -76,6 +76,32 @@ const std::vector<Graphics::Quad> modelEgg[3] = {
         }
 };
 
+const std::vector<Graphics::Quad> modelEggCarton = {
+        {
+                Graphics::Quad(
+                        ZDEPTH_ABOVE_GROUND - ZDEPTH_LAYER * 2,
+                        UIVec(-0.5, 0.5), TILEMAP_COORD(-3, 10),
+                        UIVec(0.5, 0.5), TILEMAP_COORD(-2, 10),
+                        UIVec(0.5, -0.5), TILEMAP_COORD(-2, 11),
+                        UIVec(-0.5, -0.5), TILEMAP_COORD(-3, 11)
+                ),
+                Graphics::Quad(
+                        ZDEPTH_ABOVE_GROUND,
+                        UIVec(-0.5, 0.5), TILEMAP_COORD(-2, 10),
+                        UIVec(0.5, 0.5), TILEMAP_COORD(-1, 10),
+                        UIVec(0.5, -0.5), TILEMAP_COORD(-1, 11),
+                        UIVec(-0.5, -0.5), TILEMAP_COORD(-2, 11)
+                ),
+                Graphics::Quad(
+                        ZDEPTH_ABOVE_GROUND + ZDEPTH_LAYER * 2,
+                        UIVec(-0.5, 0.5), TILEMAP_COORD(-1, 10),
+                        UIVec(0.5, 0.5), TILEMAP_COORD(0, 10),
+                        UIVec(0.5, -0.5), TILEMAP_COORD(0, 11),
+                        UIVec(-0.5, -0.5), TILEMAP_COORD(-1, 11)
+                )
+        }
+};
+
 const std::vector<Graphics::Quad> modelNPC = {
         // Why not use texture ... ?
 };
