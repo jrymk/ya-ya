@@ -2,9 +2,9 @@
 
 ## 鴨鴨
 
-### roadmap
-
 ![Egg carton](./doc/img.png)
+
+### roadmap
 
 #### gameplay
 
@@ -17,7 +17,7 @@
 #### serialization
 
 - [x] save duck gender
-- [x] save actions
+- [ ] save actions
 - [ ] ...
 
 #### artwork
@@ -26,9 +26,7 @@
 
 ### build guide
 
-**Compiler**\
-supposedly: `mingw64 x86_64-7.3.0-release-posix-seh-rt_v5-rev0`\
-used: `mingw64 x86_64-12.1.0-release-posix-seh-rt_v10-rev3`
+**Compiler:** `mingw64 x86_64-12.1.0-release-posix-seh-rt_v10-rev3`
 
 **Working directory:** `/build/`
 

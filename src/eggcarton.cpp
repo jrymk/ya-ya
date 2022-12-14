@@ -44,18 +44,14 @@ void EggCarton::customUpdate() {
 void EggCarton::setInventoryProps() {
     double cartonZDepth = modelEggCarton[1].zDepth + (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
 
-    if (inventory.size() == inventory_last.size()) {
-        for (int slot = 0; slot < inventory.size(); slot++) {
-            if (!(!inventory_last[slot] && inventory[slot]))
-                continue;
-            /// ON CAPTURE
-            if (slot >= EGG_0 && slot <= EGG_9) {
-                if (inventory[slot] == nullptr)
-                    continue;
-                inventory[slot]->zPosition = .3;
-                inventory[slot]->selectable = false;
-                // eggs are not pushable anyways
-            }
+    for (int slot = 0; slot < inventory.size(); slot++) {
+        if (inventory_last.size() != inventory.size() || !(!inventory_last[slot] && inventory[slot]))
+            continue;
+        /// ON CAPTURE
+        if (slot >= EGG_0 && slot <= EGG_9) {
+            inventory[slot]->zPosition = .3;
+            inventory[slot]->selectable = false;
+            // eggs are not pushable anyways
         }
     }
     for (int slot = 0; slot < inventory.size(); slot++) {
@@ -63,29 +59,21 @@ void EggCarton::setInventoryProps() {
             continue;
         /// ON HOLD
         if (slot >= EGG_0 && slot <= EGG_9) {
-            if (inventory[slot] == nullptr)
-                continue;
             inventory[slot]->position = position + coord(-.3 + (slot % 5) * .15, (slot < 5 ? .075 : -.075));
             inventory[slot]->zPosition = .3; // do every update or else gravity will do its thing
             inventory[slot]->zDepthOverride = cartonZDepth + (slot < 5 ? -ZDEPTH_LAYER : ZDEPTH_LAYER);
         }
     }
-    if (inventory.size() == inventory_last.size()) {
-        for (int slot = 0; slot < inventory.size(); slot++) {
-            if (!(inventory_last[slot] && !inventory[slot]))
-                continue;
-            /// ON RELEASE
-            if (slot >= EGG_0 && slot <= EGG_9) {
-                if (inventory[slot] == nullptr)
-                    continue;
-                inventory_last[slot]->zDepthOverride = -1e8;
-                inventory_last[slot]->zPosition = 0.;
-                inventory_last[slot]->selectable = true;
-            }
+    for (int slot = 0; slot < inventory.size(); slot++) {
+        if (inventory_last.size() != inventory.size() || !(inventory_last[slot] && !inventory[slot]))
+            continue;
+        /// ON RELEASE
+        if (slot >= EGG_0 && slot <= EGG_9) {
+            inventory_last[slot]->zDepthOverride = -1e8;
+            inventory_last[slot]->zPosition = 0.;
+            inventory_last[slot]->selectable = true;
         }
     }
-
-    inventory_last = inventory;
 }
 
 std::string EggCarton::getDescriptionStr() {

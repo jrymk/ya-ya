@@ -96,20 +96,18 @@ void Egg::customUpdate() {
 }
 
 void Egg::setInventoryProps() {
-    if (inventory.size() == inventory_last.size()) {
-        for (int slot = 0; slot < inventory.size(); slot++) {
-            if (!(!inventory_last[slot] && inventory[slot]))
-                continue;
-            /// ON CAPTURE
-            switch (slot) {
-                case InventorySlots::EMBRYO:
-                    inventory[InventorySlots::EMBRYO]->scale = .3;
-                    inventory[InventorySlots::EMBRYO]->opacity = .1;
-                    inventory[InventorySlots::EMBRYO]->selectable = false;
-                    inventory[InventorySlots::EMBRYO]->collisionCollidable = false;
-                    inventory[InventorySlots::EMBRYO]->collisionPushable = false;
-                    break;
-            }
+    for (int slot = 0; slot < inventory.size(); slot++) {
+        if (inventory_last.size() != inventory.size() || !(!inventory_last[slot] && inventory[slot]))
+            continue;
+        /// ON CAPTURE
+        switch (slot) {
+            case InventorySlots::EMBRYO:
+                inventory[InventorySlots::EMBRYO]->scale = .3;
+                inventory[InventorySlots::EMBRYO]->opacity = .1;
+                inventory[InventorySlots::EMBRYO]->selectable = false;
+                inventory[InventorySlots::EMBRYO]->collisionCollidable = false;
+                inventory[InventorySlots::EMBRYO]->collisionPushable = false;
+                break;
         }
     }
     for (int slot = 0; slot < inventory.size(); slot++) {
@@ -122,24 +120,20 @@ void Egg::setInventoryProps() {
                 break;
         }
     }
-    if (inventory.size() == inventory_last.size()) {
-        for (int slot = 0; slot < inventory.size(); slot++) {
-            if (!(inventory_last[slot] && !inventory[slot]))
-                continue;
-            /// ON RELEASE
-            switch (slot) {
-                case InventorySlots::EMBRYO:
-                    inventory_last[InventorySlots::EMBRYO]->scale = 1.;
-                    inventory_last[InventorySlots::EMBRYO]->opacity = 1.;
-                    inventory_last[InventorySlots::EMBRYO]->selectable = true;
-                    inventory_last[InventorySlots::EMBRYO]->collisionCollidable = true;
-                    inventory_last[InventorySlots::EMBRYO]->collisionPushable = true;
-                    break;
-            }
+    for (int slot = 0; slot < inventory.size(); slot++) {
+        if (inventory_last.size() != inventory.size() || !(inventory_last[slot] && !inventory[slot]))
+            continue;
+        /// ON RELEASE
+        switch (slot) {
+            case InventorySlots::EMBRYO:
+                inventory_last[InventorySlots::EMBRYO]->scale = 1.;
+                inventory_last[InventorySlots::EMBRYO]->opacity = 1.;
+                inventory_last[InventorySlots::EMBRYO]->selectable = true;
+                inventory_last[InventorySlots::EMBRYO]->collisionCollidable = true;
+                inventory_last[InventorySlots::EMBRYO]->collisionPushable = true;
+                break;
         }
     }
-
-    inventory_last = inventory;
 }
 
 std::string Egg::getDescriptionStr() {

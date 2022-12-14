@@ -319,20 +319,19 @@ void Duck::customUpdate() {
 }
 
 void Duck::setInventoryProps() {
-    if (inventory.size() == inventory_last.size()) {
-        for (int slot = 0; slot < inventory.size(); slot++) {
-            if (!(!inventory_last[slot] && inventory[slot]))
-                continue;
-            /// ON CAPTURE
-            switch (slot) {
-                case InventorySlots::EGG_0:
-                case InventorySlots::EGG_1:
-                    inventory[slot]->motionFrozen = true;
-                    inventory[slot]->selectable = false;
-                    inventory[slot]->opacity = .1;
-                    inventory[slot]->scale = .6;
-                    break;
-            }
+
+    for (int slot = 0; slot < inventory.size(); slot++) {
+        if (inventory_last.size() != inventory.size() || !(!inventory_last[slot] && inventory[slot]))
+            continue;
+        /// ON CAPTURE
+        switch (slot) {
+            case InventorySlots::EGG_0:
+            case InventorySlots::EGG_1:
+                inventory[slot]->motionFrozen = true;
+                inventory[slot]->selectable = false;
+                inventory[slot]->opacity = .1;
+                inventory[slot]->scale = .6;
+                break;
         }
     }
     for (int slot = 0; slot < inventory.size(); slot++) {
@@ -357,24 +356,20 @@ void Duck::setInventoryProps() {
                 break;
         }
     }
-    if (inventory.size() == inventory_last.size()) {
-        for (int slot = 0; slot < inventory.size(); slot++) {
-            if (!(inventory_last[slot] && !inventory[slot]))
-                continue;
-            /// ON RELEASE
-            switch (slot) {
-                case InventorySlots::EGG_0:
-                case InventorySlots::EGG_1:
-                    inventory_last[slot]->motionFrozen = false;
-                    inventory_last[slot]->selectable = true;
-                    inventory_last[slot]->opacity = 1.;
-                    inventory_last[slot]->scale = 1.;
-                    break;
-            }
+    for (int slot = 0; slot < inventory.size(); slot++) {
+        if (inventory_last.size() != inventory.size() || !(inventory_last[slot] && !inventory[slot]))
+            continue;
+        /// ON RELEASE
+        switch (slot) {
+            case InventorySlots::EGG_0:
+            case InventorySlots::EGG_1:
+                inventory_last[slot]->motionFrozen = false;
+                inventory_last[slot]->selectable = true;
+                inventory_last[slot]->opacity = 1.;
+                inventory_last[slot]->scale = 1.;
+                break;
         }
     }
-
-    inventory_last = inventory;
 }
 
 std::string Duck::getDescriptionStr() {

@@ -169,6 +169,7 @@ void Entity::update() {
     while (!historyPosition.empty() && historyPosition.front().first.elapsed() >= 1.0)
         historyPosition.pop_back();
 
+    inventory_last = inventory;
     customUpdate();
     environmentUpdate();
 }

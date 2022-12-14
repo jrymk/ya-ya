@@ -18,18 +18,16 @@ Player::Player(Game* game) : game(game) {
 }
 
 void Player::setInventoryProps() {
-    if (inventory.size() == inventory_last.size()) {
-        for (int slot = 0; slot < inventory.size(); slot++) {
-            if (!(!inventory_last[slot] && inventory[slot]))
-                continue;
-            /// ON CAPTURE
-            switch (slot) {
-                case InventorySlots::LEFT_HAND:
-                case InventorySlots::RIGHT_HAND:
-                    inventory[slot]->motionFrozen = true;
-                    inventory[slot]->selectable = false;
-                    break;
-            }
+    for (int slot = 0; slot < inventory.size(); slot++) {
+        if (inventory_last.size() != inventory.size() || !(!inventory_last[slot] && inventory[slot]))
+            continue;
+        /// ON CAPTURE
+        switch (slot) {
+            case InventorySlots::LEFT_HAND:
+            case InventorySlots::RIGHT_HAND:
+                inventory[slot]->motionFrozen = true;
+                inventory[slot]->selectable = false;
+                break;
         }
     }
     for (int slot = 0; slot < inventory.size(); slot++) {
@@ -54,22 +52,18 @@ void Player::setInventoryProps() {
                 break;
         }
     }
-    if (inventory.size() == inventory_last.size()) {
-        for (int slot = 0; slot < inventory.size(); slot++) {
-            if (!(inventory_last[slot] && !inventory[slot]))
-                continue;
-            /// ON RELEASE
-            switch (slot) {
-                case InventorySlots::LEFT_HAND:
-                case InventorySlots::RIGHT_HAND:
-                    inventory_last[slot]->motionFrozen = false;
-                    inventory_last[slot]->selectable = true;
-                    break;
-            }
+    for (int slot = 0; slot < inventory.size(); slot++) {
+        if (inventory_last.size() != inventory.size() || !(inventory_last[slot] && !inventory[slot]))
+            continue;
+        /// ON RELEASE
+        switch (slot) {
+            case InventorySlots::LEFT_HAND:
+            case InventorySlots::RIGHT_HAND:
+                inventory_last[slot]->motionFrozen = false;
+                inventory_last[slot]->selectable = true;
+                break;
         }
     }
-
-    inventory_last = inventory;
 }
 
 void Player::customUpdate() {
