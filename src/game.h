@@ -19,6 +19,7 @@ public:
     Controls controls;
 
     bool showActionList = false;
+    bool showCollisionBoxes = false;
 
     std::priority_queue<Action> actionList;
     double updateTime;

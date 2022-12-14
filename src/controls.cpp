@@ -69,8 +69,8 @@ void Controls::handleKeyPress(sf::Event &event) {
                 debug << "Toggled wireframe: " << Graphics::showWireframe << "\n";
                 break;
             case sf::Keyboard::F2:
-                for (int i = 0; i < debugGraphs.size(); i++)
-                    debugGraphs[i].resetRange();
+                game->showCollisionBoxes = !game->showCollisionBoxes;
+                debug << "Toggled collision boxes: " << game->showCollisionBoxes << "\n";
                 break;
             case sf::Keyboard::F3:
                 debugStream.str("");
@@ -85,6 +85,7 @@ void Controls::handleKeyPress(sf::Event &event) {
                         Action a(duck.second, Timer::getNow(), DUCK_DUCKWALK_TO_UNTIL);
                         a.argCoord[0].x = Camera::getMouseCoord().x + (getRand() - .5);
                         a.argCoord[0].y = Camera::getMouseCoord().y + (getRand() - .5);
+                        a.argFloat[0] = 15.;
                         game->pushAction(a);
                     }
                 }

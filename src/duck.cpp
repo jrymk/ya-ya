@@ -20,6 +20,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                 Action a(action.entity, Timer::getNow() + .3, DUCK_DUCKWALK_TO_UNTIL);
                 a.argCoord[0].x = position.x + 3. * (getRand() - 0.5);
                 a.argCoord[0].y = position.y + 3. * (getRand() - 0.5);
+                a.argFloat[0] = 5.;
                 followUpActions.push_back(a);
             }
             opacity = 1.; // this is actual creation
@@ -35,6 +36,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
             Action a(action.entity, Timer::getNow(), DUCK_DUCKWALK_TO_UNTIL);
             a.argCoord[0].x = position.x + getRand() * 3.;
             a.argCoord[0].y = position.y + getRand() * 3.;
+            a.argFloat[0] = 15.;
             followUpActions.push_back(a);
             break;
         }
@@ -122,6 +124,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                     {
                         Action a(action.entity, Timer::getNow() + .1, DUCK_DUCKWALK_TO_DUCK);
                         a.argEntity[0] = closest;
+                        a.argFloat[0] = 15.;
                         followUpActions.push_back(a);
                     }
                     {
@@ -249,9 +252,11 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
             if (position.len(action.argCoord[0]) < .7) {
                 velocity = 0.;
                 headingRotationSpeed = 0.;
-            } else {
-                Action a(action.entity, Timer::getNow() + 0.2 * std::sqrt(position.len(action.argCoord[0])), DUCK_DUCKWALK_TO_UNTIL);
+            } else if (action.argFloat[0] > 0.) {
+                Timer t = Timer::getNow() + 0.2 * std::sqrt(position.len(action.argCoord[0]));
+                Action a(action.entity, t, DUCK_DUCKWALK_TO_UNTIL);
                 a.argCoord[0] = action.argCoord[0];
+                a.argFloat[0] = t.elapsed(action.time + action.argFloat[0]);
                 followUpActions.push_back(a);
             }
             break;
@@ -271,9 +276,11 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
             if (position.len(action.argEntity[0]->position) < .3) {
                 velocity = 0.;
                 headingRotationSpeed = 0.;
-            } else {
-                Action a(action.entity, Timer::getNow() + 0.2 * std::sqrt(position.len(action.argEntity[0]->position)), DUCK_DUCKWALK_TO_DUCK);
+            } else if (action.argFloat[0] > 0.) {
+                Timer t = Timer::getNow() + 0.2 * std::sqrt(position.len(action.argEntity[0]->position));
+                Action a(action.entity, t, DUCK_DUCKWALK_TO_DUCK);
                 a.argEntity[0] = action.argEntity[0];
+                a.argFloat[0] = t.elapsed(action.time + action.argFloat[0]);
                 followUpActions.push_back(a);
             }
             break;

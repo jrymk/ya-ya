@@ -8,7 +8,7 @@
 
 - [ ] add on hold item menu ui
 - [x] add map tiles and rendering
-- [ ] add map collision
+- [x] add map collision
 - [ ] add building mechanism and ui
 - [ ] selling and buying resources
 

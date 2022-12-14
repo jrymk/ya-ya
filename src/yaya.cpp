@@ -9,7 +9,7 @@
 /**
  * Key definitions
  * F1: toggle wireframe
- * F2: reset graph min max
+ * F2: toggle collision boxes
  * F3: clear debug output
  * F4: toggle debug out of sight
  * F5: duckwalk to cursor
@@ -106,9 +106,9 @@ int main() {
         // handleEvents(window);
         window.clear(sf::Color(129, 214, 131));
 
-//        UIRect rectWindow(sf::FloatRect(0, 0, window.getView().getSize().x, window.getView().getSize().y));
-        UIRect rectWindow(sf::FloatRect(window.getView().getSize().x / 8., window.getView().getSize().y / 8., window.getView().getSize().x / 4. * 3.,
-                                        window.getView().getSize().y / 4. * 3.));
+        UIRect rectWindow(sf::FloatRect(0, 0, window.getView().getSize().x, window.getView().getSize().y));
+//        UIRect rectWindow(sf::FloatRect(window.getView().getSize().x / 8., window.getView().getSize().y / 8., window.getView().getSize().x / 4. * 3.,
+//                                        window.getView().getSize().y / 4. * 3.));
         Camera::setViewport(rectWindow);
 
         Graphics::clearQuadsArray();
