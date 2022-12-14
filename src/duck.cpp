@@ -329,7 +329,7 @@ void Duck::setInventoryProps() {
                 case InventorySlots::EGG_1:
                     inventory[slot]->motionFrozen = true;
                     inventory[slot]->selectable = false;
-                    inventory[slot]->opacity = .3;
+                    inventory[slot]->opacity = .1;
                     inventory[slot]->scale = .6;
                     break;
             }
@@ -391,7 +391,7 @@ std::string Duck::getDescriptionStr() {
 void Duck::environmentUpdate() {
 //    for (int i = 0; i < 9; i++) {
 //        Map::Tile &t = game->map.getTile(std::floor(position.x) + (i % 3) - 1, std::floor(position.y) + (i / 3) - 1);
-//        if (t.tileType == Map::Tile::TileType::STONE) {
+//        if (t.tileType == Map::Tile::TileType::MOAI) {
 //            if (position.len(coord(t.x, t.y)) < .5) {
 //                position = position + (coord(t.x, t.y) - position).unit() * ((coord(t.x, t.y) - position).len() - .5);
 //            }

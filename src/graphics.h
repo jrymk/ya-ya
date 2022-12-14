@@ -8,6 +8,12 @@
 #include <SFML/Graphics.hpp>
 #include "debugger.h"
 
+#define ZDEPTH_LAYER 0.00001
+#define ZDEPTH_BG 0.
+#define ZDEPTH_GROUND 0.1
+#define ZDEPTH_GROUND_OVERLAY 0.2
+#define ZDEPTH_ABOVE_GROUND 0.4
+
 #define PI 3.14159265359
 
 extern bool graphicsIsFullscreen;

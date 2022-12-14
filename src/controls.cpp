@@ -142,7 +142,7 @@ void Controls::handleMousePress(sf::Event &event) {
     if (event.type == sf::Event::MouseButtonPressed) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) {
             if (facingTile != nullptr) {
-                facingTile->setTileType(Map::Tile::STONE);
+                facingTile->setTileType(Map::Tile::MOAI);
             }
         } else {
             if (event.mouseButton.button == sf::Mouse::Button::Left) {

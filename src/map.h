@@ -22,6 +22,8 @@ public:
         Map* map = nullptr;
         uint32_t seed;
 
+        void _pushQuads(std::vector<Graphics::Quad> const* model, double zDepthOffset = 0.);
+
     public:
         int x = 0;
         int y = 0;
@@ -34,7 +36,7 @@ public:
         enum TileType {
             GRASS,
             DIRT,
-            STONE,
+            MOAI,
         } tileType = GRASS;
 
         Tile();

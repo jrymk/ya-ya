@@ -72,26 +72,83 @@ coord CollideBox::collide(const CollideBox &rhs, coord myOffset, coord rhsOffset
 }
 
 void Map::Tile::pushQuads() {
-    std::vector<Graphics::Quad> const* model = &modelGrass[seed % 9];
-
     switch (tileType) {
         case GRASS:
-            model = &modelGrass[seed % 9];
+            _pushQuads(&modelGrass[seed % 9]);
             break;
         case DIRT:
-            model = &modelDirt;
+            _pushQuads(&modelDirt);
             break;
-        case STONE:
-            model = &modelStone;
+        case MOAI:
+            _pushQuads(&modelGrass[seed % 9]);
+            _pushQuads(&modelMoai);
             break;
     }
+}
 
+void Map::Tile::setCoord(int x, int y) {
+    this->x = x;
+    this->y = y;
+}
+
+void Map::Tile::neighborUpdate() { // for adapting to neighbor tiles and so on
+    switch (tileType) {
+        case MOAI:
+            collideBoxes = {CollideBox({.5, .5}, {.6, .6}, false)};
+            if (map->exists(x - 1, y) && map->getTile(x - 1, y).tileType == MOAI)
+                collideBoxes.push_back(CollideBox({.1, .5}, {.2, .4}, false));
+            if (map->exists(x + 1, y) && map->getTile(x + 1, y).tileType == MOAI)
+                collideBoxes.push_back(CollideBox({.9, .5}, {.2, .4}, false));
+            if (map->exists(x, y - 1) && map->getTile(x, y - 1).tileType == MOAI)
+                collideBoxes.push_back(CollideBox({.5, .1}, {.4, .2}, false));
+            if (map->exists(x, y + 1) && map->getTile(x, y + 1).tileType == MOAI)
+                collideBoxes.push_back(CollideBox({.5, .9}, {.4, .2}, false));
+
+
+//            break;
+//            Map::Tile &tile = map->getTile(x, y + 1);
+//            if (tile.tileType != MOAI)
+//                tile.tileType = MOAI;
+//            break;
+    }
+}
+
+void Map::Tile::setMap(Map* map) {
+    this->map = map;
+}
+
+void Map::Tile::setTileType(Map::Tile::TileType type) {
+    tileType = type;
+    switch (tileType) {
+        case GRASS:
+        case DIRT:
+            collideBoxes = {};
+            break;
+        case MOAI:
+            collideBoxes = {
+                    CollideBox({.5, .5}, {.6, .6}, true)
+            };
+            break;
+    }
+    map->getTile(x - 1, y).neighborUpdate();
+    map->getTile(x + 1, y).neighborUpdate();
+    map->getTile(x, y - 1).neighborUpdate();
+    map->getTile(x, y + 1).neighborUpdate();
+    map->getTile(x, y).neighborUpdate(); // chain update is not allowed (only neighbors, just for those simple fences and shit)
+}
+
+Map::Tile::Tile() {
+    seed = getRandInt();
+}
+
+void Map::Tile::_pushQuads(std::vector<Graphics::Quad> const* model, double zDepthOffset) {
     for (auto quad: *model) {
         quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) + coord(x, y));
         quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + coord(x, y));
         quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + coord(x, y));
         quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) + coord(x, y));
-        quad.zDepth += (Camera::getScreenPos(coord(x, y)).y / Camera::getViewport().size.y - 0.5) / 100.;
+        quad.zDepth += zDepthOffset + (Camera::getScreenPos(coord(float(x) + .5, float(y) + .5)).y / Camera::getViewport().size.y - 0.5) / 100.;
+        // add (.5, .5) because map tiles have origins different from entities
 
         quad.c0 = sf::Color(255, 255, 255, 255);
         quad.c1 = sf::Color(255, 255, 255, 255);
@@ -110,61 +167,6 @@ void Map::Tile::pushQuads() {
             );
         }
     }
-}
-
-void Map::Tile::setCoord(int x, int y) {
-    this->x = x;
-    this->y = y;
-}
-
-void Map::Tile::neighborUpdate() { // for adapting to neighbor tiles and so on
-    switch (tileType) {
-        case STONE:
-            collideBoxes = {CollideBox({.5, .5}, {.6, .6}, false)};
-            if (map->exists(x - 1, y) && map->getTile(x - 1, y).tileType == STONE)
-                collideBoxes.push_back(CollideBox({.1, .5}, {.2, .4}, false));
-            if (map->exists(x + 1, y) && map->getTile(x + 1, y).tileType == STONE)
-                collideBoxes.push_back(CollideBox({.9, .5}, {.2, .4}, false));
-            if (map->exists(x, y - 1) && map->getTile(x, y - 1).tileType == STONE)
-                collideBoxes.push_back(CollideBox({.5, .1}, {.4, .2}, false));
-            if (map->exists(x, y + 1) && map->getTile(x, y + 1).tileType == STONE)
-                collideBoxes.push_back(CollideBox({.5, .9}, {.4, .2}, false));
-
-
-//            break;
-//            Map::Tile &tile = map->getTile(x, y + 1);
-//            if (tile.tileType != STONE)
-//                tile.tileType = STONE;
-//            break;
-    }
-}
-
-void Map::Tile::setMap(Map* map) {
-    this->map = map;
-}
-
-void Map::Tile::setTileType(Map::Tile::TileType type) {
-    tileType = type;
-    switch (tileType) {
-        case GRASS:
-        case DIRT:
-            collideBoxes = {};
-            break;
-        case STONE:
-            collideBoxes = {
-                    CollideBox({.5, .5}, {.6, .6}, true)
-            };
-            break;
-    }
-    map->getTile(x - 1, y).neighborUpdate();
-    map->getTile(x + 1, y).neighborUpdate();
-    map->getTile(x, y - 1).neighborUpdate();
-    map->getTile(x, y + 1).neighborUpdate();
-    map->getTile(x, y).neighborUpdate(); // chain update is not allowed (only neighbors, just for those simple fences and shit)
-}
-
-Map::Tile::Tile() {
-    seed = getRandInt();
 }
 
 bool Map::exists(int x, int y) {
