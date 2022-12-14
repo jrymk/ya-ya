@@ -70,7 +70,7 @@ int main() {
             auto eptr = game.insertEntity(egg);
 
             {
-                Action a(eptr, Timer::getNow(), ENTITY_OWN_BY);
+                Action a(eptr, Timer::getNow(), ENTITY_OWN_BY); // need the container to register "own_by" or else it will not be set up correctly
                 a.argEntity[0] = cptr;
                 a.argInt[0] = i;
                 game.pushAction(a);
@@ -94,7 +94,7 @@ int main() {
             auto eptr = game.insertEntity(egg);
 
             {
-                Action a(eptr, Timer::getNow(), ENTITY_OWN_BY);
+                Action a(eptr, Timer::getNow() + 1.5 + .2 * i, ENTITY_OWN_BY);
                 a.argEntity[0] = cptr;
                 a.argInt[0] = i;
                 game.pushAction(a);

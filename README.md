@@ -33,3 +33,46 @@ used: `mingw64 x86_64-12.1.0-release-posix-seh-rt_v10-rev3`
 **Working directory:** `/build/`
 
 **SFML version:** `2.6.x` (fetched from GitHub)
+
+### controls
+
+- when hands are empty
+    - <mouse_button> pick up item
+    - shows very basic information
+    - if an item with actions is highlighted...
+        - a tool
+            - <alt> equip tool (and unequip tool)
+- when holding an entity
+    - <mouse_button> drop item
+    - if a container space is highlighted (for example a cage)
+        - <alt> store item
+- when holding a container
+    - <mouse_button> drop container
+    - if a storable item is highlighted (game field)
+        - <alt> store item
+    - if an inventory item is highlighted (bottom bar)
+        - if offhand is empty
+            - <other_mouse_button> pick up item
+            - <this_mouse_button> drop item
+        - else
+            - "free your other hand to manipulate inventory"
+    - if an empty slot is highlighted (bottom bar)
+        - if offhand is holding a storable item
+            - <other_mouse_button> store item
+        - else if offhand is holding a instorable item
+            - "xx can not be stored in this container"
+        - else
+            - nothing
+    - shows contents on bottom bar
+    - (optional) items can be dragged around in the bottom bar (if offhand is empty, or else show "free your other hand to manipulate inventory")
+- when holding a tool...
+    - <mouse_button> unequip tool
+    - hammer(?) (the building tool)
+        - if a building is highlighted
+            - <alt + hold> demolish (turns into item form with a chance of disappearing)
+        - if the other hand is holding a buildable item and a valid tile is highlighted
+            - <alt> build
+    - ...
+- (optional) when holding food
+    - if an entity is highlighted
+        - <alt> feed
