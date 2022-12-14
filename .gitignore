@@ -8,3 +8,5 @@ build/libwinpthread-1.dll
 /out/
 /.vs/
 /build/_deps/
+/cmake-build-debug-mingw-810/
+/res/

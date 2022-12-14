@@ -33,6 +33,8 @@ extern std::mt19937 rng;
 
 double getRand();
 
+uint32_t getRandInt();
+
 double subtractAngle(double l, double r);
 
 std::string randomId();

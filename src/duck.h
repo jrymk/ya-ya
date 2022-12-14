@@ -16,8 +16,10 @@ public:
     Game* game;
 
     Duck();
-    
+
     Duck(Game* game);
+
+    void objInit() override;
 
     enum InventorySlots {
         EGG_0,

@@ -64,21 +64,19 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
 }
 
 void Egg::loadModel() {
-    model = &modelEgg;
+    model = &modelEgg[seed % 3];
 }
 
-Egg::Egg() {
-    inventory.resize(1, nullptr);
-    loadModel();
-    collisionPushable = false;
-}
+Egg::Egg() { objInit(); }
 
-Egg::Egg(Game* game) : game(game) {
-    // auto shared = std::make_shared<Egg>(this);
+Egg::Egg(Game* game) : game(game) { objInit(); }
+
+void Egg::objInit() {
     inventory.resize(1, nullptr);
     type = EGG;
-    loadModel();
     collisionPushable = false;
+    footprint = coord(.3, .3);
+    collideBox = CollideBox({0., 0.}, {.2, .2}, true);
 }
 
 void Egg::customUpdate() {

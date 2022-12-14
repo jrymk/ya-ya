@@ -17,8 +17,10 @@ public:
     Game* game;
 
     Egg();
-    
+
     Egg(Game* game);
+
+    void objInit() override;
 
     enum InventorySlots {
         EMBRYO,

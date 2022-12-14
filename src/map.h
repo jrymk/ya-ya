@@ -20,6 +20,7 @@ class Map {
 public:
     class Tile {
         Map* map = nullptr;
+        uint32_t seed;
 
     public:
         int x = 0;
@@ -35,6 +36,8 @@ public:
             DIRT,
             STONE,
         } tileType = GRASS;
+
+        Tile();
 
         void pushQuads();
 

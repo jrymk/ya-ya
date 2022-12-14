@@ -38,6 +38,7 @@ public:
     std::vector<std::shared_ptr<Entity>> inventory;
     std::shared_ptr<Entity> ownedBy = nullptr;
     int ownedSlot = 0;
+    uint32_t seed;
 
     Timer entityTimer; // get elapsed per update
     double lastUpdate = -1.;
@@ -45,8 +46,8 @@ public:
 
     // interaction and appearance
     std::vector<Graphics::Quad> const* model;
-    const coord footprint = coord(1, 1);
-    const CollideBox collideBox = CollideBox({0., 0.}, {.7, .7}, true); // yes each entity only gets one collidable shape
+    coord footprint = coord(1, 1);
+    CollideBox collideBox = CollideBox({0., 0.}, {.7, .7}, true); // yes each entity only gets one collidable shape
     bool selectable = true;
     std::pair<int, int> neighborsFinderMyTile = {-1e8, 1e8};
     float opacity = 0.;
@@ -73,6 +74,8 @@ public:
 
     virtual void loadModel();
 
+    virtual void objInit();
+
     void pushQuads();
 
     void updateTimer();
@@ -86,6 +89,8 @@ public:
     virtual void customUpdate();
 
     virtual void setInventoryProps();
+
+    Entity();
 
     ~Entity();
 

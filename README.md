@@ -14,8 +14,8 @@
 
 #### serialization
 
-- [ ] save duck gender
-- [ ] save actions
+- [x] save duck gender
+- [x] save actions
 - [ ] ...
 
 #### artwork

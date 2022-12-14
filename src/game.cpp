@@ -89,7 +89,7 @@ void Game::processCollisions() {
                     Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
                     a.argCoord[0] = move;
                     a.argFloat[0] = 0.1;
-                    pushAction(a);
+                    pushAction(a); /// TODO: use entity collision boxes as entity collision ref
                 }
             }
         }

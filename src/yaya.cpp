@@ -5,8 +5,10 @@
 #include "player.h"
 #include "duck.h"
 #include "egg.h"
+#include "ui.h"
 
-#define TESTLOAD
+//#define TESTLOAD
+
 /**
  * Key definitions
  * F1: toggle wireframe
@@ -28,21 +30,15 @@ int main() {
     Graphics::loadFont(1, "CascadiaCode.ttf");
     FramerateCounter fc;
 
-    debugGraphs.push_back(DebugGraph("entities", 200, 150, 10000));
-    debugGraphs.push_back(DebugGraph("actions", 200, 150, 10000));
-    debugGraphs.push_back(DebugGraph("quads", 200, 150, 10000));
-    debugGraphs.push_back(DebugGraph("update time", 200, 150, 10000));
-    debugGraphs.push_back(DebugGraph("entities(long)", 200, 150, 1000000));
-
     Game game;
 
-    #ifndef TESTLOAD
+#ifndef TESTLOAD
     std::shared_ptr<Player> player(new Player(&game));
     player->id = "player$player";
     player->opacity = 1.;
     auto &player_e = game.insertEntity(player);
     game.setPlayer(player_e);
-    
+
     for (int i = 0; i < 100; i++) {
         std::shared_ptr<Egg> egg(new Egg(&game));
         egg->id = game.newId(EGG);
@@ -53,9 +49,9 @@ int main() {
         egg->fertilized = true;
         game.insertEntity(egg);
     }
-    #else
+#else
     game.load();
-    #endif
+#endif
 
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("tilemap.png"))
@@ -63,7 +59,6 @@ int main() {
     else
         debug << "maximum texture size: " << sf::Texture::getMaximumSize() << "\n";
     tilemap.setSmooth(true);
-
 
     while (window.isOpen()) {
         sf::Event event;
@@ -103,7 +98,6 @@ int main() {
             }
         }
 
-        // handleEvents(window);
         window.clear(sf::Color(129, 214, 131));
 
         UIRect rectWindow(sf::FloatRect(0, 0, window.getView().getSize().x, window.getView().getSize().y));
@@ -134,21 +128,19 @@ int main() {
 
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
 
-        Graphics::setFont(1);
-        Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::Black, 12, UIVec(6, 17), 0., sf::Color(255, 255, 255, 200), 2.);
+//        Graphics::setFont(1);
+//        Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::Black, 12, UIVec(6, 17), 0., sf::Color(255, 255, 255, 200), 2.);
 
         Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.08);
 
-        Camera::printCameraInfo();
-
-        Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
-        Graphics::drawText(
-                "[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y),
-                sf::Color::White, 16, rectWindow.pos + UIVec(0, -10), 0., sf::Color::Black, 1.);
+//        Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
+//        Graphics::drawText(
+//                "[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y),
+//                sf::Color::White, 16, rectWindow.pos + UIVec(0, -10), 0., sf::Color::Black, 1.);
 
         window.display();
     }
     game.save();
-    
+
     return 0;
 }

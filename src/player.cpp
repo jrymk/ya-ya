@@ -8,7 +8,6 @@ void Player::loadModel() {
 
 Player::Player() {
     inventory.resize(2, nullptr);
-    loadModel();
 }
 
 Player::Player(Game* game) : game(game) {
@@ -16,7 +15,6 @@ Player::Player(Game* game) : game(game) {
     // Entity::childClassPtr = std::dynamic_pointer_cast<Entity>(shared);
     inventory.resize(2, nullptr);
     type = PLAYER;
-    loadModel();
 }
 
 void Player::setInventoryProps() {

@@ -47,6 +47,10 @@ double getRand() {
     return std::max(0., std::min(1., (double) rng() / rng.max()));
 }
 
+uint32_t getRandInt() {
+    return rng();
+}
+
 double subtractAngle(double l, double r) {
     return (((l - r) / 2. / PI) - int((l - r) / 2. / PI)) * 2. * PI;
     // return l - r + 6 * PI - int((l - r + 6 * PI) / 2. / PI) * 2. * PI;

@@ -292,17 +292,15 @@ void Duck::loadModel() {
     model = &modelDuck;
 }
 
-Duck::Duck() {
-    inventory.resize(3, nullptr);
-    loadModel();
-}
+Duck::Duck() { objInit(); }
 
-Duck::Duck(Game* game) : game(game) {
-    // auto shared = std::make_shared<Duck>(this);
-    // Entity::childClassPtr = std::dynamic_pointer_cast<Entity>(shared);
+Duck::Duck(Game* game) : game(game) { objInit(); }
+
+void Duck::objInit() {
     inventory.resize(3, nullptr);
     type = DUCK;
-    loadModel();
+    footprint = coord(.5, .5);
+    collideBox = CollideBox({0., 0.}, {.4, .4}, true);
 }
 
 void Duck::customUpdate() {

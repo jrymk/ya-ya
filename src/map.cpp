@@ -72,11 +72,11 @@ coord CollideBox::collide(const CollideBox &rhs, coord myOffset, coord rhsOffset
 }
 
 void Map::Tile::pushQuads() {
-    std::vector<Graphics::Quad> const* model = &modelGrass;
+    std::vector<Graphics::Quad> const* model = &modelGrass[seed % 9];
 
     switch (tileType) {
         case GRASS:
-            model = &modelGrass;
+            model = &modelGrass[seed % 9];
             break;
         case DIRT:
             model = &modelDirt;
@@ -161,6 +161,10 @@ void Map::Tile::setTileType(Map::Tile::TileType type) {
     map->getTile(x, y - 1).neighborUpdate();
     map->getTile(x, y + 1).neighborUpdate();
     map->getTile(x, y).neighborUpdate(); // chain update is not allowed (only neighbors, just for those simple fences and shit)
+}
+
+Map::Tile::Tile() {
+    seed = getRandInt();
 }
 
 bool Map::exists(int x, int y) {

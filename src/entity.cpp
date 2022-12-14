@@ -84,6 +84,7 @@ void Entity::loadModel() {
 }
 
 void Entity::pushQuads() {
+    loadModel();
     for (auto quad: *model) {
         quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) * scale + position) +
                   UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
@@ -164,5 +165,13 @@ void Entity::runAction(Action &action, std::vector<Action> &followUpActions) {
 
 void Entity::setInventoryProps() {
 
+}
+
+void Entity::objInit() {
+
+}
+
+Entity::Entity() {
+    seed = getRandInt();
 }
 
