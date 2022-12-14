@@ -151,7 +151,8 @@ void Game::runActions() {
             break;
     }
     for (auto &action: followUpActions)
-        actionList.push(action); // will run next update
+        if (action.isGlobal || !action.entity->deleted)
+            actionList.push(action); // will run next update
 }
 
 void Game::runAction(Action &action, std::vector<Action> &followUpActions) {
