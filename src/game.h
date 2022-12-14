@@ -13,11 +13,13 @@
 #include "controls.h"
 #include "neighborsfinder.h"
 #include "map.h"
+#include "ui.h"
 
 class Game {
 public:
     NeighborsFinder neighborsFinder;
     Controls controls;
+    UserInterface ui;
 
     bool showActionList = false;
     bool showCollisionBoxes = false;

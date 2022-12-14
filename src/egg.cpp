@@ -75,6 +75,7 @@ void Egg::objInit() {
     inventory.resize(1, nullptr);
     type = EGG;
     collisionPushable = false;
+    collisionCollidable = false;
     footprint = coord(.3, .3);
     collideBox = CollideBox({0., 0.}, {.2, .2}, true);
 }

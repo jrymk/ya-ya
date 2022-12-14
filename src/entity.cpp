@@ -122,6 +122,36 @@ void Entity::pushQuads() {
                     sf::Color::Magenta, sf::Color::Black
             );
         }
+        if (deleted) {
+            Graphics::insertUserWireframe(
+                    Camera::getScreenPos(position) + UIVec(-3, 5),
+                    Camera::getScreenPos(position) + UIVec(-5, 3),
+                    Camera::getScreenPos(position) + UIVec(3, -5),
+                    Camera::getScreenPos(position) + UIVec(5, -3),
+                    sf::Color::Black, sf::Color::Black
+            );
+            Graphics::insertUserWireframe(
+                    Camera::getScreenPos(position) + UIVec(3, 5),
+                    Camera::getScreenPos(position) + UIVec(5, 3),
+                    Camera::getScreenPos(position) + UIVec(-3, -5),
+                    Camera::getScreenPos(position) + UIVec(-5, -3),
+                    sf::Color::Black, sf::Color::Black
+            );
+            Graphics::insertUserWireframe(
+                    Camera::getScreenPos(position) + UIVec(-3, 4),
+                    Camera::getScreenPos(position) + UIVec(-4, 3),
+                    Camera::getScreenPos(position) + UIVec(3, -4),
+                    Camera::getScreenPos(position) + UIVec(4, -3),
+                    sf::Color::Red, sf::Color::Transparent
+            );
+            Graphics::insertUserWireframe(
+                    Camera::getScreenPos(position) + UIVec(3, 4),
+                    Camera::getScreenPos(position) + UIVec(4, 3),
+                    Camera::getScreenPos(position) + UIVec(-3, -4),
+                    Camera::getScreenPos(position) + UIVec(-4, -3),
+                    sf::Color::Red, sf::Color::Transparent
+            );
+        }
     }
 }
 

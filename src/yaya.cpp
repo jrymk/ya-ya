@@ -29,6 +29,8 @@ int main() {
     Graphics::createWindow(false);
     Graphics::loadFont(0, "yourStar.ttf");
     Graphics::loadFont(1, "CascadiaCode.ttf");
+    Graphics::loadFont(2, "Aero Matics Regular.ttf");
+    Graphics::loadFont(3, "Barlow-SemiBold.ttf");
     FramerateCounter fc;
 
     Game game;
@@ -51,12 +53,36 @@ int main() {
 //        game.insertEntity(egg);
 //    }
 
-    for (int j = 0; j < 50; j++) {
+    {
         std::shared_ptr<EggCarton> eggcarton(new EggCarton(&game));
         eggcarton->id = game.newId(EGG_CARTON);
         eggcarton->opacity = 1.;
-        eggcarton->position.x = -2.5 + j % 5;
-        eggcarton->position.y = -2.5 + (j / 5) * 0.5;
+        eggcarton->position.x = 1.;
+        eggcarton->position.y = 0.;
+        auto cptr = game.insertEntity(eggcarton);
+
+        for (int i = 0; i < 10; i++) {
+            std::shared_ptr<Egg> egg(new Egg(&game));
+            egg->id = game.newId(EGG);
+            egg->opacity = 1.;
+            egg->genderIsMale = i & 0b1;
+            egg->fertilized = true;
+            auto eptr = game.insertEntity(egg);
+
+            {
+                Action a(eptr, Timer::getNow(), ENTITY_OWN_BY);
+                a.argEntity[0] = cptr;
+                a.argInt[0] = i;
+                game.pushAction(a);
+            }
+        }
+    }
+    {
+        std::shared_ptr<EggCarton> eggcarton(new EggCarton(&game));
+        eggcarton->id = game.newId(EGG_CARTON);
+        eggcarton->opacity = 1.;
+        eggcarton->position.x = 1.;
+        eggcarton->position.y = 1.;
         auto cptr = game.insertEntity(eggcarton);
 
         for (int i = 0; i < 10; i++) {
@@ -132,7 +158,6 @@ int main() {
 //                                        window.getView().getSize().y / 4. * 3.));
         Camera::setViewport(rectWindow);
 
-        Graphics::clearQuadsArray();
 
         UIVec moveVec; // on screen vec
         if (game.controls.dirPadPress & 0b0001)
@@ -151,8 +176,13 @@ int main() {
         game.player->heading = game.player->position.angle(Camera::getMouseCoord());
 
         game.update();
+        Graphics::clearQuadsArray();
         game.render();
 
+        Graphics::renderQuads(window, tilemap, Camera::getViewport());
+
+        Graphics::clearQuadsArray();
+        game.ui.renderUI();
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
 
 //        Graphics::setFont(1);
@@ -164,6 +194,8 @@ int main() {
 //        Graphics::drawText(
 //                "[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y),
 //                sf::Color::White, 16, rectWindow.pos + UIVec(0, -10), 0., sf::Color::Black, 1.);
+
+
 
         window.display();
     }

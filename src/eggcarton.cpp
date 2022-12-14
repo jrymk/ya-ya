@@ -44,65 +44,14 @@ void EggCarton::customUpdate() {
 void EggCarton::setInventoryProps() {
     double cartonZDepth = modelEggCarton[1].zDepth + (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
 
-    if (inventory[InventorySlots::EGG_0] != nullptr) {
-        inventory[InventorySlots::EGG_0]->position = position + coord(-.3, .075);
-        inventory[InventorySlots::EGG_0]->zDepthOverride = cartonZDepth - ZDEPTH_LAYER;
-        inventory[InventorySlots::EGG_0]->zPosition = .3;
-        inventory[InventorySlots::EGG_0]->selectable = false;
-    }
-    if (inventory[InventorySlots::EGG_1] != nullptr) {
-        inventory[InventorySlots::EGG_1]->position = position + coord(-.15, .075);
-        inventory[InventorySlots::EGG_1]->zDepthOverride = cartonZDepth - ZDEPTH_LAYER;
-        inventory[InventorySlots::EGG_1]->zPosition = .3;
-        inventory[InventorySlots::EGG_1]->selectable = false;
-    }
-    if (inventory[InventorySlots::EGG_2] != nullptr) {
-        inventory[InventorySlots::EGG_2]->position = position + coord(0., .075);
-        inventory[InventorySlots::EGG_2]->zDepthOverride = cartonZDepth - ZDEPTH_LAYER;
-        inventory[InventorySlots::EGG_2]->zPosition = .3;
-        inventory[InventorySlots::EGG_2]->selectable = false;
-    }
-    if (inventory[InventorySlots::EGG_3] != nullptr) {
-        inventory[InventorySlots::EGG_3]->position = position + coord(.15, .075);
-        inventory[InventorySlots::EGG_3]->zDepthOverride = cartonZDepth - ZDEPTH_LAYER;
-        inventory[InventorySlots::EGG_3]->zPosition = .3;
-        inventory[InventorySlots::EGG_3]->selectable = false;
-    }
-    if (inventory[InventorySlots::EGG_4] != nullptr) {
-        inventory[InventorySlots::EGG_4]->position = position + coord(.3, .075);
-        inventory[InventorySlots::EGG_4]->zDepthOverride = cartonZDepth - ZDEPTH_LAYER;
-        inventory[InventorySlots::EGG_4]->zPosition = .3;
-        inventory[InventorySlots::EGG_4]->selectable = false;
-    }
-    if (inventory[InventorySlots::EGG_5] != nullptr) {
-        inventory[InventorySlots::EGG_5]->position = position + coord(-.3, -.075);
-        inventory[InventorySlots::EGG_5]->zDepthOverride = cartonZDepth + ZDEPTH_LAYER;
-        inventory[InventorySlots::EGG_5]->zPosition = .3;
-        inventory[InventorySlots::EGG_5]->selectable = false;
-    }
-    if (inventory[InventorySlots::EGG_6] != nullptr) {
-        inventory[InventorySlots::EGG_6]->position = position + coord(-.15, -.075);
-        inventory[InventorySlots::EGG_6]->zDepthOverride = cartonZDepth + ZDEPTH_LAYER;
-        inventory[InventorySlots::EGG_6]->zPosition = .3;
-        inventory[InventorySlots::EGG_6]->selectable = false;
-    }
-    if (inventory[InventorySlots::EGG_7] != nullptr) {
-        inventory[InventorySlots::EGG_7]->position = position + coord(0., -.075);
-        inventory[InventorySlots::EGG_7]->zDepthOverride = cartonZDepth + ZDEPTH_LAYER;
-        inventory[InventorySlots::EGG_7]->zPosition = .3;
-        inventory[InventorySlots::EGG_7]->selectable = false;
-    }
-    if (inventory[InventorySlots::EGG_8] != nullptr) {
-        inventory[InventorySlots::EGG_8]->position = position + coord(.15, -.075);
-        inventory[InventorySlots::EGG_8]->zDepthOverride = cartonZDepth + ZDEPTH_LAYER;
-        inventory[InventorySlots::EGG_8]->zPosition = .3;
-        inventory[InventorySlots::EGG_8]->selectable = false;
-    }
-    if (inventory[InventorySlots::EGG_9] != nullptr) {
-        inventory[InventorySlots::EGG_9]->position = position + coord(.3, -.075);
-        inventory[InventorySlots::EGG_9]->zDepthOverride = cartonZDepth + ZDEPTH_LAYER;
-        inventory[InventorySlots::EGG_9]->zPosition = .3;
-        inventory[InventorySlots::EGG_9]->selectable = false;
+    for (int i = 0; i < 10; i++) {
+        if (inventory[i] == nullptr)
+            continue;
+        inventory[i]->position = position + coord(-.3 + (i % 5) * .15, (i < 5 ? .075 : -.075));
+        inventory[i]->zDepthOverride = cartonZDepth + (i < 5 ? -ZDEPTH_LAYER : ZDEPTH_LAYER);
+        inventory[i]->zPosition = .3;
+        inventory[i]->selectable = false;
+        inventory[i]->collisionCollidable = false;
     }
 }
 

@@ -4,11 +4,13 @@
 #include "player.h"
 #include "duck.h"
 #include "egg.h"
+#include "ui.h"
 #include "serializationExtended.h"
 
 Game::Game() :
         neighborsFinder(this),
-        controls(this) {}
+        controls(this),
+        ui(this) {}
 
 void Game::update() {
     Timer updateTimer;
@@ -80,6 +82,20 @@ void Game::processCollisions() {
                 if (e->ownedBy == f || f->ownedBy == e)
                     continue;
 
+//                if (f->collideBox.collide(e->collideBox, f->position, e->position).len() > 0.) {
+//                    coord delta = f->position - e->position;
+//                    if (delta.len() < .00001)
+//                        delta = coord::getRandCoord();
+//                    coord move = delta / delta.len() / delta.len() / 3.;
+//                    if (f->historyPosition.size() >= 2 &&
+//                        (f->historyPosition[1].second.len(f->historyPosition[0].second)) / f->historyPosition[1].first.elapsed(f->historyPosition[0].first) < 0.12) {
+//                        Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
+//                        a.argCoord[0] = move;
+//                        a.argFloat[0] = .12;
+//                        pushAction(a); /// TODO: use entity collision boxes as entity collision ref
+//                    }
+//                }
+//                f->position = f->position + f->collideBox.collide(e->collideBox, f->position, e->position) * .7;
                 coord delta = f->position - e->position;
                 if (delta.len() < .00001)
                     delta = coord::getRandCoord();
@@ -89,7 +105,7 @@ void Game::processCollisions() {
                     Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
                     a.argCoord[0] = move;
                     a.argFloat[0] = 0.1;
-                    pushAction(a); /// TODO: use entity collision boxes as entity collision ref
+                    pushAction(a); /// TODO: use entity collision boxes as entity collision ref (if it ain't broke don't fix it)
                 }
             }
         }
@@ -208,6 +224,7 @@ void Game::destroyEntity(std::string id) {
 }
 
 void Game::render() {
+
     renderMap();
 
     for (auto entity: entities) {
@@ -243,6 +260,7 @@ void Game::render() {
                 sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
         );
     }
+
 }
 
 void Game::renderMap() {

@@ -4,6 +4,8 @@
 
 ### roadmap
 
+![Egg carton](./doc/img.png)
+
 #### gameplay
 
 - [ ] add on hold item menu ui
