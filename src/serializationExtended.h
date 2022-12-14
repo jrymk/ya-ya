@@ -10,7 +10,9 @@
 
 namespace Serialization{
     template<>
-    inline std::string serialize<std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > > >(const std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > > &obj) {  // specialization for entities map
+    inline std::string serialize<std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > >,
+                                std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > >
+                                (const std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > > &obj) {  // specialization for entities map
         std::string str;
         str.append("<MapSize>" + std::to_string(obj.size()) + "</MapSize>{");
         for (const auto &kvpair: obj){
@@ -39,7 +41,9 @@ namespace Serialization{
     }
 
     template<>
-    inline void deserialize<std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > > >(std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > > &obj, const std::string &str) { // specialization for entities map
+    inline void deserialize<std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > >,
+                            std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > >
+                            (std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > > &obj, const std::string &str) { // specialization for entities map
         int sizeTagStart = str.find("<MapSize>"),
                 sizeTagEnd = str.find("</MapSize>");
         int mapSize = std::stoi(str.substr(sizeTagStart + 9, sizeTagEnd - sizeTagStart - 9)),
