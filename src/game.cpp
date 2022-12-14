@@ -157,7 +157,8 @@ void Game::runActions() {
 
 void Game::runAction(Action &action, std::vector<Action> &followUpActions) {
     if (!action.isGlobal) {
-        action.entity->runActionEntity(action, followUpActions); // first go through entity
+        if (!action.entity->deleted)
+            action.entity->runActionEntity(action, followUpActions); // first go through entity
         return;
     }
     // global actions
