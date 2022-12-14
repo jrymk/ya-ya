@@ -2,13 +2,14 @@
 #ifndef YAYA_GAME_H
 #define YAYA_GAME_H
 
+#include <string>
 #include <fstream>
 #include <map>
 #include <set>
 #include <queue>
 #include <memory>
 #include "entity.h"
-#include "serialization.h"
+#include "saveUtilities.h"
 #include "controls.h"
 #include "neighborsfinder.h"
 #include "map.h"

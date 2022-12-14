@@ -6,20 +6,16 @@ void Player::loadModel() {
     model = &modelPlayer;
 }
 
+Player::Player() {
+    inventory.resize(2, nullptr);
+    loadModel();
+}
+
 Player::Player(Game* game) : game(game) {
     // auto shared = std::make_shared<Player>(this);
     // Entity::childClassPtr = std::dynamic_pointer_cast<Entity>(shared);
     inventory.resize(2, nullptr);
     type = PLAYER;
-    loadModel();
-}
-
-Player::Player(Game* game, std::shared_ptr<Entity> &entity) : game(game) {
-    inventory.resize(2, nullptr);
-    id = entity->id;
-    type = entity->type;
-    position = entity->position;
-    deleted = entity->deleted;
     loadModel();
 }
 

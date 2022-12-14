@@ -16,6 +16,8 @@ public:
 
     Game* game;
 
+    Egg();
+    
     Egg(Game* game);
 
     enum InventorySlots {
@@ -28,6 +30,15 @@ public:
 
     std::string getDescriptionStr() override;
 
+    constexpr static auto properties = std::make_tuple(  // reminder: set game*
+            SaveUtilities::property(&Egg::id, "Eg.id"),
+            SaveUtilities::property(&Egg::type, "Eg.tp"),
+            SaveUtilities::property(&Egg::position, "Eg.ps"),
+            SaveUtilities::property(&Egg::deleted, "Eg.dl"),
+            SaveUtilities::property(&Egg::genderIsMale, "Eg.gd"),
+            SaveUtilities::property(&Egg::fertilized, "Eg.fr"),
+            SaveUtilities::property(&Egg::opacity, "Eg.op")
+    );
 };
 
 #endif

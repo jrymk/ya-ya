@@ -15,9 +15,9 @@ public:
 
     Game* game;
 
+    Duck();
+    
     Duck(Game* game);
-
-    Duck(Game* game, std::shared_ptr<Entity> &entity);
 
     enum InventorySlots {
         EGG_0,
@@ -33,11 +33,14 @@ public:
 
     std::string getDescriptionStr() override;
 
-    constexpr static auto properties = std::make_tuple(  // reminder: update constructor
+    constexpr static auto properties = std::make_tuple(  // reminder: set game*
             SaveUtilities::property(&Duck::id, "Dk.id"),
             SaveUtilities::property(&Duck::type, "Dk.tp"),
             SaveUtilities::property(&Duck::position, "Dk.ps"),
-            SaveUtilities::property(&Duck::deleted, "Dk.dl")
+            SaveUtilities::property(&Duck::deleted, "Dk.dl"),
+            SaveUtilities::property(&Duck::genderIsMale, "Dk.gd"),
+            SaveUtilities::property(&Duck::fertilized, "Dk.fr"),
+            SaveUtilities::property(&Duck::opacity, "Dk.op")
     );
 };
 

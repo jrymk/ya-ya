@@ -67,6 +67,12 @@ void Egg::loadModel() {
     model = &modelEgg;
 }
 
+Egg::Egg() {
+    inventory.resize(1, nullptr);
+    loadModel();
+    collisionPushable = false;
+}
+
 Egg::Egg(Game* game) : game(game) {
     // auto shared = std::make_shared<Egg>(this);
     inventory.resize(1, nullptr);
