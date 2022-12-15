@@ -117,6 +117,7 @@ void Egg::setInventoryProps() {
         switch (slot) {
             case InventorySlots::EMBRYO:
                 inventory[InventorySlots::EMBRYO]->position = position;
+                inventory[InventorySlots::EMBRYO]->zPosition = zPosition;
                 break;
         }
     }

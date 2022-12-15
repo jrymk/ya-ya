@@ -49,7 +49,7 @@ void EggCarton::setInventoryProps() {
             continue;
         /// ON CAPTURE
         if (slot >= EGG_0 && slot <= EGG_9) {
-            inventory[slot]->zPosition = .3;
+            inventory[slot]->zPosition = zPosition + .3;
             inventory[slot]->selectable = false;
             // eggs are not pushable anyways
         }
@@ -60,7 +60,7 @@ void EggCarton::setInventoryProps() {
         /// ON HOLD
         if (slot >= EGG_0 && slot <= EGG_9) {
             inventory[slot]->position = position + coord(-.3 + (slot % 5) * .15, (slot < 5 ? .075 : -.075));
-            inventory[slot]->zPosition = .3; // do every update or else gravity will do its thing
+            inventory[slot]->zPosition = zPosition + .3; // do every update or else gravity will do its thing
             inventory[slot]->zDepthOverride = cartonZDepth + (slot < 5 ? -ZDEPTH_LAYER : ZDEPTH_LAYER);
         }
     }
@@ -70,7 +70,6 @@ void EggCarton::setInventoryProps() {
         /// ON RELEASE
         if (slot >= EGG_0 && slot <= EGG_9) {
             inventory_last[slot]->zDepthOverride = -1e8;
-            inventory_last[slot]->zPosition = 0.;
             inventory_last[slot]->selectable = true;
         }
     }

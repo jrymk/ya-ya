@@ -22,6 +22,7 @@ enum Command {
     ENTITY_COLLISION_COLLIDABLE, // bool collidable
     ENTITY_MOVE_TO_INSTANT, // coord pos
     ENTITY_MOVE_TO_APPROACH, // coord pos, float speed
+    ENTITY_ZPOS_TO_APPROACH_UNTIL, // float zpos, float speed
     ENTITY_HEADING_INSTANT, // float heading
     ENTITY_HOP,
     ENTITY_SLIDE_VELOCITY_DISTANCE, // coord vel, float distance

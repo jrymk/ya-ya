@@ -16,25 +16,25 @@ void UserInterface::renderUI() {
     UIRect bottomBarRect;
     bottomBarRect.pos = Camera::getViewport() * UIVec(0., 1.) + UIVec(0., -totalHeight);
     bottomBarRect.size = UIVec(Camera::getViewport().size.x, totalHeight);
-    Graphics::drawRect(sf::Color(0, 0, 0, 255), 1, bottomBarRect.pos, bottomBarRect.pos + bottomBarRect.size);
+    Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, bottomBarRect.pos, bottomBarRect.pos + bottomBarRect.size);
 
     const float gapFromCenter = 120.;
     UIRect leftHandRect;
     leftHandRect.pos = bottomBarRect * UIVec(0., 0.) + UIVec(0., 0.);
     leftHandRect.size = bottomBarRect.size * UIVec(.5, 1.) + UIVec(-gapFromCenter, -padding);
-    Graphics::drawRect(sf::Color(0, 0, 0, 255), 1, leftHandRect.pos, leftHandRect.pos + leftHandRect.size);
+    Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, leftHandRect.pos, leftHandRect.pos + leftHandRect.size);
 
     const float itemWindowSize = 80.;
     UIRect leftHandItemWindowRect;
     leftHandItemWindowRect.pos = leftHandRect * UIVec(1., 0.) + UIVec(-padding, padding) + UIVec(-itemWindowSize, 0.);
     leftHandItemWindowRect.size = UIVec(itemWindowSize, itemWindowSize);
-    Graphics::drawRect(sf::Color(0, 0, 0, 255), 1, leftHandItemWindowRect.pos, leftHandItemWindowRect.pos + leftHandItemWindowRect.size);
+    Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, leftHandItemWindowRect.pos, leftHandItemWindowRect.pos + leftHandItemWindowRect.size);
     Graphics::fillRect(sf::Color(255, 255, 255, 120), leftHandItemWindowRect.pos, leftHandItemWindowRect.pos + leftHandItemWindowRect.size);
 
     UIRect leftHandInfoRect;
     leftHandInfoRect.pos = leftHandRect * UIVec(0., 0.) + UIVec(padding, padding);
     leftHandInfoRect.size = leftHandRect.size * UIVec(1., 1.) + UIVec(-itemWindowSize - 3 * padding, -2 * padding);
-    Graphics::drawRect(sf::Color(0, 0, 0, 255), 1, leftHandInfoRect.pos, leftHandInfoRect.pos + leftHandInfoRect.size);
+    Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, leftHandInfoRect.pos, leftHandInfoRect.pos + leftHandInfoRect.size);
 
     if (game->player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr) {
         Graphics::drawText(splitId(game->player->inventory[Player::InventorySlots::LEFT_HAND]->id).second, sf::Color::White, 24,

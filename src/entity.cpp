@@ -44,6 +44,17 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
         case ENTITY_MOVE_TO_APPROACH:
             position = action.argCoord[0] - (action.argCoord[0] - position) * std::pow(action.argFloat[0], elapsedSecs);
             break;
+        case ENTITY_ZPOS_TO_APPROACH_UNTIL:
+            zPosition = action.argFloat[0] - (action.argFloat[0] - zPosition) * std::pow(action.argFloat[1], elapsedSecs);
+            if (std::abs(zPosition - action.argFloat[0]) < .01)
+                zPosition = action.argFloat[0];
+            else {
+                Action a(action.entity, Timer::getNow() + 0.01, ENTITY_ZPOS_TO_APPROACH_UNTIL);
+                a.argFloat[0] = action.argFloat[0];
+                a.argFloat[1] = action.argFloat[1];
+                followUpActions.push_back(a);
+            }
+            break;
         case ENTITY_HEADING_INSTANT:
             heading = action.argFloat[0];
             break;

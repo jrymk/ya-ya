@@ -342,17 +342,9 @@ void Duck::setInventoryProps() {
             case InventorySlots::EGG_0:
             case InventorySlots::EGG_1:
                 coord pos = position + coord::getAngleVec((slot == InventorySlots::EGG_0) ? -.1 : -.2, heading);
-                {
-                    Action a(inventory[slot], Timer::getNow(), ENTITY_MOVE_TO_APPROACH);
-                    a.argCoord[0] = pos;
-                    a.argFloat[0] = .0000000005;
-                    game->pushAction(a);
-                }
-                {
-                    Action a(inventory[slot], Timer::getNow(), ENTITY_HEADING_INSTANT);
-                    a.argFloat[0] = heading;
-                    game->pushAction(a);
-                }
+                inventory[slot]->position = pos;
+                inventory[slot]->heading = heading;
+                inventory[slot]->zPosition = zPosition;
                 break;
         }
     }

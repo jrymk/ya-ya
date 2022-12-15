@@ -27,6 +27,12 @@ void Player::setInventoryProps() {
             case InventorySlots::RIGHT_HAND:
                 inventory[slot]->motionFrozen = true;
                 inventory[slot]->selectable = false;
+                {
+                    Action a(inventory[slot], Timer::getNow(), ENTITY_ZPOS_TO_APPROACH_UNTIL);
+                    a.argFloat[0] = 1.;
+                    a.argFloat[1] = .00000001;
+                    game->pushAction(a);
+                }
                 break;
         }
     }
@@ -38,10 +44,12 @@ void Player::setInventoryProps() {
             case InventorySlots::LEFT_HAND:
             case InventorySlots::RIGHT_HAND:
                 coord pos = position + coord::getAngleVec(0.4, heading + (slot == InventorySlots::LEFT_HAND ? PI / 4 : -PI / 4));
+//                inventory[slot]->motionFrozen = true;
+
                 {
                     Action a(inventory[slot], Timer::getNow(), ENTITY_MOVE_TO_APPROACH);
                     a.argCoord[0] = pos;
-                    a.argFloat[0] = .0000000005;
+                    a.argFloat[0] = .000000005;
                     game->pushAction(a);
                 }
                 {
@@ -49,6 +57,9 @@ void Player::setInventoryProps() {
                     a.argFloat[0] = heading;
                     game->pushAction(a);
                 }
+//                inventory[slot]->position = pos;
+//                inventory[slot]->heading = heading;
+//                inventory[slot]->zPosition = .7;
                 break;
         }
     }
