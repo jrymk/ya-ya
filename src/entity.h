@@ -109,9 +109,17 @@ public:
     constexpr static auto properties = std::make_tuple(
             SaveUtilities::property(&Entity::id, "Ey.id"),
             SaveUtilities::property(&Entity::type, "Ey.tp"),
-            SaveUtilities::property(&Entity::position, "Ey.ps"),
             SaveUtilities::property(&Entity::deleted, "Ey.dl"),
-            SaveUtilities::property(&Entity::opacity, "Ey.op")
+            SaveUtilities::property(&Entity::inventory, "Ey.ivt"),
+            SaveUtilities::property(&Entity::ownedBy, "Ey.owb"),
+            SaveUtilities::property(&Entity::ownedSlot, "Ey.ows"),
+            SaveUtilities::property(&Entity::zDepthOffset, "Ey.zd"),
+            SaveUtilities::property(&Entity::zDepthOverride, "Ey.zo"),
+            SaveUtilities::property(&Entity::footprint, "Ey.fp"),
+            SaveUtilities::property(&Entity::opacity, "Ey.op"),
+            SaveUtilities::property(&Entity::scale, "Ey.sc"),
+            SaveUtilities::property(&Entity::position, "Ey.ps"),
+            SaveUtilities::property(&Entity::heading, "Ey.hd")
     );
 };
 

@@ -4,6 +4,7 @@
 #include "player.h"
 #include "duck.h"
 #include "egg.h"
+#include "eggcarton.h"
 #include "NPC.h"
 #include "ui.h"
 #include "serializationExtended.h"
@@ -325,6 +326,11 @@ void Game::load(const char* filepath) {
             }
             case EGG: {
                 std::dynamic_pointer_cast<Egg>(e.second)->game = this;
+                pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
+                break;
+            }
+            case EGG_CARTON: {
+                std::dynamic_pointer_cast<EggCarton>(e.second)->game = this;
                 pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
                 break;
             }

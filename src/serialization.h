@@ -44,7 +44,8 @@ namespace Serialization {
     template<typename T,
             typename std::enable_if_t<std::is_pointer<T>::value>* = nullptr>
     inline std::string serialize(const T ptr) {  // object* and normal type*
-        return SaveUtilities::getAddress(ptr) + rserialize(*ptr);
+        if(!ptr) return "<Addr>-1</Addr>";
+        else return SaveUtilities::getAddress(ptr) + rserialize(*ptr);
     }
 
     template<typename T,
@@ -56,7 +57,9 @@ namespace Serialization {
     template<typename T, typename U>
     // shared_ptr
     inline std::string serialize(const std::shared_ptr<U> &ptr) {
-        return SaveUtilities::getAddress(ptr.get()) + rserialize(*ptr);
+        debug << ptr.get() << '\n';
+        if(!ptr) return "<Addr>-1</Addr>";
+        else return SaveUtilities::getAddress(ptr.get()) + rserialize(*ptr);
     }
 
     template<typename T, typename U, typename A>
@@ -135,7 +138,11 @@ namespace Serialization {
                 addrEnd = str.find("</Addr>");
         std::uintptr_t oldAddress = std::stoull(str.substr(addrStart + 6, addrEnd - addrStart - 6));
 
-        if (SaveUtilities::objectTracker[oldAddress])
+        if (oldAddress == -1) {
+            ptr = nullptr;
+            return;
+        }
+        else if (SaveUtilities::objectTracker[oldAddress])
             ptr = static_cast<T>(SaveUtilities::objectTracker[oldAddress]);
         else {
             ptr = new U;
@@ -155,7 +162,12 @@ namespace Serialization {
         int addrStart = str.find("<Addr>"),
                 addrEnd = str.find("</Addr>");
         std::uintptr_t oldAddress = std::stoull(str.substr(addrStart + 6, addrEnd - addrStart - 6));
-        if (SaveUtilities::smartObjectTracker[oldAddress])
+
+        if (oldAddress == -1) {
+            ptr = nullptr;
+            return;
+        }
+        else if (SaveUtilities::smartObjectTracker[oldAddress])
             ptr = std::static_pointer_cast<U>(SaveUtilities::smartObjectTracker[oldAddress]);
         else {
             ptr = std::make_shared<U>();

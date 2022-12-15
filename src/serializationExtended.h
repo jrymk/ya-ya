@@ -7,6 +7,7 @@
 #include "duck.h"
 #include "player.h"
 #include "egg.h"
+#include "eggcarton.h"
 
 namespace Serialization{
     template<>
@@ -27,6 +28,10 @@ namespace Serialization{
             }
             else if(kvpair.first.find("egg$") != std::string::npos){
                 typedef Egg T;
+                str.append(rserialize<std::shared_ptr<T> >(std::dynamic_pointer_cast<T>(kvpair.second)) + ";");
+            }
+            else if(kvpair.first.find("eggcarton$") != std::string::npos){
+                typedef EggCarton T;
                 str.append(rserialize<std::shared_ptr<T> >(std::dynamic_pointer_cast<T>(kvpair.second)) + ";");
             }
             else{
@@ -84,6 +89,12 @@ namespace Serialization{
             }
             else if(key.find("egg$") != std::string::npos){
                 typedef std::shared_ptr<Egg> V;
+                V value;
+                rdeserialize(value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
+                obj[key] = value;
+            }
+            else if(key.find("eggcarton$") != std::string::npos){
+                typedef std::shared_ptr<EggCarton> V;
                 V value;
                 rdeserialize(value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
                 obj[key] = value;
