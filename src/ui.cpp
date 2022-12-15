@@ -4,10 +4,11 @@
 #include "camera.h"
 #include "entity.h"
 #include "player.h"
+#include "localization.h"
 
 void UserInterface::renderUI() {
     Graphics::
-    Graphics::setFont(3);
+    Graphics::setFont(4);
     const float totalHeight = 120.;
     const float bottomPadding = 8.;
     const float padding = 12.;
@@ -61,7 +62,7 @@ void UserInterface::renderUI() {
                 leftMouseActionRect * UIVec(0., 0.) + UIVec(0., 36. + 20.), sf::Vector2f(0., 8192.)
         ));
 
-        Graphics::drawText("drop item", sf::Color::White, 20,
+        Graphics::drawText(strDropItem[1], sf::Color::White, 20,
                            leftMouseActionRect * UIVec(0., 0.) + UIVec(26. + textLRPadding, 20.), 0.);
     }
 }

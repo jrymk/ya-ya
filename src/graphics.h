@@ -153,6 +153,9 @@ public:
     static void drawText(const std::string &str, const sf::Color &fillColor, int size, UIVec pos, float align = 0., const sf::Color &outlineColor = sf::Color::Black,
                          float outlineStrokeWidth = 0.);
 
+    static void drawText(const std::wstring &str, const sf::Color &fillColor, int size, UIVec pos, float align = 0., const sf::Color &outlineColor = sf::Color::Black,
+                         float outlineStrokeWidth = 0.);
+
     static void drawTextBatch(sf::VertexArray &va, const std::string &str, const sf::Color &fillColor, int size, UIVec pos, float align = 0.);
 
     static void appendWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color &color = sf::Color::Black, const sf::Color &bgcolor = sf::Color::White);

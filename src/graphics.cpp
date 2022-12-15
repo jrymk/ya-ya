@@ -70,6 +70,28 @@ void Graphics::drawText(const std::string &str, const sf::Color &fillColor, int 
     }
 }
 
+void Graphics::drawText(const std::wstring &str, const sf::Color &fillColor, int size, UIVec pos, float align, const sf::Color &outlineColor, float outlineStrokeWidth) {
+    sf::Text text;
+    text.setPosition(0, 0);
+    text.setFont(fonts[selectedFont]);
+    text.setString(str);
+    text.setCharacterSize(size);
+    text.setFillColor(fillColor);
+    sf::FloatRect bounds = text.getLocalBounds();
+    text.setPosition((pos + UIVec(bounds.width * -align, -size)).getVec2f());
+    text.setOutlineColor(outlineColor);
+    text.setOutlineThickness(outlineStrokeWidth);
+    window->draw(text);
+
+    if (showWireframe) {
+        // magenta rectangle: actual bounds
+        drawRect(sf::Color::Magenta, 1, pos + UIVec(bounds.width * -align, -size + bounds.top),
+                 pos + UIVec(bounds.width * -align, -size + bounds.top) + UIVec(bounds.width, bounds.height));
+        // cyan rectangle: baseline(input y coord) and size for reference
+        drawRect(sf::Color::Cyan, 1, pos + UIVec(bounds.width * -align, -size), pos + UIVec(bounds.width * -align, -size) + UIVec(bounds.width, size));
+    }
+}
+
 void Graphics::drawTextBatch(sf::VertexArray &va, const std::string &str, const sf::Color &fillColor, int size, UIVec pos, float align) {
     sf::Text text;
     text.setPosition(0, 0);

@@ -26,7 +26,7 @@ add_executable(yaya
         src/timer.cpp
         src/utilities.cpp
         src/map.cpp
-        src/ui.cpp src/eggcarton.cpp src/eggcarton.h)
+        src/ui.cpp src/eggcarton.cpp src/eggcarton.h src/localization.h)
 
 target_link_libraries(yaya PRIVATE sfml-graphics)
 target_compile_features(yaya PRIVATE cxx_std_17)

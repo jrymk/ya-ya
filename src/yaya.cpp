@@ -31,6 +31,7 @@ int main() {
     Graphics::loadFont(1, "CascadiaCode.ttf");
     Graphics::loadFont(2, "Aero Matics Regular.ttf");
     Graphics::loadFont(3, "Barlow-SemiBold.ttf");
+    Graphics::loadFont(4, "SourceHanSansTC-Bold.otf");
     FramerateCounter fc;
 
     Game game;
