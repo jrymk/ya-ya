@@ -1,3 +1,0 @@
-C:\Python\Python37\Lib\site-packages\cmake\data\bin\cmake.exe -E rm -f CMakeFiles\yaya.dir/objects.a
-C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\yaya.dir/objects.a @CMakeFiles\yaya.dir\objects1
-C:\msys64\mingw64\bin\c++.exe -Wl,--whole-archive CMakeFiles\yaya.dir/objects.a -Wl,--no-whole-archive -o yaya.exe -Wl,--out-implib,libyaya.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\yaya.dir\linkLibs.rsp
