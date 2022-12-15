@@ -57,7 +57,7 @@ namespace Serialization {
     template<typename T, typename U>
     // shared_ptr
     inline std::string serialize(const std::shared_ptr<U> &ptr) {
-        debug << ptr.get() << '\n';
+        //debug << ptr.get() << '\n';
         if(!ptr) return "<Addr>-1</Addr>";
         else return SaveUtilities::getAddress(ptr.get()) + rserialize(*ptr);
     }
