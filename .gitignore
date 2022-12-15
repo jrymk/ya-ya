@@ -18,4 +18,4 @@ build/Makefile
 build/sfml-graphics-2.dll
 build/sfml-system-2.dll
 build/sfml-window-2.dll
-build/CMakeFiles/
+/build/CMakeFiles/
