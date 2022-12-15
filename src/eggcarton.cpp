@@ -28,18 +28,6 @@ void EggCarton::objInit() {
 }
 
 void EggCarton::customUpdate() {
-    if (!motionFrozen) {
-        heading += headingRotationSpeed * elapsedSecs;
-        position.x += velocity * std::cos(heading) * elapsedSecs;
-        position.y += velocity * std::sin(heading) * elapsedSecs;
-        position = position + slideVelocity * elapsedSecs;
-        if (zPosition > 0)
-            zVelocity += GRAVITY * elapsedSecs;
-        zPosition += zVelocity;
-        zPosition = std::max(zPosition, 0.);
-        if (zPosition == 0.)
-            zVelocity = 0.;
-    }
 }
 
 void EggCarton::setInventoryProps() {
@@ -61,6 +49,7 @@ void EggCarton::setInventoryProps() {
         /// ON HOLD
         if (slot >= EGG_0 && slot <= EGG_9) {
             inventory[slot]->position = position + coord(-.3 + (slot % 5) * .15, (slot < 5 ? .075 : -.075));
+            inventory[slot]->underlyingPos = position + coord(-.3 + (slot % 5) * .15, (slot < 5 ? .075 : -.075));
             inventory[slot]->zPosition = zPosition + .3; // do every update or else gravity will do its thing
             inventory[slot]->zDepthOverride = cartonZDepth + (slot < 5 ? -ZDEPTH_LAYER : ZDEPTH_LAYER);
         }

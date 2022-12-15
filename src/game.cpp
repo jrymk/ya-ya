@@ -69,14 +69,14 @@ void Game::processCollisions() {
         // entity collision
         if (!e->collisionCollidable)
             continue;
-        auto result = neighborsFinder.findNeighbors(e->position, .3);
+        auto result = neighborsFinder.findNeighbors(e->underlyingPos, .3);
         for (auto f: result) {
             if (e == f)
                 continue;
             if (!f->collisionPushable)
                 continue;
 
-            if (e->position.len(f->position) < .3) {
+            if (e->underlyingPos.len(f->underlyingPos) < .3) {
                 if (!f->collisionPushable)
                     continue;
                 if (e->ownedBy == f || f->ownedBy == e)
@@ -92,17 +92,17 @@ void Game::processCollisions() {
 //                        Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
 //                        a.argCoord[0] = move;
 //                        a.argFloat[0] = .12;
-//                        pushAction(a); /// TODO: use entity collision boxes as entity collision ref
+//                        pushAction(a);
 //                    }
 //                }
 //                f->position = f->position + f->collideBox.collide(e->collideBox, f->position, e->position) * .7;
-                coord delta = f->position - e->position;
+                coord delta = f->underlyingPos - e->underlyingPos;
                 if (delta.len() < .00001)
                     delta = coord::getRandCoord();
                 coord move = delta / delta.len() / delta.len() / 3.;
                 if (f->historyPosition.size() >= 2 &&
                     (f->historyPosition[1].second.len(f->historyPosition[0].second)) / f->historyPosition[1].first.elapsed(f->historyPosition[0].first) < 0.1) {
-                    Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
+                    Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE); /// TODO: fix teleportion with collision (because of hopping)
                     a.argCoord[0] = move;
                     a.argFloat[0] = 0.1;
                     pushAction(a); /// TODO: use entity collision boxes as entity collision ref (if it ain't broke don't fix it)
@@ -115,10 +115,11 @@ void Game::processCollisions() {
         if (e->collisionNoEnv)
             continue;
         // map collision
-        for (int tx = int(std::round(e->position.x - e->footprint.x / 2 - 1.)); tx <= int(std::round(e->position.x + e->footprint.x / 2)); tx++) {
-            for (int ty = int(std::round(e->position.y - e->footprint.y / 2 - 1.)); ty <= int(std::round(e->position.y + e->footprint.y / 2)); ty++) {
+        for (int tx = int(std::round(e->underlyingPos.x - e->footprint.x / 2 - 1.)); tx <= int(std::round(e->underlyingPos.x + e->footprint.x / 2)); tx++) {
+            for (int ty = int(std::round(e->underlyingPos.y - e->footprint.y / 2 - 1.)); ty <= int(std::round(e->underlyingPos.y + e->footprint.y / 2)); ty++) {
                 for (auto &cb: map.getTile(tx, ty).collideBoxes) {
-                    e->position = e->position + e->collideBox.collide(cb, e->position, coord(tx, ty));
+                    e->underlyingPos = e->underlyingPos + e->collideBox.collide(cb, e->underlyingPos, coord(tx, ty));
+//                    e->position = e->underlyingPos;
                     if (showCollisionBoxes)
                         Graphics::insertUserWireframe(Camera::getScreenPos(coord(tx, ty) + cb.center + coord(-cb.size.x / 2., -cb.size.y / 2.)),
                                                       Camera::getScreenPos(coord(tx, ty) + cb.center + coord(cb.size.x / 2., -cb.size.y / 2.)),

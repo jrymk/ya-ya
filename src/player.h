@@ -15,6 +15,8 @@ public:
 
     Player(Game* game);
 
+    void objInit();
+
     Game* game;
 
     enum InventorySlots {

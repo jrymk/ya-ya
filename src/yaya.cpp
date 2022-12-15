@@ -177,7 +177,7 @@ int main() {
         else
             game.player->slideVelocity = coord();
 
-        game.player->heading = game.player->position.angle(Camera::getMouseCoord());
+        game.player->heading = game.player->underlyingPos.angle(Camera::getMouseCoord());
 
         game.update();
         Graphics::clearQuadsArray();
@@ -192,7 +192,7 @@ int main() {
 //        Graphics::setFont(1);
 //        Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::Black, 12, UIVec(6, 17), 0., sf::Color(255, 255, 255, 200), 2.);
 
-        Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.08);
+        Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.08); /// TODO: decide underlying pos or pos
 
 //        Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
 //        Graphics::drawText(

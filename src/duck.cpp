@@ -305,18 +305,6 @@ void Duck::objInit() {
 }
 
 void Duck::customUpdate() {
-    if (!motionFrozen) {
-        heading += headingRotationSpeed * elapsedSecs;
-        position.x += velocity * std::cos(heading) * elapsedSecs;
-        position.y += velocity * std::sin(heading) * elapsedSecs;
-        position = position + slideVelocity * elapsedSecs;
-        if (zPosition > 0)
-            zVelocity += GRAVITY * elapsedSecs;
-        zPosition += zVelocity;
-        zPosition = std::max(zPosition, 0.);
-        if (zPosition == 0.)
-            zVelocity = 0.;
-    }
 }
 
 void Duck::setInventoryProps() {
@@ -344,6 +332,7 @@ void Duck::setInventoryProps() {
             case InventorySlots::EGG_1:
                 coord pos = position + coord::getAngleVec((slot == InventorySlots::EGG_0) ? -.1 : -.2, heading);
                 inventory[slot]->position = pos;
+                inventory[slot]->underlyingPos = pos;
                 inventory[slot]->heading = heading;
                 inventory[slot]->zPosition = zPosition;
                 break;

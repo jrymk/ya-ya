@@ -13,7 +13,7 @@
 #include <deque>
 
 #define OUT_OF_SIGHT 500
-#define GRAVITY -2.
+#define GRAVITY -5
 
 enum EntityType {
     ENTITY,
@@ -57,12 +57,16 @@ public:
     float scale = 1.;
 
     // motion
+    coord position;
+    Timer lastLandTime;
+    double hopPower = .15;
+    coord _hopVelocity; // internal
     bool motionFrozen = false;
     bool collisionPushable = true;
     bool collisionCollidable = true;
     bool collisionNoEnv = false;
-    coord position;
     std::deque<std::pair<Timer, coord>> historyPosition;
+    coord underlyingPos;
     double zPosition = 0.;
     double velocity = 0.;
     double zVelocity = 0.;
@@ -90,6 +94,8 @@ public:
     virtual void environmentUpdate();
 
     virtual std::string getDescriptionStr();
+
+    void motionUpdate();
 
     virtual void customUpdate();
 

@@ -41,7 +41,8 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             position = action.argCoord[0];
             break;
         case ENTITY_MOVE_TO_APPROACH:
-            position = action.argCoord[0] - (action.argCoord[0] - position) * std::pow(action.argFloat[0], elapsedSecs);
+            underlyingPos = action.argCoord[0] - (action.argCoord[0] - underlyingPos) * std::pow(action.argFloat[0], elapsedSecs);
+            position = underlyingPos; // TODO: I think this is only used in player inventory???
             break;
         case ENTITY_ZPOS_TO_APPROACH_UNTIL:
             zPosition = action.argFloat[0] - (action.argFloat[0] - zPosition) * std::pow(action.argFloat[1], elapsedSecs);
@@ -62,15 +63,16 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
                 zVelocity = .3;
             break;
         case ENTITY_SLIDE_INSTANT:
-            position = position + action.argCoord[0];
+            underlyingPos = underlyingPos + action.argCoord[0];
             break;
         case ENTITY_SLIDE_VELOCITY: {
-            position = position + action.argCoord[0] / elapsedSecs;
+            underlyingPos = underlyingPos + action.argCoord[0] / elapsedSecs;
             break;
         }
         case ENTITY_SLIDE_VELOCITY_DISTANCE:
-            position = position + action.argCoord[0] / action.argCoord[0].len() *
-                                  std::min(action.argCoord[0].len() * elapsedSecs, action.argFloat[0]);
+            underlyingPos = underlyingPos + action.argCoord[0] / action.argCoord[0].len() *
+                                            std::min(action.argCoord[0].len() * elapsedSecs, action.argFloat[0]);
+            position = underlyingPos;
             action.argFloat[0] -= action.argCoord[0].len() * elapsedSecs;
             velocity = velocity / action.argCoord[0].len() *
                        std::max(action.argFloat[0] / 0.5, action.argCoord[0].len() - 0.05 * elapsedSecs); // deccelerate
@@ -82,7 +84,7 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             }
             break;
         case ENTITY_WALK_INSTANT:
-            position = position + coord::getAngleVec(action.argFloat[0], heading);
+            underlyingPos = underlyingPos + coord::getAngleVec(action.argFloat[0], heading);
             break;
         default:
             runAction(action, followUpActions); // run entity specific actions
@@ -180,6 +182,7 @@ void Entity::update() {
         historyPosition.pop_back();
 
     inventory_last = inventory;
+    motionUpdate();
     customUpdate();
     environmentUpdate();
 }
@@ -193,6 +196,38 @@ std::string Entity::getDescriptionStr() {
     ss << "position: " << std::setprecision(3) << std::fixed << position.x << ", " << position.y << "\n";
     ss << "chunk: " << neighborsFinderMyTile.first << ", " << neighborsFinderMyTile.second << "\n";
     return ss.str();
+}
+
+void Entity::motionUpdate() {
+    if (!motionFrozen) {
+        heading += headingRotationSpeed * elapsedSecs;
+        underlyingPos.x += velocity * std::cos(heading) * elapsedSecs;
+        underlyingPos.y += velocity * std::sin(heading) * elapsedSecs;
+        underlyingPos = underlyingPos + slideVelocity * elapsedSecs;
+        if (zPosition > 0)
+            zVelocity += GRAVITY * elapsedSecs;
+        zPosition += zVelocity;
+        zPosition = std::max(zPosition, 0.);
+        if (zVelocity != 0 && zPosition == 0.) {
+            lastLandTime = Timer::getNow();
+            zVelocity = 0.;
+        }
+    }
+//    position = underlyingPos;
+    if (position.len(underlyingPos) > .01 && zPosition == 0. && lastLandTime.elapsed() > .15 * hopPower) {
+        zVelocity = hopPower;
+        _hopVelocity =
+                (underlyingPos - position).unit() * std::min(hopPower * 1.9, position.len(underlyingPos)) /
+                (2. * hopPower / (- GRAVITY)) /* hop time (requires physics knowledge 'o') */;
+    }
+    if (zPosition > 0.) {
+        if (position.len(underlyingPos) < _hopVelocity.len() * elapsedSecs)
+            position = underlyingPos;
+        else
+            position = position + _hopVelocity * elapsedSecs;
+        //        position = position + (underlyingPos - position).unit() * std::min(.7, position.len(underlyingPos)) * ;
+    }
+
 }
 
 void Entity::customUpdate() {
@@ -222,4 +257,5 @@ Entity::Entity() {
 std::wstring Entity::getLocalization(int lang, int strId) {
     return std::wstring(L"general entity");
 }
+
 

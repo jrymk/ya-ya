@@ -6,15 +6,14 @@ void Player::loadModel() {
     model = &modelPlayer;
 }
 
-Player::Player() {
-    inventory.resize(2, nullptr);
-}
+Player::Player() { objInit(); }
 
-Player::Player(Game* game) : game(game) {
-    // auto shared = std::make_shared<Player>(this);
-    // Entity::childClassPtr = std::dynamic_pointer_cast<Entity>(shared);
+Player::Player(Game* game) : game(game) { objInit(); }
+
+void Player::objInit() {
     inventory.resize(2, nullptr);
     type = PLAYER;
+    hopPower = .3;
 }
 
 void Player::setInventoryProps() {
@@ -78,19 +77,7 @@ void Player::setInventoryProps() {
 }
 
 void Player::customUpdate() {
-    if (!motionFrozen) {
-        heading += headingRotationSpeed * elapsedSecs;
-        position.x += velocity * std::cos(heading) * elapsedSecs;
-        position.y += velocity * std::sin(heading) * elapsedSecs;
-        position = position + slideVelocity * elapsedSecs;
-        if (zPosition > 0)
-            zVelocity += GRAVITY * elapsedSecs;
-        zPosition += zVelocity;
-        zPosition = std::max(zPosition, 0.);
-        if (zPosition == 0.)
-            zVelocity = 0.;
-//    debug << "custom updated " << slideVelocity.x << ", " << slideVelocity.y << "\n";
-    }
+
 }
 
 void Player::environmentUpdate() {

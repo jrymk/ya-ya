@@ -82,18 +82,6 @@ void Egg::objInit() {
 }
 
 void Egg::customUpdate() {
-    if (!motionFrozen) {
-        heading += headingRotationSpeed * elapsedSecs;
-        position.x += velocity * std::cos(heading) * elapsedSecs;
-        position.y += velocity * std::sin(heading) * elapsedSecs;
-        position = position + slideVelocity * elapsedSecs;
-        if (zPosition > 0)
-            zVelocity += GRAVITY * elapsedSecs;
-        zPosition += zVelocity;
-        zPosition = std::max(zPosition, 0.);
-        if (zPosition == 0.)
-            zVelocity = 0.;
-    }
 }
 
 void Egg::setInventoryProps() {
@@ -118,6 +106,7 @@ void Egg::setInventoryProps() {
         switch (slot) {
             case InventorySlots::EMBRYO:
                 inventory[InventorySlots::EMBRYO]->position = position;
+                inventory[InventorySlots::EMBRYO]->underlyingPos = position;
                 inventory[InventorySlots::EMBRYO]->zPosition = zPosition;
                 break;
         }
