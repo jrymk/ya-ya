@@ -4,6 +4,7 @@
 #include "player.h"
 #include "duck.h"
 #include "egg.h"
+#include "NPC.h"
 #include "ui.h"
 #include "serializationExtended.h"
 
@@ -204,6 +205,9 @@ std::string Game::newId(EntityType type) {
             break;
         case EGG_CARTON:
             id = "eggcarton$" + randomId();
+            break;
+        case NPC:
+            id = "npc$" + randomId();
             break;
         default:
             debug << "hey you forgot me\n";

@@ -5,7 +5,7 @@
 #include "entity.h"
 #include "game.h"
 
-class NPC : public Entity {
+class npc : public Entity {
 public :
     bool genderIsMale = true;
     bool fertilized = false;
@@ -16,7 +16,7 @@ public :
 
     Game* game;
 
-    NPC(Game* game);
+    npc(Game* game);
 
     void customUpdate() override;
 

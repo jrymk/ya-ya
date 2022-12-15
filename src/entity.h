@@ -20,7 +20,8 @@ enum EntityType {
     PLAYER,
     DUCK,
     EGG,
-    EGG_CARTON
+    EGG_CARTON,
+    NPC
 };
 
 class Game;
