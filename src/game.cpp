@@ -164,6 +164,8 @@ void Game::runAction(Action &action, std::vector<Action> &followUpActions) {
     // global actions
     switch (action.command) {
         case GLOBAL_DESTROY:
+            if (action.argEntity[0]->ownedBy != nullptr)
+                action.argEntity[0]->ownedBy->inventory[action.argEntity[0]->ownedSlot] = nullptr;
             destroyEntity(action.argEntity[0]->id);
             break;
         default:

@@ -2,6 +2,7 @@
 #include <iomanip>
 #include "duck.h"
 #include "model.h"
+#include "localization.h"
 
 void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
@@ -147,3 +148,8 @@ std::string Egg::getDescriptionStr() {
     ss << "gender: " << (genderIsMale ? "male" : "female") << "\n";
     return ss.str();
 }
+
+std::wstring Egg::getLocalization(int lang, int strId) {
+    return strEgg[strId][lang];
+}
+

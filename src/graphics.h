@@ -72,6 +72,20 @@ struct UIRect {
         size.y = h;
     }
 
+    inline UIRect(UIVec tl, float w, float h) {
+        pos.x = tl.x;
+        pos.y = tl.y;
+        size.x = w;
+        size.y = h;
+    }
+
+    inline UIRect(UIVec tl, UIVec wh) {
+        pos.x = tl.x;
+        pos.y = tl.y;
+        size.x = wh.x;
+        size.y = wh.y;
+    }
+
     inline UIRect(sf::FloatRect rect) {
         size = UIVec(rect.width, rect.height);
         pos = UIVec(rect.left, rect.top);
@@ -121,6 +135,13 @@ public:
         }
     };
 
+    struct Image {
+        sf::Vector2f texturePos;
+        sf::Vector2f textureSize;
+
+        inline Image(sf::Vector2f pos, sf::Vector2f size) : texturePos(pos), textureSize(size) {}
+    };
+
 private:
     inline static sf::RenderWindow* window;
     inline static unsigned int selectedFont;
@@ -157,6 +178,8 @@ public:
                          float outlineStrokeWidth = 0.);
 
     static void drawTextBatch(sf::VertexArray &va, const std::string &str, const sf::Color &fillColor, int size, UIVec pos, float align = 0.);
+
+    static void drawImage(const Image &image, float zDepth, UIVec pos, UIVec align, float scale = 1., sf::Color color = sf::Color::White);
 
     static void appendWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color &color = sf::Color::Black, const sf::Color &bgcolor = sf::Color::White);
 

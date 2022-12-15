@@ -10,6 +10,8 @@ class UserInterface {
 public:
     Game* game;
 
+    float displayScaling = 1.;
+
     inline UserInterface(Game* game) : game(game) {}
 
     void renderUI();

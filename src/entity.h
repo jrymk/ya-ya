@@ -79,6 +79,8 @@ public:
 
     virtual void objInit();
 
+    virtual std::wstring getLocalization(int lang, int strId);
+
     void pushQuads();
 
     void updateTimer();

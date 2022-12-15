@@ -146,7 +146,10 @@ int main() {
                 }
             }
             if (event.type == sf::Event::MouseWheelMoved) {
-                // mouseWheelPosition += event.mouseWheel.delta;
+                game.ui.displayScaling += event.mouseWheel.delta * .25;
+                game.ui.displayScaling = std::max(game.ui.displayScaling, .25f);
+                Camera::setZoom(80 / game.ui.displayScaling);
+                debug << "Display scaling: " << game.ui.displayScaling << "\n";
             }
             if (event.type == sf::Event::MouseButtonPressed) {
             }

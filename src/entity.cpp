@@ -23,7 +23,6 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             }
             ownedBy->inventory[ownedSlot] = nullptr;
             ownedBy = nullptr;
-            opacity = 1.;
             break;
         }
         case ENTITY_MOTION_FROZEN:
@@ -218,5 +217,9 @@ void Entity::objInit() {
 
 Entity::Entity() {
     seed = getRandInt();
+}
+
+std::wstring Entity::getLocalization(int lang, int strId) {
+    return std::wstring(L"general entity");
 }
 

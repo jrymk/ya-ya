@@ -3,6 +3,7 @@
 #include <iomanip>
 #include "duck.h"
 #include "model.h"
+#include "localization.h"
 
 void EggCarton::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
@@ -83,3 +84,8 @@ std::string EggCarton::getDescriptionStr() {
     ss << "chunk: " << neighborsFinderMyTile.first << ", " << neighborsFinderMyTile.second << "\n";
     return ss.str();
 }
+
+std::wstring EggCarton::getLocalization(int lang, int strId) {
+    return strEggCarton[strId][lang];
+}
+

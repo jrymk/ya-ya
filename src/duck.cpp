@@ -3,6 +3,7 @@
 #include "game.h"
 #include "egg.h"
 #include "model.h"
+#include "localization.h"
 
 void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
@@ -384,5 +385,9 @@ void Duck::environmentUpdate() {
 //            }
 //        }
 //    }
+}
+
+std::wstring Duck::getLocalization(int lang, int strId) {
+    return strDuck[strId][lang];
 }
 

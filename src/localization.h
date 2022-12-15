@@ -4,10 +4,21 @@
 #include <string>
 
 #define LANG_COUNT 2
+#define LOC_ENTITIY_NAME 0
+#define LOC_ENTITIY_DESC 1
+#define LOC_ENTITY_CNT 2
 
 const std::wstring strPickUpItem[LANG_COUNT] = {
         L"pick up item",
         L"拿起物品"
+};
+const std::wstring strHoldIn[LANG_COUNT][2] = {
+        L"hold ", L" in ",
+        L"將", L"拿在"
+};
+const std::wstring strDrop[LANG_COUNT][1] = {
+        L"put down ",
+        L"放下"
 };
 const std::wstring strDropItem[LANG_COUNT] = {
         L"drop item",
@@ -26,17 +37,22 @@ const std::wstring strStoreItem[LANG_COUNT] = {
         L"儲存物品"
 };
 
-const std::wstring strDuck[LANG_COUNT] = {
-        L"duck",
-        L"鴨鴨"
+const std::wstring strLeftHand[LANG_COUNT] = {
+        L"left hand",
+        L"左手"
 };
-const std::wstring strEgg[LANG_COUNT] = {
-        L"egg",
-        L"蛋"
+
+const std::wstring strDuck[LOC_ENTITY_CNT][LANG_COUNT] = {
+        L"the duck", L"鴨鴨",
+        L"delicious, delicious", L"美味、可口"
 };
-const std::wstring strEggCarton[LANG_COUNT] = {
-        L"egg carton",
-        L""
+const std::wstring strEgg[LOC_ENTITY_CNT][LANG_COUNT] = {
+        L"the egg", L"蛋",
+        L"a duck egg", L"鴨蛋"
+};
+const std::wstring strEggCarton[LOC_ENTITY_CNT][LANG_COUNT] = {
+        L"the egg carton", L"蛋盒",
+        L"holds up to 10 eggs!", L"可以放十顆蛋！"
 };
 
 #endif //YAYA_LOCALIZATION_H

@@ -35,6 +35,8 @@ public:
 
     void setInventoryProps() override;
 
+    std::wstring getLocalization(int lang, int strId) override;
+
     std::string getDescriptionStr() override;
 
     constexpr static auto properties = std::make_tuple(  /// TODO: set game*
