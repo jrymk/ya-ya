@@ -26,11 +26,10 @@ enum EntityType {
 
 class Game;
 
+class Entity;
+
 /// @brief Renderer and motion control for entities
 class Entity {
-protected:
-    std::vector<std::shared_ptr<Entity>> inventory_last;
-
 public:
     std::string id = "undefined";
     EntityType type = ENTITY;

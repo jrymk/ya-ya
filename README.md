@@ -35,13 +35,15 @@
 ### controls
 
 - when hands are empty
-    - <mouse_button> pick up item
+    - ~~<mouse_button> pick up item~~
     - shows very basic information
     - if an item with actions is highlighted...
         - a tool
             - <alt> equip tool (and unequip tool)
 - when holding an entity
-    - <mouse_button> drop item
+    - ~~<mouse_button> drop item~~
+    - if a container is highlighted (for example an egg carton)
+        - <alt> store item
     - if a container space is highlighted (for example a cage)
         - <alt> store item
 - when holding a container

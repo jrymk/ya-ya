@@ -286,6 +286,22 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
             }
             break;
         }
+        case ENTITY_INVENTORY_ON_CAPTURE:
+            if (action.argInt[0] == InventorySlots::EGG_0 || action.argInt[0] == InventorySlots::EGG_1) {
+                action.argEntity[0]->motionFrozen = true;
+                action.argEntity[0]->selectable = false;
+                action.argEntity[0]->opacity = .1;
+                action.argEntity[0]->scale = .6;
+            }
+            break;
+        case ENTITY_INVENTORY_ON_RELEASE:
+            if (action.argInt[0] == InventorySlots::EGG_0 || action.argInt[0] == InventorySlots::EGG_1) {
+                action.argEntity[0]->motionFrozen = false;
+                action.argEntity[0]->selectable = true;
+                action.argEntity[0]->opacity = 1.;
+                action.argEntity[0]->scale = 1.;
+            }
+            break;
     }
 }
 
@@ -311,49 +327,16 @@ void Duck::customUpdate() {
 
 void Duck::setInventoryProps() {
     for (int slot = 0; slot < inventory.size(); slot++) {
-        if (!((inventory_last.size() != inventory.size() || !inventory_last[slot]) && inventory[slot]))
-            continue;
-        /// ON CAPTURE
-        switch (slot) {
-            case InventorySlots::EGG_0:
-            case InventorySlots::EGG_1:
-                inventory[slot]->motionFrozen = true;
-                inventory[slot]->selectable = false;
-                inventory[slot]->opacity = .1;
-                inventory[slot]->scale = .6;
-                break;
-        }
-    }
-    for (int slot = 0; slot < inventory.size(); slot++) {
         if (!inventory[slot])
             continue;
-        /// ON HOLD
-        switch (slot) {
-            case InventorySlots::EGG_0:
-            case InventorySlots::EGG_1:
-                coord pos = position + coord::getAngleVec((slot == InventorySlots::EGG_0) ? -.1 : -.2, heading);
-                inventory[slot]->position = pos;
-                inventory[slot]->underlyingPos = pos;
-                inventory[slot]->heading = heading;
-                inventory[slot]->zPosition = zPosition;
-                break;
+        if (slot == InventorySlots::EGG_0 || slot == InventorySlots::EGG_1) {
+            coord pos = position + coord::getAngleVec((slot == InventorySlots::EGG_0) ? -.1 : -.2, heading);
+            inventory[slot]->position = pos;
+            inventory[slot]->underlyingPos = pos;
+            inventory[slot]->heading = heading;
+            inventory[slot]->zPosition = zPosition;
         }
     }
-    for (int slot = 0; slot < inventory.size(); slot++) {
-        if (inventory_last.size() != inventory.size() || !(inventory_last[slot] && !inventory[slot]))
-            continue;
-        /// ON RELEASE
-        switch (slot) {
-            case InventorySlots::EGG_0:
-            case InventorySlots::EGG_1:
-                inventory_last[slot]->motionFrozen = false;
-                inventory_last[slot]->selectable = true;
-                inventory_last[slot]->opacity = 1.;
-                inventory_last[slot]->scale = 1.;
-                break;
-        }
-    }
-    inventory_last = inventory;
 }
 
 std::string Duck::getDescriptionStr() {

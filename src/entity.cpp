@@ -11,6 +11,12 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             ownedBy = action.argEntity[0];
             ownedSlot = action.argInt[0];
             action.argEntity[0]->inventory[action.argInt[0]] = action.entity;
+            {
+                Action a(ownedBy, Timer::getNow(), ENTITY_INVENTORY_ON_CAPTURE);
+                a.argEntity[0] = action.entity;
+                a.argInt[0] = ownedSlot;
+                followUpActions.push_back(a);
+            }
             break;
         case ENTITY_UNOWN: {
             if (ownedBy == nullptr)
@@ -18,6 +24,12 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             {
                 Action a(action.entity, Timer::getNow(), ON_UNOWNED);
                 a.argEntity[0] = ownedBy;
+                a.argInt[0] = ownedSlot;
+                followUpActions.push_back(a);
+            }
+            {
+                Action a(ownedBy, Timer::getNow(), ENTITY_INVENTORY_ON_RELEASE);
+                a.argEntity[0] = action.entity;
                 a.argInt[0] = ownedSlot;
                 followUpActions.push_back(a);
             }
