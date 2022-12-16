@@ -352,6 +352,7 @@ void Duck::setInventoryProps() {
                 break;
         }
     }
+    inventory_last = inventory;
 }
 
 std::string Duck::getDescriptionStr() {

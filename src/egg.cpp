@@ -125,6 +125,7 @@ void Egg::setInventoryProps() {
                 break;
         }
     }
+    inventory_last = inventory;
 }
 
 std::string Egg::getDescriptionStr() {

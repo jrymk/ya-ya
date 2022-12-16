@@ -74,6 +74,7 @@ void Player::setInventoryProps() {
                 break;
         }
     }
+    inventory_last = inventory;
 }
 
 void Player::customUpdate() {

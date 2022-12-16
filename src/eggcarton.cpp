@@ -63,6 +63,7 @@ void EggCarton::setInventoryProps() {
             inventory_last[slot]->selectable = true;
         }
     }
+    inventory_last = inventory;
 }
 
 std::string EggCarton::getDescriptionStr() {
