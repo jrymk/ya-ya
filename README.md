@@ -22,7 +22,7 @@
 
 #### artwork
 
-- [ ] just about everything
+- [ ] half?
 
 ### build guide
 
@@ -35,19 +35,21 @@
 ### controls
 
 - when hands are empty
-    - <mouse_button> pick up item
-    - shows very basic information
-    - if an item with actions is highlighted...
+    - ✅ `PICK_UP_ITEM` ~~<mouse_button> pick up item~~
+    - ❌ shows very basic information
+    - ❌ if an item with actions is highlighted...
         - a tool
-            - <alt> equip tool (and unequip tool)
+            - \<alt> equip tool (and unequip tool)
 - when holding an entity
-    - <mouse_button> drop item
-    - if a container space is highlighted (for example a cage)
-        - <alt> store item
+    - ✅ `DROP_ITEM` ~~<mouse_button> drop item~~
+    - ~~if a container is highlighted (for example an egg carton)~~
+        - ✅ `STORE_ITEM` ~~\<alt> store item~~
+    - if a ❌(container space) is highlighted (for example a cage)
+        - ❌ \<alt> store item
 - when holding a container
     - <mouse_button> drop container
     - if a storable item is highlighted (game field)
-        - <alt> store item
+        - \<alt> store item
     - if an inventory item is highlighted (bottom bar)
         - if offhand is empty
             - <other_mouse_button> pick up item
@@ -69,8 +71,8 @@
         - if a building is highlighted
             - <alt + hold> demolish (turns into item form with a chance of disappearing)
         - if the other hand is holding a buildable item and a valid tile is highlighted
-            - <alt> build
+            - \<alt> build
     - ...
 - (optional) when holding food
     - if an entity is highlighted
-        - <alt> feed
+        - \<alt> feed

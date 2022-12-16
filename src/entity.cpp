@@ -11,6 +11,12 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             ownedBy = action.argEntity[0];
             ownedSlot = action.argInt[0];
             action.argEntity[0]->inventory[action.argInt[0]] = action.entity;
+            {
+                Action a(ownedBy, Timer::getNow(), ENTITY_INVENTORY_ON_CAPTURE);
+                a.argEntity[0] = action.entity;
+                a.argInt[0] = ownedSlot;
+                followUpActions.push_back(a);
+            }
             break;
         case ENTITY_UNOWN: {
             if (ownedBy == nullptr)
@@ -18,6 +24,12 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             {
                 Action a(action.entity, Timer::getNow(), ON_UNOWNED);
                 a.argEntity[0] = ownedBy;
+                a.argInt[0] = ownedSlot;
+                followUpActions.push_back(a);
+            }
+            {
+                Action a(ownedBy, Timer::getNow(), ENTITY_INVENTORY_ON_RELEASE);
+                a.argEntity[0] = action.entity;
                 a.argInt[0] = ownedSlot;
                 followUpActions.push_back(a);
             }
@@ -41,7 +53,7 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             position = action.argCoord[0];
             break;
         case ENTITY_MOVE_TO_APPROACH:
-            underlyingPos = action.argCoord[0] - (action.argCoord[0] - underlyingPos) * std::pow(action.argFloat[0], elapsedSecs);
+            underlyingPos = action.argCoord[0] - (action.argCoord[0] - underlyingPos) * std::pow(action.argFloat[0], elapsedSecs * 1000); // not true "time independent" :(
             position = underlyingPos; // TODO: I think this is only used in player inventory???
             break;
         case ENTITY_ZPOS_TO_APPROACH_UNTIL:
@@ -212,7 +224,7 @@ void Entity::motionUpdate() {
             zVelocity = 0.;
         }
     }
-    if (!hoppable)
+    if (!hoppable) /// TODO: fix ducks flying away
         position = underlyingPos;
     else {
         if (position.len(underlyingPos) > .01 && zPosition == 0. && lastLandTime.elapsed() > .15 * hopPower) {

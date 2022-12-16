@@ -17,65 +17,52 @@ void Player::objInit() {
     hoppable = true;
 }
 
-void Player::setInventoryProps() {
-    for (int slot = 0; slot < inventory.size(); slot++) {
-        if (!((inventory_last.size() != inventory.size() || !inventory_last[slot]) && inventory[slot]))
-            continue;
-        /// ON CAPTURE
-        switch (slot) {
-            case InventorySlots::LEFT_HAND:
-            case InventorySlots::RIGHT_HAND:
-                inventory[slot]->motionFrozen = true;
-                inventory[slot]->selectable = false;
+void Player::runAction(Action &action, std::vector<Action> &followUpActions) {
+    switch (action.command) {
+        case ENTITY_INVENTORY_ON_CAPTURE:
+            if (action.argInt[0] == InventorySlots::LEFT_HAND || action.argInt[0] == InventorySlots::RIGHT_HAND) {
+                action.argEntity[0]->motionFrozen = true;
+                action.argEntity[0]->selectable = false;
                 {
-                    Action a(inventory[slot], Timer::getNow(), ENTITY_ZPOS_TO_APPROACH_UNTIL);
+                    Action a(action.argEntity[0], Timer::getNow(), ENTITY_ZPOS_TO_APPROACH_UNTIL);
                     a.argFloat[0] = 1.;
                     a.argFloat[1] = .00000001;
                     game->pushAction(a);
                 }
-                break;
-        }
+            }
+            break;
+        case ENTITY_INVENTORY_ON_RELEASE:
+            if (action.argInt[0] == InventorySlots::LEFT_HAND || action.argInt[0] == InventorySlots::RIGHT_HAND) {
+                action.argEntity[0]->motionFrozen = false;
+                action.argEntity[0]->selectable = true;
+            }
+            break;
     }
+}
+
+void Player::setInventoryProps() {
     for (int slot = 0; slot < inventory.size(); slot++) {
         if (!inventory[slot])
             continue;
-        /// ON HOLD
-        switch (slot) {
-            case InventorySlots::LEFT_HAND:
-            case InventorySlots::RIGHT_HAND:
-                coord pos = position + coord::getAngleVec(0.4, heading + (slot == InventorySlots::LEFT_HAND ? PI / 4 : -PI / 4));
-//                inventory[slot]->motionFrozen = true;
-
-                {
-                    Action a(inventory[slot], Timer::getNow(), ENTITY_MOVE_TO_APPROACH);
-                    a.argCoord[0] = pos;
-                    a.argFloat[0] = .000000005;
-                    game->pushAction(a);
-                }
-                {
-                    Action a(inventory[slot], Timer::getNow(), ENTITY_HEADING_INSTANT);
-                    a.argFloat[0] = heading;
-                    game->pushAction(a);
-                }
-//                inventory[slot]->position = pos;
-//                inventory[slot]->heading = heading;
-//                inventory[slot]->zPosition = .7;
-                break;
+        if (slot == InventorySlots::LEFT_HAND || slot == InventorySlots::RIGHT_HAND) {
+            coord pos = position + coord::getAngleVec(0.5, heading + (slot == InventorySlots::LEFT_HAND ? PI / 4 : -PI / 4));
+//            inventory[slot]->position = pos;
+//            inventory[slot]->underlyingPos = pos;
+            inventory[slot]->heading = heading;
+            {
+                Action a(inventory[slot], Timer::getNow(), ENTITY_MOVE_TO_APPROACH);
+                a.argCoord[0] = pos;
+                a.argFloat[0] = 0.90343660158;
+                game->pushAction(a);
+            }
+//
+//            {
+//                Action a(inventory[slot], Timer::getNow(), ENTITY_HEADING_INSTANT);
+//                a.argFloat[0] = heading;
+//                game->pushAction(a);
+//            }
         }
     }
-    for (int slot = 0; slot < inventory.size(); slot++) {
-        if (inventory_last.size() != inventory.size() || !(inventory_last[slot] && !inventory[slot]))
-            continue;
-        /// ON RELEASE
-        switch (slot) {
-            case InventorySlots::LEFT_HAND:
-            case InventorySlots::RIGHT_HAND:
-                inventory_last[slot]->motionFrozen = false;
-                inventory_last[slot]->selectable = true;
-                break;
-        }
-    }
-    inventory_last = inventory;
 }
 
 void Player::customUpdate() {

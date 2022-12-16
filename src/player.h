@@ -11,6 +11,8 @@ private:
 public:
     void loadModel() override;
 
+    void runAction(Action &action, std::vector<Action> &followUpActions) override;
+
     Player();
 
     Player(Game* game);

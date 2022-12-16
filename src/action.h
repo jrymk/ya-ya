@@ -16,6 +16,8 @@ enum Command {
     GLOBAL_DESTROY, // entity e
     ENTITY_OWN_BY, // entity e, int slot
     ENTITY_UNOWN,
+    ENTITY_INVENTORY_ON_CAPTURE, // int slot, entity e
+    ENTITY_INVENTORY_ON_RELEASE, // int slot, entity e
     ENTITY_MOTION_FROZEN, // bool frozen
     ENTITY_SELECTABLE, // bool selectable
     ENTITY_COLLISION_PUSHABLE, // bool pushable
