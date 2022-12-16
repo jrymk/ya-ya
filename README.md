@@ -18,6 +18,7 @@
 
 - [x] save duck gender
 - [x] save inventory
+- [ ] save map
 - [ ] save timer
 - [ ] save actions
 - [ ] ...
