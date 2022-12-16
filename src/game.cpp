@@ -78,7 +78,7 @@ void Game::processCollisions() {
             if (!f->collisionPushable)
                 continue;
 
-            if (e->underlyingPos.len(f->underlyingPos) < .3) {
+            if (e->position.len(f->position) < .3) {
                 if (!f->collisionPushable)
                     continue;
                 if (e->ownedBy == f || f->ownedBy == e)
@@ -98,13 +98,13 @@ void Game::processCollisions() {
 //                    }
 //                }
 //                f->position = f->position + f->collideBox.collide(e->collideBox, f->position, e->position) * .7;
-                coord delta = f->underlyingPos - e->underlyingPos;
+                coord delta = f->position - e->position;
                 if (delta.len() < .00001)
                     delta = coord::getRandCoord();
                 coord move = delta / delta.len() / delta.len() / 3.;
                 if (f->historyPosition.size() >= 2 &&
                     (f->historyPosition[1].second.len(f->historyPosition[0].second)) / f->historyPosition[1].first.elapsed(f->historyPosition[0].first) < 0.1) {
-                    Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE); /// TODO: fix teleportion with collision (because of hopping)
+                    Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
                     a.argCoord[0] = move;
                     a.argFloat[0] = 0.1;
                     pushAction(a); /// TODO: use entity collision boxes as entity collision ref (if it ain't broke don't fix it)
