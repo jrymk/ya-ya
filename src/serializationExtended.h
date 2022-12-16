@@ -7,94 +7,66 @@
 #include "duck.h"
 #include "player.h"
 #include "egg.h"
+#include "eggcarton.h"
 
 namespace Serialization{
     template<>
-    inline std::string serialize<std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > >,
-                                std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > >
-                                (const std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > > &obj) {  // specialization for entities map
-        std::string str;
-        str.append("<MapSize>" + std::to_string(obj.size()) + "</MapSize>{");
-        for (const auto &kvpair: obj){
-            str.append(rserialize(kvpair.first) + ":");
-            if(kvpair.first.find("player$") != std::string::npos){
-                typedef Player T;
-                str.append(rserialize<std::shared_ptr<T> >(std::dynamic_pointer_cast<T>(kvpair.second)) + ";");
+    inline std::string serialize<std::shared_ptr<Entity>, Entity>(const std::shared_ptr<Entity> &ptr) {  // specialization for entities
+        if(!ptr)
+            return "<Addr>-1</Addr>";
+        else switch(ptr -> type){
+            case PLAYER: {
+                return rserialize(std::dynamic_pointer_cast<Player>(ptr));
+                break;
             }
-            else if(kvpair.first.find("duck$") != std::string::npos){
-                typedef Duck T;
-                str.append(rserialize<std::shared_ptr<T> >(std::dynamic_pointer_cast<T>(kvpair.second)) + ";");
+            case DUCK: {
+                return rserialize(std::dynamic_pointer_cast<Duck>(ptr));
+                break;
             }
-            else if(kvpair.first.find("egg$") != std::string::npos){
-                typedef Egg T;
-                str.append(rserialize<std::shared_ptr<T> >(std::dynamic_pointer_cast<T>(kvpair.second)) + ";");
+            case EGG: {
+                return rserialize(std::dynamic_pointer_cast<Egg>(ptr));
+                break;
             }
-            else{
-                typedef Entity T;
-                str.append(rserialize<std::shared_ptr<T> >(std::dynamic_pointer_cast<T>(kvpair.second)) + ";");
-            }    
+            case EGG_CARTON: {
+                return rserialize(std::dynamic_pointer_cast<EggCarton>(ptr));
+                break;
+            }
+            default: {  // from original definition
+                if(SaveUtilities::checkSerialized[SaveUtilities::getAddressNum(ptr.get())])
+                    return SaveUtilities::getAddressStr(ptr.get());
+                else{
+                    SaveUtilities::checkSerialized[SaveUtilities::getAddressNum(ptr.get())] = 1;
+                    return SaveUtilities::getAddressStr(ptr.get()) + rserialize(*ptr);
+                }
+                break;
+            }
         }
-        if (obj.size()) str.pop_back();
-        str.append("}");
-
-        return str;
     }
 
-    template<>
-    inline void deserialize<std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > >,
-                            std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > >
-                            (std::map<std::string, std::shared_ptr<Entity>, std::less<std::string>, std::allocator<std::pair<const std::string, std::shared_ptr<Entity> > > > &obj, const std::string &str) { // specialization for entities map
-        int sizeTagStart = str.find("<MapSize>"),
-                sizeTagEnd = str.find("</MapSize>");
-        int mapSize = std::stoi(str.substr(sizeTagStart + 9, sizeTagEnd - sizeTagStart - 9)),
-                searchIdx = str.find("{") + 1;
+    template<>  // from original definition
+    inline void deserialize<std::shared_ptr<Entity>, Entity>(std::shared_ptr<Entity>& ptr, const std::string &str) {  // specialization for entities map
+        int addrStart = str.find("<Addr>"),
+                addrEnd = str.find("</Addr>");
+        std::uintptr_t oldAddress = std::stoull(str.substr(addrStart + 6, addrEnd - addrStart - 6));
 
-        obj.clear();
-        for (size_t i = 0; i < mapSize; i++) {
-            int nxtIdx = searchIdx, sepIdx = 0, brackets = 0;
-            if (i == mapSize - 1) {
-                nxtIdx = str.size() - 1;
-                sepIdx = searchIdx;
-                while (brackets || str[sepIdx] != ':') {
-                    if (str[sepIdx] == '{') brackets++;
-                    if (str[sepIdx] == '}') brackets--;
-                    sepIdx++;
-                }
-            }
-            else while (brackets || str[nxtIdx] != ';') {
-                if (str[nxtIdx] == '{') brackets++;
-                if (str[nxtIdx] == '}') brackets--;
-                if ((!brackets) && str[nxtIdx] == ':') sepIdx = nxtIdx;
-                nxtIdx++;
-            }
-            std::string key;
-            rdeserialize(key, str.substr(searchIdx, sepIdx - searchIdx));
+        if (oldAddress == -1) {
+            ptr = nullptr;
+            return;
+        }
+        else if (SaveUtilities::smartObjectTracker[oldAddress])
+            ptr = std::static_pointer_cast<Entity>(SaveUtilities::smartObjectTracker[oldAddress]);
+        else {
+            int idStart = str.find("<Ey.id>"), idEnd = str.find("</Ey.id>");
+            std::string id = str.substr(idStart + 7, idEnd - idStart - 7);
 
-            if(key.find("player$") != std::string::npos){
-                typedef std::shared_ptr<Player> V;
-                V value;
-                rdeserialize(value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
-                obj[key] = value;
-            }
-            else if(key.find("duck$") != std::string::npos){
-                typedef std::shared_ptr<Duck> V;
-                V value;
-                rdeserialize(value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
-                obj[key] = value;
-            }
-            else if(key.find("egg$") != std::string::npos){
-                typedef std::shared_ptr<Egg> V;
-                V value;
-                rdeserialize(value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
-                obj[key] = value;
-            }
-            else{
-                typedef std::shared_ptr<Entity> V;
-                V value;
-                rdeserialize(value, str.substr(sepIdx + 1, nxtIdx - sepIdx - 1));
-                obj[key] = value;
-            }
-            searchIdx = nxtIdx + 1;
+            if(id.find("player$") != std::string::npos)          ptr = std::make_shared<Player>();
+            else if(id.find("duck$") != std::string::npos)       ptr = std::make_shared<Duck>();
+            else if(id.find("egg$") != std::string::npos)        ptr = std::make_shared<Egg>();
+            else if(id.find("eggcarton$") != std::string::npos)  ptr = std::make_shared<EggCarton>();
+            else                                                 ptr = std::make_shared<Entity>();
+            
+            SaveUtilities::smartObjectTracker[oldAddress] = ptr;
+            rdeserialize(*ptr, str.substr(addrEnd + 7));
         }
     }
 }

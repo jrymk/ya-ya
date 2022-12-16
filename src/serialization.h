@@ -44,7 +44,14 @@ namespace Serialization {
     template<typename T,
             typename std::enable_if_t<std::is_pointer<T>::value>* = nullptr>
     inline std::string serialize(const T ptr) {  // object* and normal type*
-        return SaveUtilities::getAddress(ptr) + rserialize(*ptr);
+        if(!ptr)
+            return "<Addr>-1</Addr>";
+        else if(SaveUtilities::checkSerialized[SaveUtilities::getAddressNum(ptr)])
+            return SaveUtilities::getAddressStr(ptr);
+        else{
+            SaveUtilities::checkSerialized[SaveUtilities::getAddressNum(ptr)] = 1;
+            return SaveUtilities::getAddressStr(ptr) + rserialize(*ptr);
+        }
     }
 
     template<typename T,
@@ -53,10 +60,16 @@ namespace Serialization {
         return std::to_string(static_cast<unsigned>(etp));
     }
 
-    template<typename T, typename U>
-    // shared_ptr
-    inline std::string serialize(const std::shared_ptr<U> &ptr) {
-        return SaveUtilities::getAddress(ptr.get()) + rserialize(*ptr);
+    template<typename T, typename U>  // reminder: modify extended
+    inline std::string serialize(const std::shared_ptr<U> &ptr) {  // shared_ptr
+        if(!ptr)
+            return "<Addr>-1</Addr>";
+        else if(SaveUtilities::checkSerialized[SaveUtilities::getAddressNum(ptr.get())])
+            return SaveUtilities::getAddressStr(ptr.get());
+        else{
+            SaveUtilities::checkSerialized[SaveUtilities::getAddressNum(ptr.get())] = 1;
+            return SaveUtilities::getAddressStr(ptr.get()) + rserialize(*ptr);
+        }
     }
 
     template<typename T, typename U, typename A>
@@ -117,12 +130,26 @@ namespace Serialization {
             typename std::enable_if_t<!std::is_enum<T>::value>* = nullptr>
     inline void deserialize(T &obj, const std::string &str) {  // object
         constexpr auto propertyCnt = std::tuple_size<decltype(T::properties)>::value;
-        SaveUtilities::forSequence(std::make_index_sequence<propertyCnt>{}, [&](auto i) {
+        SaveUtilities::forSequence(std::make_index_sequence<propertyCnt>{}, [&](auto i){
             constexpr auto property = std::get<i>(T::properties);
 
             int tagStart = str.find("<" + std::string(property.ID) + ">"),
-                    tagEnd = str.find("</" + std::string(property.ID) + ">"),
-                    tagLen = strlen(property.ID) + 2;
+                    tagLen = strlen(property.ID) + 2,
+                    tagEnd = tagStart;
+            int tags = 0;
+            while(true){
+                if(str.substr(tagEnd, tagLen) == "<" + std::string(property.ID) + ">"){
+                    tags++;
+                    tagEnd += tagLen;
+                }
+                else if(str.substr(tagEnd, tagLen + 1) == "</" + std::string(property.ID) + ">"){
+                    tags--;
+                    if(!tags) break;
+                    tagEnd += tagLen + 1;
+                }
+                else tagEnd++;
+            }
+            
             rdeserialize(obj.*(property.member), str.substr(tagStart + tagLen, tagEnd - tagStart - tagLen));
         });
     }
@@ -135,7 +162,11 @@ namespace Serialization {
                 addrEnd = str.find("</Addr>");
         std::uintptr_t oldAddress = std::stoull(str.substr(addrStart + 6, addrEnd - addrStart - 6));
 
-        if (SaveUtilities::objectTracker[oldAddress])
+        if (oldAddress == -1) {
+            ptr = nullptr;
+            return;
+        }
+        else if (SaveUtilities::objectTracker[oldAddress])
             ptr = static_cast<T>(SaveUtilities::objectTracker[oldAddress]);
         else {
             ptr = new U;
@@ -150,12 +181,17 @@ namespace Serialization {
         etp = static_cast<T>(std::stoi(str));
     }
 
-    template<typename T, typename U>
+    template<typename T, typename U>  // reminder: modify extended
     inline void deserialize(std::shared_ptr<U> &ptr, const std::string &str) {  // shared_ptr
         int addrStart = str.find("<Addr>"),
                 addrEnd = str.find("</Addr>");
         std::uintptr_t oldAddress = std::stoull(str.substr(addrStart + 6, addrEnd - addrStart - 6));
-        if (SaveUtilities::smartObjectTracker[oldAddress])
+
+        if (oldAddress == -1) {
+            ptr = nullptr;
+            return;
+        }
+        else if (SaveUtilities::smartObjectTracker[oldAddress])
             ptr = std::static_pointer_cast<U>(SaveUtilities::smartObjectTracker[oldAddress]);
         else {
             ptr = std::make_shared<U>();

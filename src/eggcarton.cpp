@@ -43,6 +43,7 @@ void EggCarton::setInventoryProps() {
             // eggs are not pushable anyways
         }
     }
+
     for (int slot = 0; slot < inventory.size(); slot++) {
         if (!inventory[slot])
             continue;

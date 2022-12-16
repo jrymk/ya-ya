@@ -205,5 +205,6 @@ int main() {
     }
     game.save();
 
+    //getchar();  // for testing with cmd
     return 0;
 }

@@ -4,6 +4,8 @@
 #include "player.h"
 #include "duck.h"
 #include "egg.h"
+#include "eggcarton.h"
+#include "NPC.h"
 #include "ui.h"
 #include "serializationExtended.h"
 
@@ -205,6 +207,9 @@ std::string Game::newId(EntityType type) {
         case EGG_CARTON:
             id = "eggcarton$" + randomId();
             break;
+        case NPC:
+            id = "npc$" + randomId();
+            break;
         default:
             debug << "hey you forgot me\n";
     }
@@ -306,11 +311,11 @@ void Game::load(const char* filepath) {
     fin >> str;
     Serialization::deserialize(*this, str);
     if (fin.bad()) std::cerr << "file loading failed";
+    debug << "deserialization done\n";
 
     for (auto &e: entities) {
         switch (e.second->type) {
             case PLAYER: {
-                setPlayer(e.second);
                 std::dynamic_pointer_cast<Player>(e.second)->game = this;
                 break;
             }
@@ -324,10 +329,17 @@ void Game::load(const char* filepath) {
                 pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
                 break;
             }
+            case EGG_CARTON: {
+                std::dynamic_pointer_cast<EggCarton>(e.second)->game = this;
+                pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
+                break;
+            }
         }
     }
 
+    SaveUtilities::clearObjTracker();  // don't forget to clear smart ptr ownership here
     fin.close();
+    debug << "game successfully loaded\n";
 }
 
 void Game::setPlayer(std::shared_ptr<Entity> &player) {

@@ -6,7 +6,7 @@
 #include "model.h"
 #include "NPC.h"
 
-void NPC::runAction(Action& action, std::vector<Action>& followUpActions) {
+void npc::runAction(Action& action, std::vector<Action>& followUpActions) {
     switch (action.command) {
     case ON_CREATION:
         // something ... ?
@@ -14,18 +14,18 @@ void NPC::runAction(Action& action, std::vector<Action>& followUpActions) {
     }
 }
 
-void NPC::loadModel() {
+void npc::loadModel() {
     model = &modelNPC;
 }
 
-NPC::NPC(Game* game) : game(game) {
+npc::npc(Game* game) : game(game) {
     inventory.resize(1, nullptr);
     type = NPC;
     loadModel();
     collisionPushable = false;
 }
 
-void NPC::customUpdate() {
+void npc::customUpdate() {
     if (!motionFrozen) {
         heading += headingRotationSpeed * elapsedSecs;
         position.x += velocity * std::cos(heading) * elapsedSecs;
@@ -40,13 +40,13 @@ void NPC::customUpdate() {
     }
 }
 
-void Egg::setInventoryProps() {
+void npc::setInventoryProps() {
     if (inventory[InventorySlots::LANSEHYAOJI] != nullptr) {
         inventory[InventorySlots::LANSEHYAOJI]->opacity = .1;
     }
 }
 
-std::string NPC::getDescriptionStr() {
+std::string npc::getDescriptionStr() {
     std::stringstream ss;
     ss << "id: " << id << "\n";
     ss << "type: " << type << "\n";
