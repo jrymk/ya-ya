@@ -61,6 +61,7 @@ public:
     coord position;
     Timer lastLandTime;
     double hopPower = .15;
+    bool hoppable = false;
     coord _hopVelocity; // internal
     bool motionFrozen = false;
     bool collisionPushable = true;

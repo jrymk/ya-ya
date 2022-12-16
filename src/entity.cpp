@@ -212,21 +212,23 @@ void Entity::motionUpdate() {
             zVelocity = 0.;
         }
     }
-//    position = underlyingPos;
-    if (position.len(underlyingPos) > .01 && zPosition == 0. && lastLandTime.elapsed() > .15 * hopPower) {
-        zVelocity = hopPower;
-        _hopVelocity =
-                (underlyingPos - position).unit() * std::min(hopPower * 1.9, position.len(underlyingPos)) /
-                (2. * hopPower / (- GRAVITY)) /* hop time (requires physics knowledge 'o') */;
+    if (!hoppable)
+        position = underlyingPos;
+    else {
+        if (position.len(underlyingPos) > .01 && zPosition == 0. && lastLandTime.elapsed() > .15 * hopPower) {
+            zVelocity = hopPower;
+            _hopVelocity =
+                    (underlyingPos - position).unit() * std::min(hopPower * 1.9, position.len(underlyingPos)) /
+                    (2. * hopPower / (- GRAVITY)) /* hop time (requires physics knowledge 'o') */;
+        }
+        if (zPosition > 0.) {
+            if (position.len(underlyingPos) < _hopVelocity.len() * elapsedSecs)
+                position = underlyingPos;
+            else
+                position = position + _hopVelocity * elapsedSecs;
+            //        position = position + (underlyingPos - position).unit() * std::min(.7, position.len(underlyingPos)) * ;
+        }
     }
-    if (zPosition > 0.) {
-        if (position.len(underlyingPos) < _hopVelocity.len() * elapsedSecs)
-            position = underlyingPos;
-        else
-            position = position + _hopVelocity * elapsedSecs;
-        //        position = position + (underlyingPos - position).unit() * std::min(.7, position.len(underlyingPos)) * ;
-    }
-
 }
 
 void Entity::customUpdate() {

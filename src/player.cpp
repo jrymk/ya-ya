@@ -14,6 +14,7 @@ void Player::objInit() {
     inventory.resize(2, nullptr);
     type = PLAYER;
     hopPower = .3;
+    hoppable = true;
 }
 
 void Player::setInventoryProps() {

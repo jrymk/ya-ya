@@ -302,6 +302,8 @@ void Duck::objInit() {
     type = DUCK;
     footprint = coord(.5, .5);
     collideBox = CollideBox({0., 0.}, {.4, .4}, true);
+    hopPower = .15;
+    hoppable = true;
 }
 
 void Duck::customUpdate() {
