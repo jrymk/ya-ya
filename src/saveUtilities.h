@@ -55,6 +55,13 @@ namespace SaveUtilities {
         objectTracker.clear();
         smartObjectTracker.clear();
     }
+
+    template<typename Derived, typename Base>
+    inline std::shared_ptr<Derived> make_derived(std::shared_ptr<Base>& ptr){  // for extended serialization
+        std::shared_ptr<Derived> derivedPtr = std::make_shared<Derived>();
+        ptr = derivedPtr;
+        return derivedPtr;
+    }
 }
 
 #endif

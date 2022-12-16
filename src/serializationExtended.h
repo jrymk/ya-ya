@@ -59,14 +59,31 @@ namespace Serialization{
             int idStart = str.find("<Ey.id>"), idEnd = str.find("</Ey.id>");
             std::string id = str.substr(idStart + 7, idEnd - idStart - 7);
 
-            if(id.find("player$") != std::string::npos)          ptr = std::make_shared<Player>();
-            else if(id.find("duck$") != std::string::npos)       ptr = std::make_shared<Duck>();
-            else if(id.find("egg$") != std::string::npos)        ptr = std::make_shared<Egg>();
-            else if(id.find("eggcarton$") != std::string::npos)  ptr = std::make_shared<EggCarton>();
-            else                                                 ptr = std::make_shared<Entity>();
-            
-            SaveUtilities::smartObjectTracker[oldAddress] = ptr;
-            rdeserialize(*ptr, str.substr(addrEnd + 7));
+            if(id.find("player$") != std::string::npos){
+                auto derivedPtr = SaveUtilities::make_derived<Player>(ptr);
+                SaveUtilities::smartObjectTracker[oldAddress] = ptr;
+                rdeserialize(*derivedPtr, str.substr(addrEnd + 7));
+            }
+            else if(id.find("duck$") != std::string::npos){
+                auto derivedPtr = SaveUtilities::make_derived<Duck>(ptr);
+                SaveUtilities::smartObjectTracker[oldAddress] = ptr;
+                rdeserialize(*derivedPtr, str.substr(addrEnd + 7));
+            }
+            else if(id.find("egg$") != std::string::npos){
+                auto derivedPtr = SaveUtilities::make_derived<Egg>(ptr);
+                SaveUtilities::smartObjectTracker[oldAddress] = ptr;
+                rdeserialize(*derivedPtr, str.substr(addrEnd + 7));
+            }
+            else if(id.find("eggcarton$") != std::string::npos){
+                auto derivedPtr = SaveUtilities::make_derived<EggCarton>(ptr);
+                SaveUtilities::smartObjectTracker[oldAddress] = ptr;
+                rdeserialize(*derivedPtr, str.substr(addrEnd + 7));
+            }
+            else{
+                ptr = std::make_shared<Entity>();
+                SaveUtilities::smartObjectTracker[oldAddress] = ptr;
+                rdeserialize(*ptr, str.substr(addrEnd + 7));
+            }
         }
     }
 }

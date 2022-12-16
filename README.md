@@ -17,6 +17,8 @@
 #### serialization
 
 - [x] save duck gender
+- [x] save inventory
+- [ ] save timer
 - [ ] save actions
 - [ ] ...
 

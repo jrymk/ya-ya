@@ -8,7 +8,7 @@
 #include "ui.h"
 #include "eggcarton.h"
 
-//#define TESTLOAD
+#define TESTLOAD
 
 /**
  * Key definitions
@@ -38,6 +38,7 @@ int main() {
 
 #ifndef TESTLOAD
     std::shared_ptr<Player> player(new Player(&game));
+
     player->id = "player$player";
     player->opacity = 1.;
     auto &player_e = game.insertEntity(player);
@@ -219,7 +220,6 @@ int main() {
 //        Graphics::drawText(
 //                "[viewport] rectWindow (" + toStr(rectWindow.size.x) + "x" + toStr(rectWindow.size.y) + ") @ " + toStr(rectWindow.pos.x) + ", " + toStr(rectWindow.pos.y),
 //                sf::Color::White, 16, rectWindow.pos + UIVec(0, -10), 0., sf::Color::Black, 1.);
-
 
 
         window.display();

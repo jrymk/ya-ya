@@ -130,14 +130,17 @@ namespace Serialization {
             typename std::enable_if_t<!std::is_enum<T>::value>* = nullptr>
     inline void deserialize(T &obj, const std::string &str) {  // object
         constexpr auto propertyCnt = std::tuple_size<decltype(T::properties)>::value;
+
+        int findTagStartStart = 0;  // to avoid <Ivt><zdo> a </zdo></Ivt> <zdo> b </zdo>
         SaveUtilities::forSequence(std::make_index_sequence<propertyCnt>{}, [&](auto i){
             constexpr auto property = std::get<i>(T::properties);
 
-            int tagStart = str.find("<" + std::string(property.ID) + ">"),
-                    tagLen = strlen(property.ID) + 2,
-                    tagEnd = tagStart;
+            // debug << typeid(T).name() << " finding " << "<" + std::string(property.ID) + ">" << '\n';
+            int tagStart = str.find("<" + std::string(property.ID) + ">", findTagStartStart),
+                tagLen = strlen(property.ID) + 2,
+                tagEnd = tagStart;
             int tags = 0;
-            while(true){
+            while(true){  // to avoid <Ivt><Ivt> a </Ivt></Ivt> <Ivt> b </Ivt>
                 if(str.substr(tagEnd, tagLen) == "<" + std::string(property.ID) + ">"){
                     tags++;
                     tagEnd += tagLen;
@@ -151,6 +154,7 @@ namespace Serialization {
             }
             
             rdeserialize(obj.*(property.member), str.substr(tagStart + tagLen, tagEnd - tagStart - tagLen));
+            findTagStartStart = tagEnd + tagLen + 1;
         });
     }
 

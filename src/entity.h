@@ -120,6 +120,7 @@ public:
             SaveUtilities::property(&Entity::opacity, "Ey.op"),
             SaveUtilities::property(&Entity::scale, "Ey.sc"),
             SaveUtilities::property(&Entity::position, "Ey.ps"),
+            SaveUtilities::property(&Entity::underlyingPos, "Ey.ulp"),
             SaveUtilities::property(&Entity::heading, "Ey.hd")
     );
 };
