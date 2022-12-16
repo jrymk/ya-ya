@@ -44,8 +44,11 @@ void UserInterface::renderUI() {
                     case Controls::DROP_CONTAINER:
                         actionStr = strDrop[1][0] + game->player->inventory[hand]->getLocalization(1, LOC_ENTITIY_NAME);
                         break;
-                    case Controls::STORE_ITEM:
+                    case Controls::STORE_ITEM_TO_CONTAINER:
                         actionStr = L"儲存物品";
+                        break;
+                    case Controls::PICK_UP_ITEM_FROM_CONTAINER:
+                        actionStr = L"從容器中拿出物品";
                         break;
                 }
 

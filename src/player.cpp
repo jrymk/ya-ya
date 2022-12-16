@@ -12,6 +12,7 @@ Player::Player(Game* game) : game(game) { objInit(); }
 
 void Player::objInit() {
     inventory.resize(2, nullptr);
+    inventoryPosition.resize(2);
     type = PLAYER;
     hopPower = .3;
     hoppable = true;
@@ -41,17 +42,19 @@ void Player::runAction(Action &action, std::vector<Action> &followUpActions) {
 }
 
 void Player::setInventoryProps() {
+    inventoryPosition[InventorySlots::LEFT_HAND] = position + coord::getAngleVec(0.5, heading + PI / 4);
+    inventoryPosition[InventorySlots::RIGHT_HAND] = position + coord::getAngleVec(0.5, heading + -PI / 4);
+
     for (int slot = 0; slot < inventory.size(); slot++) {
         if (!inventory[slot])
             continue;
         if (slot == InventorySlots::LEFT_HAND || slot == InventorySlots::RIGHT_HAND) {
-            coord pos = position + coord::getAngleVec(0.5, heading + (slot == InventorySlots::LEFT_HAND ? PI / 4 : -PI / 4));
 //            inventory[slot]->position = pos;
 //            inventory[slot]->underlyingPos = pos;
             inventory[slot]->heading = heading;
             {
                 Action a(inventory[slot], Timer::getNow(), ENTITY_MOVE_TO_APPROACH);
-                a.argCoord[0] = pos;
+                a.argCoord[0] = inventoryPosition[slot];
                 a.argFloat[0] = 0.90343660158;
                 game->pushAction(a);
             }

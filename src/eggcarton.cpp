@@ -35,6 +35,7 @@ EggCarton::EggCarton(Game* game) : game(game) { objInit(); }
 
 void EggCarton::objInit() {
     inventory.resize(10, nullptr);
+    inventoryPosition.resize(10);
     type = EGG_CARTON;
     footprint = coord(1., .5);
     collideBox = CollideBox({0., 0.}, {.9, .4}, false);
@@ -47,11 +48,12 @@ void EggCarton::setInventoryProps() {
     double cartonZDepth = modelEggCarton[1].zDepth + (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
 
     for (int slot = 0; slot < inventory.size(); slot++) {
+        inventoryPosition[slot] = position + coord(-.3 + (slot % 5) * .15, (slot < 5 ? .075 : -.075));
         if (!inventory[slot])
             continue;
         if (slot >= EGG_0 && slot <= EGG_9) {
-            inventory[slot]->position = position + coord(-.3 + (slot % 5) * .15, (slot < 5 ? .075 : -.075));
-            inventory[slot]->underlyingPos = position + coord(-.3 + (slot % 5) * .15, (slot < 5 ? .075 : -.075));
+            inventory[slot]->position = inventoryPosition[slot];
+            inventory[slot]->underlyingPos = inventoryPosition[slot];
             inventory[slot]->zPosition = zPosition + .3; // do every update or else gravity will do its thing
             inventory[slot]->zDepthOverride = cartonZDepth + (slot < 5 ? -ZDEPTH_LAYER : ZDEPTH_LAYER);
         }

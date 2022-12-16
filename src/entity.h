@@ -37,6 +37,7 @@ public:
 
     // game logic
     std::vector<std::shared_ptr<Entity>> inventory;
+    std::vector<coord> inventoryPosition; // for inventory slot selection
     std::shared_ptr<Entity> ownedBy = nullptr;
     int ownedSlot = 0;
     uint32_t seed;

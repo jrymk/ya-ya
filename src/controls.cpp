@@ -36,6 +36,31 @@ void Controls::update() {
                         break;
                     case EGG_CARTON:
                         clickAction = PICK_UP_CONTAINER;
+                        // alt click picks up contents
+                        int closestSlot = -1;
+                        for (int slot = EggCarton::InventorySlots::EGG_0; slot <= EggCarton::InventorySlots::EGG_9; slot++) {
+                            if (facingEntity->inventory[slot] == nullptr)
+                                continue;
+                            if (closestSlot == -1 || Camera::getMouseCoord().len(facingEntity->inventoryPosition[slot]) <
+                                                     Camera::getMouseCoord().len(
+                                                             facingEntity->inventoryPosition[closestSlot])) // should I use on screen closest or ingame coord closest?
+                                closestSlot = slot;
+
+                        }
+                        if (closestSlot != -1) {
+                            altClickAction = PICK_UP_ITEM_FROM_CONTAINER;
+                            Graphics::insertUserWireframe(
+                                    Camera::getScreenPos(facingEntity->inventoryPosition[closestSlot]) +
+                                    Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.0 * PI),
+                                    Camera::getScreenPos(facingEntity->inventoryPosition[closestSlot]) +
+                                    Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.5 * PI),
+                                    Camera::getScreenPos(facingEntity->inventoryPosition[closestSlot]) +
+                                    Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.0 * PI),
+                                    Camera::getScreenPos(facingEntity->inventoryPosition[closestSlot]) +
+                                    Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.5 * PI),
+                                    sf::Color(100, 255, 100, 100), sf::Color(0, 0, 0, 100)
+                            );
+                        }
                         break;
                 }
             }
@@ -58,12 +83,31 @@ void Controls::update() {
                     case EGG_CARTON:
                         switch (inv->type) {
                             case EGG: {
-                                std::vector<int> slotCandidates;
-                                for (int slot = EggCarton::InventorySlots::EGG_0; slot <= EggCarton::InventorySlots::EGG_9; slot++)
-                                    if (facingEntity->inventory[slot] == nullptr)
-                                        slotCandidates.push_back(slot);
-                                if (slotCandidates.size() > 0)
-                                    altClickAction = STORE_ITEM;
+                                // alt click stores item
+                                int closestSlot = -1;
+                                for (int slot = EggCarton::InventorySlots::EGG_0; slot <= EggCarton::InventorySlots::EGG_9; slot++) {
+                                    if (facingEntity->inventory[slot] != nullptr)
+                                        continue;
+                                    if (closestSlot == -1 || Camera::getMouseCoord().len(facingEntity->inventoryPosition[slot]) <
+                                                             Camera::getMouseCoord().len(
+                                                                     facingEntity->inventoryPosition[closestSlot])) // should I use on screen closest or ingame coord closest?
+                                        closestSlot = slot;
+
+                                }
+                                if (closestSlot != -1) {
+                                    altClickAction = STORE_ITEM_TO_CONTAINER;
+                                    Graphics::insertUserWireframe(
+                                            Camera::getScreenPos(facingEntity->inventoryPosition[closestSlot]) +
+                                            Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.0 * PI),
+                                            Camera::getScreenPos(facingEntity->inventoryPosition[closestSlot]) +
+                                            Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.5 * PI),
+                                            Camera::getScreenPos(facingEntity->inventoryPosition[closestSlot]) +
+                                            Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.0 * PI),
+                                            Camera::getScreenPos(facingEntity->inventoryPosition[closestSlot]) +
+                                            Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.5 * PI),
+                                            sf::Color(100, 255, 100, 100), sf::Color(0, 0, 0, 100)
+                                    );
+                                }
                                 else
                                     altClickAction = NONE_CONTAINER_FULL;
                                 break;
@@ -240,22 +284,49 @@ void Controls::handleMousePress(sf::Event &event) {
                 game->pushAction(a);
                 break;
             }
+            case PICK_UP_ITEM_FROM_CONTAINER: {
+                int closestSlot = -1;
+                for (int slot = EggCarton::InventorySlots::EGG_0; slot <= EggCarton::InventorySlots::EGG_9; slot++) {
+                    if (facingEntity->inventory[slot] == nullptr)
+                        continue;
+                    if (closestSlot == -1 || Camera::getMouseCoord().len(facingEntity->inventoryPosition[slot]) <
+                                             Camera::getMouseCoord().len(
+                                                     facingEntity->inventoryPosition[closestSlot])) // should I use on screen closest or ingame coord closest?
+                        closestSlot = slot;
+
+                }
+                if (closestSlot != -1) {
+                    game->pushAction(Action(facingEntity->inventory[closestSlot], Timer::getNow(), ENTITY_UNOWN));
+                    {
+                        Action a(facingEntity->inventory[closestSlot], Timer::getNow() + TIME_SMALL_INC, ENTITY_OWN_BY);
+                        a.argEntity[0] = game->player; // player
+                        a.argInt[0] = hand;
+                        game->pushAction(a);
+                    }
+                }
+                break;
+            }
             case DROP_ITEM:
             case DROP_CONTAINER:
                 game->pushAction(Action(game->player->inventory[hand], Timer::getNow(), ENTITY_UNOWN));
                 break;
-            case STORE_ITEM: {
-                std::vector<int> slotCandidates;
+            case STORE_ITEM_TO_CONTAINER: {
+                int closestSlot = -1;
                 for (int slot = EggCarton::InventorySlots::EGG_0; slot <= EggCarton::InventorySlots::EGG_9; slot++) {
-                    if (facingEntity->inventory[slot] == nullptr)
-                        slotCandidates.push_back(slot);
+                    if (facingEntity->inventory[slot] != nullptr)
+                        continue;
+                    if (closestSlot == -1 || Camera::getMouseCoord().len(facingEntity->inventoryPosition[slot]) <
+                                             Camera::getMouseCoord().len(
+                                                     facingEntity->inventoryPosition[closestSlot])) // should I use on screen closest or ingame coord closest?
+                        closestSlot = slot;
+
                 }
-                if (slotCandidates.size() > 0) {
+                if (closestSlot != -1) {
                     game->pushAction(Action(game->player->inventory[hand], Timer::getNow(), ENTITY_UNOWN));
                     {
                         Action a(game->player->inventory[hand], Timer::getNow() + TIME_SMALL_INC, ENTITY_OWN_BY);
                         a.argEntity[0] = facingEntity; // the container
-                        a.argInt[0] = slotCandidates[int(getRand() * double(slotCandidates.size()))];
+                        a.argInt[0] = closestSlot;
                         game->pushAction(a);
                     }
                 }

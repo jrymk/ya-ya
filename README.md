@@ -40,10 +40,12 @@
     - ❌ if an item with actions is highlighted...
         - a tool
             - \<alt> equip tool (and unequip tool)
+    - if facing a container...
+        - ✅ `PICK_UP_ITEM_FROM_CONTAINER`
 - when holding an entity
     - ✅ `DROP_ITEM` ~~<mouse_button> drop item~~
     - ~~if a container is highlighted (for example an egg carton)~~
-        - ✅ `STORE_ITEM` ~~\<alt> store item~~
+        - ✅ `STORE_ITEM_TO_CONTAINER` ~~\<alt> store item~~
     - if a ❌(container space) is highlighted (for example a cage)
         - ❌ \<alt> store item
 - when holding a container

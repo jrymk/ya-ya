@@ -23,11 +23,12 @@ public:
         NONE_NO_ITEM_SELECTED,
         PICK_UP_ITEM,
         PICK_UP_CONTAINER,
+        PICK_UP_ITEM_FROM_CONTAINER,
         DROP_ITEM,
         DROP_CONTAINER,
         NONE_CONTAINER_FULL,
         NONE_CONTAINER_MISMATCH,
-        STORE_ITEM,
+        STORE_ITEM_TO_CONTAINER,
     };
 
     ControlsActions leftMouseClickAction;

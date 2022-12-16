@@ -46,7 +46,8 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
                         followUpActions.push_back(a);
                     }
 
-                } else {
+                }
+                else {
                     double t = 4. + 4. * getRand();
                     {
                         Action a(Timer::getNow() + t, GLOBAL_DESTROY, "egg " + duck_ptr->id); // DIE
@@ -92,6 +93,7 @@ Egg::Egg(Game* game) : game(game) { objInit(); }
 
 void Egg::objInit() {
     inventory.resize(1, nullptr);
+    inventoryPosition.resize(1);
     type = EGG;
     collisionPushable = false;
     collisionCollidable = false;
@@ -103,6 +105,7 @@ void Egg::customUpdate() {
 }
 
 void Egg::setInventoryProps() {
+    inventoryPosition[InventorySlots::EMBRYO] = position;
     for (int slot = 0; slot < inventory.size(); slot++) {
         if (!inventory[slot])
             continue;

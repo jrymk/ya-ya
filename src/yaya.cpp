@@ -188,10 +188,18 @@ int main() {
                 Camera::getScreenPos(game.player->underlyingPos) + UIVec(0, 5),
                 Camera::getScreenPos(game.player->underlyingPos) + UIVec(-5, 0),
                 Camera::getScreenPos(game.player->underlyingPos) + UIVec(0, -5),
+                sf::Color(100, 255, 255, int(std::max(std::min((game.player->underlyingPos.len(game.player->position) - .5) * 255., 255.), 0.))),
+                sf::Color(0, 0, 0, int(std::max(std::min((game.player->underlyingPos.len(game.player->position) - .5) * 255., 255.), 0.)))
+        );
+        Graphics::insertUserWireframe(
+                Camera::getScreenPos(game.player->underlyingPos) + UIVec(3, 0),
+                Camera::getScreenPos(game.player->underlyingPos) + UIVec(0, 3),
+                Camera::getScreenPos(game.player->underlyingPos) + UIVec(-3, 0),
+                Camera::getScreenPos(game.player->underlyingPos) + UIVec(0, -3),
                 sf::Color(0, 0, 0, int(std::max(std::min((game.player->underlyingPos.len(game.player->position) - .5) * 255., 255.), 0.))),
                 sf::Color(100, 255, 255, int(std::max(std::min((game.player->underlyingPos.len(game.player->position) - .5) * 255., 255.), 0.)))
         );
-        
+
         game.controls.update();
         // this should be AFTER game.update() so when the next main loop comes, the controls event are polled and executed, the states are up to date
         // but BEFORE renderUI() so it gets the newest states
