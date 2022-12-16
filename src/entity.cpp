@@ -72,7 +72,7 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
         case ENTITY_SLIDE_VELOCITY_DISTANCE:
             underlyingPos = underlyingPos + action.argCoord[0] / action.argCoord[0].len() *
                                             std::min(action.argCoord[0].len() * elapsedSecs, action.argFloat[0]);
-            position = underlyingPos;
+//            position = underlyingPos;
             action.argFloat[0] -= action.argCoord[0].len() * elapsedSecs;
             velocity = velocity / action.argCoord[0].len() *
                        std::max(action.argFloat[0] / 0.5, action.argCoord[0].len() - 0.05 * elapsedSecs); // deccelerate

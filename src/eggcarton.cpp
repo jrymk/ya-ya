@@ -34,7 +34,7 @@ void EggCarton::setInventoryProps() {
     double cartonZDepth = modelEggCarton[1].zDepth + (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
 
     for (int slot = 0; slot < inventory.size(); slot++) {
-        if (inventory_last.size() != inventory.size() || !(!inventory_last[slot] && inventory[slot]))
+        if (!((inventory_last.size() != inventory.size() || !inventory_last[slot]) && inventory[slot]))
             continue;
         /// ON CAPTURE
         if (slot >= EGG_0 && slot <= EGG_9) {

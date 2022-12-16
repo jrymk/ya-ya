@@ -18,7 +18,7 @@ void Player::objInit() {
 
 void Player::setInventoryProps() {
     for (int slot = 0; slot < inventory.size(); slot++) {
-        if (inventory_last.size() != inventory.size() || !(!inventory_last[slot] && inventory[slot]))
+        if (!((inventory_last.size() != inventory.size() || !inventory_last[slot]) && inventory[slot]))
             continue;
         /// ON CAPTURE
         switch (slot) {
