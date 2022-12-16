@@ -13,7 +13,6 @@ void UserInterface::renderUI() {
     const float bottomPadding = 8. * displayScaling;
     const float padding = 12. * displayScaling;
     const float textLRPadding = 4. * displayScaling;
-
     UIRect bottomBarRect(Camera::getViewport() * UIVec(0., 1.) + UIVec(0., -totalHeight - bottomPadding), Camera::getViewport().size.x, totalHeight);
     Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, bottomBarRect.pos, bottomBarRect.pos + bottomBarRect.size);
 
@@ -85,8 +84,12 @@ void UserInterface::renderUI() {
                            sf::Color::White, 18 * displayScaling,
                            UIVec(controlsColImageLeft.pos.x + controlsColImageLeft.size.x, controlsRow2.pos.y + controlsRow2.size.y * 0.5 + 6. * displayScaling), 0.);
     } else if (game->controls.facingEntity != nullptr) {
-        Graphics::drawImage(imageMouseLeftBtn, 1., UIVec(controlsColImageLeft.pos.x, controlsRow1.pos.y + controlsRow1.size.y * 0.5), UIVec(0.5, 0.5), displayScaling);
-        Graphics::drawText(strHoldIn[1][0] + game->controls.facingEntity->getLocalization(1, LOC_ENTITIY_NAME) + strHoldIn[1][1] + strLeftHand[1], sf::Color::White,
+        Graphics::drawImage(imageMouseBase, 1., UIVec(controlsColImageLeft.pos.x, controlsRow1.pos.y + controlsRow1.size.y * 0.5), UIVec(0.5, 0.5), displayScaling);
+        Graphics::drawImage(imageMouseLeftBtn, 1., UIVec(controlsColImageLeft.pos.x, controlsRow1.pos.y + controlsRow1.size.y * 0.5), UIVec(0.5, 0.5), displayScaling,
+                            sf::Color(255, 170, 174, 255));
+        Graphics::drawImage(imageMouseRightBtn, 1., UIVec(controlsColImageLeft.pos.x, controlsRow1.pos.y + controlsRow1.size.y * 0.5), UIVec(0.5, 0.5), displayScaling);
+        Graphics::drawText(strHoldIn[1][0] + game->controls.facingEntity->getLocalization(1, LOC_ENTITIY_NAME) + strHoldIn[1][1] + strLeftHand[1],
+                           sf::Color(255, 255, 255, 255),
                            18 * displayScaling,
                            UIVec(controlsColImageLeft.pos.x + controlsColImageLeft.size.x, controlsRow1.pos.y + controlsRow1.size.y * 0.5 + 6. * displayScaling), 0.);
     }

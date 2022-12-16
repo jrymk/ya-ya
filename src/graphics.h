@@ -138,8 +138,11 @@ public:
     struct Image {
         sf::Vector2f texturePos;
         sf::Vector2f textureSize;
+        float defaultScale = 1.;
 
         inline Image(sf::Vector2f pos, sf::Vector2f size) : texturePos(pos), textureSize(size) {}
+
+        inline Image(sf::Vector2f pos, sf::Vector2f size, float defaultScale) : texturePos(pos), textureSize(size), defaultScale(defaultScale) {}
     };
 
 private:

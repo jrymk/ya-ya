@@ -212,9 +212,9 @@ const std::vector<Graphics::Quad> modelMoai = {
 
 
 /// IMAGES
-const Graphics::Image imageAltKey(sf::Vector2f(0, 8172), sf::Vector2f(33, 20));
-const Graphics::Image imageMouse(sf::Vector2f(33, 8168), sf::Vector2f(24, 24));
-const Graphics::Image imageMouseLeftBtn(sf::Vector2f(57, 8168), sf::Vector2f(24, 24));
-const Graphics::Image imageMouseRightBtn(sf::Vector2f(81, 8168), sf::Vector2f(24, 24));
+const Graphics::Image imageAltKey(sf::Vector2f(0, 7932), sf::Vector2f(260, 260), 24. / 256.); // actual size 256*256
+const Graphics::Image imageMouseLeftBtn(sf::Vector2f(260, 7932), sf::Vector2f(260, 260), 24. / 256.);
+const Graphics::Image imageMouseRightBtn(sf::Vector2f(520, 7932), sf::Vector2f(260, 260), 24. / 256.);
+const Graphics::Image imageMouseBase(sf::Vector2f(780, 7932), sf::Vector2f(260, 260), 24. / 256.);
 
 #endif //YAYA_MODEL_H

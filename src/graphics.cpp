@@ -113,6 +113,7 @@ void Graphics::drawTextBatch(sf::VertexArray &va, const std::string &str, const 
 }
 
 void Graphics::drawImage(const Image &image, float zDepth, UIVec pos, UIVec align, float scale, sf::Color color) {
+    scale *= image.defaultScale;
     insertQuad(Quad(
             zDepth,
             pos + UIVec(image.textureSize) * UIVec(0., 0.) - (UIVec(image.textureSize) * scale) * align, image.texturePos,
