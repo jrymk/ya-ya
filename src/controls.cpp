@@ -1,6 +1,9 @@
 #include "controls.h"
 #include "game.h"
 #include "player.h"
+#include "duck.h"
+#include "egg.h"
+#include "eggcarton.h"
 
 Controls::Controls(Game* game) :
         game(game) {
@@ -9,6 +12,79 @@ Controls::Controls(Game* game) :
 void Controls::update() {
     facingEntity = getFacingEntity();
     facingTile = &getFacingTile();
+
+    leftMouseClickAction = UNDEFINED;
+    leftMouseAltClickAction = UNDEFINED;
+    rightMouseClickAction = UNDEFINED;
+    rightMouseAltClickAction = UNDEFINED;
+
+    for (int hand = Player::InventorySlots::LEFT_HAND; hand <= Player::InventorySlots::RIGHT_HAND; hand++) {
+        ControlsActions clickAction = UNDEFINED;
+        ControlsActions altClickAction = UNDEFINED;
+        auto inv = game->player->inventory[hand];
+
+        if (inv == nullptr) { // hand empty
+            if (facingEntity == nullptr) {
+                clickAction = NONE_NO_ITEM_SELECTED;
+                altClickAction = NONE_NO_ITEM_SELECTED;
+            }
+            else {
+                switch (facingEntity->type) {
+                    case DUCK:
+                    case EGG:
+                        clickAction = PICK_UP_ITEM;
+                        break;
+                    case EGG_CARTON:
+                        clickAction = PICK_UP_CONTAINER;
+                        break;
+                }
+            }
+        }
+        else {
+            switch (inv->type) {
+                case DUCK:
+                case EGG:
+                    clickAction = DROP_ITEM;
+                    break;
+                case EGG_CARTON:
+                    clickAction = DROP_CONTAINER;
+                    break;
+            }
+            if (facingEntity != nullptr) {
+                switch (facingEntity->type) {
+                    case DUCK:
+                    case EGG:
+                        break;
+                    case EGG_CARTON:
+                        switch (inv->type) {
+                            case EGG: {
+                                std::vector<int> slotCandidates;
+                                for (int slot = EggCarton::InventorySlots::EGG_0; slot <= EggCarton::InventorySlots::EGG_9; slot++)
+                                    if (facingEntity->inventory[slot] == nullptr)
+                                        slotCandidates.push_back(slot);
+                                if (slotCandidates.size() > 0)
+                                    altClickAction = STORE_ITEM;
+                                else
+                                    altClickAction = NONE_CONTAINER_FULL;
+                                break;
+                            }
+                            default:
+                                altClickAction = NONE_CONTAINER_MISMATCH;
+                        }
+                        break;
+                }
+            }
+        }
+
+        if (hand == Player::InventorySlots::LEFT_HAND) {
+            leftMouseClickAction = clickAction;
+            leftMouseAltClickAction = altClickAction;
+        }
+        if (hand == Player::InventorySlots::RIGHT_HAND) {
+            rightMouseClickAction = clickAction;
+            rightMouseAltClickAction = altClickAction;
+        }
+    }
 }
 
 std::shared_ptr<Entity> Controls::getFacingEntity(EntityType filter) {
@@ -140,32 +216,102 @@ void Controls::handleKeyPress(sf::Event &event) {
 
 void Controls::handleMousePress(sf::Event &event) {
     if (event.type == sf::Event::MouseButtonPressed) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) {
-            if (facingTile != nullptr) {
-                facingTile->setTileType(Map::Tile::MOAI);
+        // no alt
+
+        int hand = -1;
+        ControlsActions action = UNDEFINED;
+        if (event.mouseButton.button == sf::Mouse::Button::Left) {
+            action = (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) ? leftMouseAltClickAction : leftMouseClickAction;
+            hand = Player::InventorySlots::LEFT_HAND;
+        }
+        if (event.mouseButton.button == sf::Mouse::Button::Right) {
+            action = (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) ? rightMouseAltClickAction : rightMouseClickAction;
+            hand = Player::InventorySlots::RIGHT_HAND;
+        }
+        if (hand == -1)
+            return;
+
+        switch (action) {
+            case PICK_UP_ITEM:
+            case PICK_UP_CONTAINER: {
+                Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
+                a.argEntity[0] = game->player;
+                a.argInt[0] = hand;
+                game->pushAction(a);
+                break;
             }
-        } else {
-            if (event.mouseButton.button == sf::Mouse::Button::Left) {
-                if (game->player->inventory[Player::InventorySlots::LEFT_HAND] == nullptr && facingEntity) {
-                    Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
-                    a.argEntity[0] = game->player;
-                    a.argInt[0] = Player::InventorySlots::LEFT_HAND;
-                    game->pushAction(a);
-                } else if (game->player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr) {
-                    game->pushAction(Action(game->player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_UNOWN));
+            case DROP_ITEM:
+            case DROP_CONTAINER:
+                game->pushAction(Action(game->player->inventory[hand], Timer::getNow(), ENTITY_UNOWN));
+                break;
+            case STORE_ITEM: {
+                std::vector<int> slotCandidates;
+                for (int slot = EggCarton::InventorySlots::EGG_0; slot <= EggCarton::InventorySlots::EGG_9; slot++) {
+                    if (facingEntity->inventory[slot] == nullptr)
+                        slotCandidates.push_back(slot);
                 }
-            }
-            if (event.mouseButton.button == sf::Mouse::Button::Right) {
-                if (game->player->inventory[Player::InventorySlots::RIGHT_HAND] == nullptr && facingEntity) {
-                    Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
-                    a.argEntity[0] = game->player;
-                    a.argInt[0] = Player::InventorySlots::RIGHT_HAND;
-                    game->pushAction(a);
-                } else if (game->player->inventory[Player::InventorySlots::RIGHT_HAND] != nullptr) {
-                    game->pushAction(Action(game->player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_UNOWN));
+                if (slotCandidates.size() > 0) {
+                    game->pushAction(Action(game->player->inventory[hand], Timer::getNow(), ENTITY_UNOWN));
+                    {
+                        Action a(game->player->inventory[hand], Timer::getNow() + TIME_SMALL_INC, ENTITY_OWN_BY);
+                        a.argEntity[0] = facingEntity; // the container
+                        a.argInt[0] = slotCandidates[int(getRand() * double(slotCandidates.size()))];
+                        game->pushAction(a);
+                    }
                 }
+                break;
             }
         }
+
+
+//            if (event.mouseButton.button == sf::Mouse::Button::Left) {
+//                if (facingEntity) {
+//                    /// if a container is highlighted (for example an egg carton) -> store item
+//                    if (facingEntity->type == EGG_CARTON && game->player->inventory[Player::InventorySlots::LEFT_HAND]->type == EGG) {
+//                    }
+//                }
+//
+////                if (game->player->inventory[Player::InventorySlots::LEFT_HAND] == nullptr && facingEntity) {
+////                    Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
+////                    a.argEntity[0] = game->player;
+////                    a.argInt[0] = Player::InventorySlots::LEFT_HAND;
+////                    game->pushAction(a);
+////                } else if (game->player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr) {
+////                    game->pushAction(Action(game->player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_UNOWN));
+////                }
+//            }
+//
+//            if (facingEntity == nullptr && facingTile != nullptr) {
+//                facingTile->setTileType(Map::Tile::MOAI);
+//            }
+//        }
+//        else {
+//            if (event.mouseButton.button == sf::Mouse::Button::Left) {
+//                if (game->player->inventory[Player::InventorySlots::LEFT_HAND] == nullptr && facingEntity) {
+//                    /// when hands are empty -> pick up item
+//                    Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
+//                    a.argEntity[0] = game->player;
+//                    a.argInt[0] = Player::InventorySlots::LEFT_HAND;
+//                    game->pushAction(a);
+//                }
+//                else if (game->player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr) {
+//                    /// when holding an entity -> drop item
+//                    game->pushAction(Action(game->player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_UNOWN));
+//                }
+//            }
+//            if (event.mouseButton.button == sf::Mouse::Button::Right) {
+//                if (game->player->inventory[Player::InventorySlots::RIGHT_HAND] == nullptr && facingEntity) {
+//                    /// when hands are empty -> pick up item
+//                    Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
+//                    a.argEntity[0] = game->player;
+//                    a.argInt[0] = Player::InventorySlots::RIGHT_HAND;
+//                    game->pushAction(a);
+//                }
+//                else if (game->player->inventory[Player::InventorySlots::RIGHT_HAND] != nullptr) {
+//                    /// when holding an entity -> drop item
+//                    game->pushAction(Action(game->player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_UNOWN));
+//                }
+//            }
     }
 }
 

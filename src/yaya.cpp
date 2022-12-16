@@ -177,7 +177,7 @@ int main() {
         else
             game.player->slideVelocity = coord();
 
-        game.player->heading = game.player->underlyingPos.angle(Camera::getMouseCoord());
+        game.player->heading = game.player->position.angle(Camera::getMouseCoord());
 
         game.update();
         Graphics::clearQuadsArray();
@@ -191,6 +191,10 @@ int main() {
                 sf::Color(0, 0, 0, int(std::max(std::min((game.player->underlyingPos.len(game.player->position) - .5) * 255., 255.), 0.))),
                 sf::Color(100, 255, 255, int(std::max(std::min((game.player->underlyingPos.len(game.player->position) - .5) * 255., 255.), 0.)))
         );
+        
+        game.controls.update();
+        // this should be AFTER game.update() so when the next main loop comes, the controls event are polled and executed, the states are up to date
+        // but BEFORE renderUI() so it gets the newest states
 
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
 

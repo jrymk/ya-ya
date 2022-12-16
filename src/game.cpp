@@ -18,24 +18,7 @@ void Game::update() {
     Timer updateTimer;
 
     neighborsFinder.update();
-    controls.update();
     mapUpdate();
-
-    if (controls.facingEntity) {
-        Graphics::drawText(controls.facingEntity->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(controls.facingEntity->position) + UIVec(0., 40.), 0.,
-                           sf::Color(255, 255, 255, 140), 3.);
-        Graphics::insertUserWireframe(
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
-        );
-    }
 
     processCollisions();
 
@@ -176,7 +159,8 @@ void Game::runActions() {
 //                      << (action.isGlobal ? "global" : action.entity->id) << "  " << std::setw(5) << action.command << "  " << action.caller << "\n";
             runAction(action, followUpActions);
             actionList.pop();
-        } else
+        }
+        else
             break;
     }
     for (auto &action: followUpActions)

@@ -45,18 +45,22 @@ void Player::setInventoryProps() {
         if (!inventory[slot])
             continue;
         if (slot == InventorySlots::LEFT_HAND || slot == InventorySlots::RIGHT_HAND) {
-            coord pos = position + coord::getAngleVec(0.4, heading + (slot == InventorySlots::LEFT_HAND ? PI / 4 : -PI / 4));
+            coord pos = position + coord::getAngleVec(0.5, heading + (slot == InventorySlots::LEFT_HAND ? PI / 4 : -PI / 4));
+//            inventory[slot]->position = pos;
+//            inventory[slot]->underlyingPos = pos;
+            inventory[slot]->heading = heading;
             {
                 Action a(inventory[slot], Timer::getNow(), ENTITY_MOVE_TO_APPROACH);
                 a.argCoord[0] = pos;
-                a.argFloat[0] = .000000005;
+                a.argFloat[0] = 0.90343660158;
                 game->pushAction(a);
             }
-            {
-                Action a(inventory[slot], Timer::getNow(), ENTITY_HEADING_INSTANT);
-                a.argFloat[0] = heading;
-                game->pushAction(a);
-            }
+//
+//            {
+//                Action a(inventory[slot], Timer::getNow(), ENTITY_HEADING_INSTANT);
+//                a.argFloat[0] = heading;
+//                game->pushAction(a);
+//            }
         }
     }
 }

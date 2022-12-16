@@ -12,6 +12,12 @@ public:
 
     float displayScaling = 1.;
 
+//    enum ControlsDisplay {
+//        PICK_UP_ITEM,
+//        DROP_ITEM,
+//        STORE_ITEM,
+//    };
+
     inline UserInterface(Game* game) : game(game) {}
 
     void renderUI();

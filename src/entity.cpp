@@ -53,7 +53,7 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             position = action.argCoord[0];
             break;
         case ENTITY_MOVE_TO_APPROACH:
-            underlyingPos = action.argCoord[0] - (action.argCoord[0] - underlyingPos) * std::pow(action.argFloat[0], elapsedSecs);
+            underlyingPos = action.argCoord[0] - (action.argCoord[0] - underlyingPos) * std::pow(action.argFloat[0], elapsedSecs * 1000); // not true "time independent" :(
             position = underlyingPos; // TODO: I think this is only used in player inventory???
             break;
         case ENTITY_ZPOS_TO_APPROACH_UNTIL:
@@ -224,7 +224,7 @@ void Entity::motionUpdate() {
             zVelocity = 0.;
         }
     }
-    if (!hoppable)
+    if (!hoppable) /// TODO: fix ducks flying away
         position = underlyingPos;
     else {
         if (position.len(underlyingPos) > .01 && zPosition == 0. && lastLandTime.elapsed() > .15 * hopPower) {
