@@ -10,12 +10,3 @@ build/libwinpthread-1.dll
 /build/_deps/
 /cmake-build-debug-mingw-810/
 /res/
-build/cmake_install.cmake
-build/CMakeCache.txt
-build/CPackConfig.cmake
-build/CPackSourceConfig.cmake
-build/Makefile
-build/sfml-graphics-2.dll
-build/sfml-system-2.dll
-build/sfml-window-2.dll
-/build/CMakeFiles/
