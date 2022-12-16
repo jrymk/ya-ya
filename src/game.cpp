@@ -311,11 +311,11 @@ void Game::load(const char* filepath) {
     fin >> str;
     Serialization::deserialize(*this, str);
     if (fin.bad()) std::cerr << "file loading failed";
+    debug << "deserialization done\n";
 
     for (auto &e: entities) {
         switch (e.second->type) {
             case PLAYER: {
-                setPlayer(e.second);
                 std::dynamic_pointer_cast<Player>(e.second)->game = this;
                 break;
             }
@@ -337,7 +337,9 @@ void Game::load(const char* filepath) {
         }
     }
 
+    SaveUtilities::clearObjTracker();  // don't forget to clear smart ptr ownership here
     fin.close();
+    debug << "game successfully loaded\n";
 }
 
 void Game::setPlayer(std::shared_ptr<Entity> &player) {
