@@ -183,6 +183,15 @@ int main() {
         Graphics::clearQuadsArray();
         game.render();
 
+        Graphics::insertUserWireframe(
+                Camera::getScreenPos(game.player->underlyingPos) + UIVec(5, 0),
+                Camera::getScreenPos(game.player->underlyingPos) + UIVec(0, 5),
+                Camera::getScreenPos(game.player->underlyingPos) + UIVec(-5, 0),
+                Camera::getScreenPos(game.player->underlyingPos) + UIVec(0, -5),
+                sf::Color(0, 0, 0, int(std::max(std::min((game.player->underlyingPos.len(game.player->position) - .5) * 255., 255.), 0.))),
+                sf::Color(100, 255, 255, int(std::max(std::min((game.player->underlyingPos.len(game.player->position) - .5) * 255., 255.), 0.)))
+        );
+
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
 
         Graphics::clearQuadsArray();
@@ -192,7 +201,7 @@ int main() {
 //        Graphics::setFont(1);
 //        Graphics::drawText(toStr(fc.getFramerateAndUpdate()) + "fps", sf::Color::Black, 12, UIVec(6, 17), 0., sf::Color(255, 255, 255, 200), 2.);
 
-        Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.08); /// TODO: decide underlying pos or pos
+        Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.1); /// TODO: decide underlying pos or pos
 
 //        Graphics::drawRect(sf::Color(0, 0, 0, 100), -5, rectWindow.pos, rectWindow.pos + rectWindow.size);
 //        Graphics::drawText(

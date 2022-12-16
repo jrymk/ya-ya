@@ -112,15 +112,41 @@ void Game::processCollisions() {
             }
         }
     }
+//    for (auto eit: entities) {
+//        auto &e = eit.second;
+//        if (e->collisionNoEnv)
+//            continue;
+//        // map collision
+//        for (int tx = int(std::round(e->underlyingPos.x - e->footprint.x / 2 - 1.)); tx <= int(std::round(e->underlyingPos.x + e->footprint.x / 2)); tx++) {
+//            for (int ty = int(std::round(e->underlyingPos.y - e->footprint.y / 2 - 1.)); ty <= int(std::round(e->underlyingPos.y + e->footprint.y / 2)); ty++) {
+//                for (auto &cb: map.getTile(tx, ty).collideBoxes) {
+//                    e->underlyingPos = e->underlyingPos + e->collideBox.collide(cb, e->underlyingPos, coord(tx, ty));
+////                    e->position = e->underlyingPos;
+//                    if (showCollisionBoxes)
+//                        Graphics::insertUserWireframe(Camera::getScreenPos(coord(tx, ty) + cb.center + coord(-cb.size.x / 2., -cb.size.y / 2.)),
+//                                                      Camera::getScreenPos(coord(tx, ty) + cb.center + coord(cb.size.x / 2., -cb.size.y / 2.)),
+//                                                      Camera::getScreenPos(coord(tx, ty) + cb.center + coord(cb.size.x / 2., cb.size.y / 2.)),
+//                                                      Camera::getScreenPos(coord(tx, ty) + cb.center + coord(-cb.size.x / 2., cb.size.y / 2.)),
+//                                                      (cb.isCircle ? sf::Color::Magenta : sf::Color::Blue), sf::Color::Transparent);
+//                }
+//            }
+//        }
+//        if (showCollisionBoxes)
+//            Graphics::insertUserWireframe(Camera::getScreenPos(e->position + e->collideBox.center + coord(-e->collideBox.size.x / 2., -e->collideBox.size.y / 2.)),
+//                                          Camera::getScreenPos(e->position + e->collideBox.center + coord(e->collideBox.size.x / 2., -e->collideBox.size.y / 2.)),
+//                                          Camera::getScreenPos(e->position + e->collideBox.center + coord(e->collideBox.size.x / 2., e->collideBox.size.y / 2.)),
+//                                          Camera::getScreenPos(e->position + e->collideBox.center + coord(-e->collideBox.size.x / 2., e->collideBox.size.y / 2.)),
+//                                          (e->collideBox.isCircle ? sf::Color::Magenta : sf::Color::Blue), sf::Color::Transparent);
+//    }
     for (auto eit: entities) {
         auto &e = eit.second;
         if (e->collisionNoEnv)
             continue;
         // map collision
-        for (int tx = int(std::round(e->underlyingPos.x - e->footprint.x / 2 - 1.)); tx <= int(std::round(e->underlyingPos.x + e->footprint.x / 2)); tx++) {
-            for (int ty = int(std::round(e->underlyingPos.y - e->footprint.y / 2 - 1.)); ty <= int(std::round(e->underlyingPos.y + e->footprint.y / 2)); ty++) {
+        for (int tx = int(std::round(e->position.x - e->footprint.x / 2 - 1.)); tx <= int(std::round(e->position.x + e->footprint.x / 2)); tx++) {
+            for (int ty = int(std::round(e->position.y - e->footprint.y / 2 - 1.)); ty <= int(std::round(e->position.y + e->footprint.y / 2)); ty++) {
                 for (auto &cb: map.getTile(tx, ty).collideBoxes) {
-                    e->underlyingPos = e->underlyingPos + e->collideBox.collide(cb, e->underlyingPos, coord(tx, ty));
+                    e->position = e->position + e->collideBox.collide(cb, e->position, coord(tx, ty));
 //                    e->position = e->underlyingPos;
                     if (showCollisionBoxes)
                         Graphics::insertUserWireframe(Camera::getScreenPos(coord(tx, ty) + cb.center + coord(-cb.size.x / 2., -cb.size.y / 2.)),
