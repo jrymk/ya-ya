@@ -44,24 +44,26 @@
         - a tool
             - \<alt> equip tool (and unequip tool)
     - if facing a container...
-        - ✅ `PICK_UP_ITEM_FROM_CONTAINER`
+        - ✅ `PICK_UP_ITEM_FROM_FACING_CONTAINER`
 - when holding an entity
     - ✅ `DROP_ITEM` ~~<mouse_button> drop item~~
     - ~~if a container is highlighted (for example an egg carton)~~
-        - ✅ `STORE_ITEM_TO_CONTAINER` ~~\<alt> store item~~
+        - ✅ `STORE_ITEM_TO_FACING_CONTAINER` ~~\<alt> store item~~
     - if a ❌(container space) is highlighted (for example a cage)
         - ❌ \<alt> store item
+    - ~~if the other hand is a valid container:~~
+        - ✅ `STORE_ITEM_TO_OTHER_HAND_CONTAINER`
 - when holding a container
     - <mouse_button> drop container
-    - if a storable item is highlighted (game field)
-        - \<alt> store item
-    - if an inventory item is highlighted (bottom bar)
+    - ✅ `STORE_FACING_ITEM_TO_CONTAINER` ~~if a storable item is highlighted (game field)~~
+        - ~~\<alt> store item~~
+    - if an inventory item is highlighted ❌(bottom bar)
         - if offhand is empty
             - <other_mouse_button> pick up item
             - <this_mouse_button> drop item
         - else
             - "free your other hand to manipulate inventory"
-    - if an empty slot is highlighted (bottom bar)
+    - if an empty slot is highlighted ❌(bottom bar)
         - if offhand is holding a storable item
             - <other_mouse_button> store item
         - else if offhand is holding a instorable item

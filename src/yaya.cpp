@@ -8,7 +8,7 @@
 #include "ui.h"
 #include "eggcarton.h"
 
-#define TESTLOAD
+//#define TESTLOAD
 
 /**
  * Key definitions
