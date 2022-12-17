@@ -83,6 +83,9 @@ void Map::Tile::pushQuads() {
             _pushQuads(&modelGrass[seed % 9]);
             _pushQuads(&modelMoai);
             break;
+        case TRUCK:
+            _pushQuads(&modelGrass[seed % 9]);
+            break;
     }
 }
 
@@ -93,8 +96,12 @@ void Map::Tile::setCoord(int x, int y) {
 
 void Map::Tile::neighborUpdate() { // for adapting to neighbor tiles and so on
     switch (tileType) {
+        case GRASS:
+        case DIRT:
+            collideBoxes = {};
+            break;
         case MOAI:
-            collideBoxes = {CollideBox({.5, .5}, {.6, .6}, false)};
+            collideBoxes = {CollideBox({.5, .5}, {.6, .6}, true)};
             if (map->exists(x - 1, y) && map->getTile(x - 1, y).tileType == MOAI)
                 collideBoxes.push_back(CollideBox({.1, .5}, {.2, .4}, false));
             if (map->exists(x + 1, y) && map->getTile(x + 1, y).tileType == MOAI)
@@ -103,13 +110,18 @@ void Map::Tile::neighborUpdate() { // for adapting to neighbor tiles and so on
                 collideBoxes.push_back(CollideBox({.5, .1}, {.4, .2}, false));
             if (map->exists(x, y + 1) && map->getTile(x, y + 1).tileType == MOAI)
                 collideBoxes.push_back(CollideBox({.5, .9}, {.4, .2}, false));
-
-
-//            break;
-//            Map::Tile &tile = map->getTile(x, y + 1);
-//            if (tile.tileType != MOAI)
-//                tile.tileType = MOAI;
-//            break;
+            break;
+        case TRUCK:
+            collideBoxes = {CollideBox({.5, .5}, {.6, .6}, false)};
+            if (map->exists(x - 1, y) && map->getTile(x - 1, y).tileType == TRUCK)
+                collideBoxes.push_back(CollideBox({.1, .5}, {.2, .6}, false));
+            if (map->exists(x + 1, y) && map->getTile(x + 1, y).tileType == TRUCK)
+                collideBoxes.push_back(CollideBox({.9, .5}, {.2, .6}, false));
+            if (map->exists(x, y - 1) && map->getTile(x, y - 1).tileType == TRUCK)
+                collideBoxes.push_back(CollideBox({.5, .1}, {.6, .2}, false));
+            if (map->exists(x, y + 1) && map->getTile(x, y + 1).tileType == TRUCK)
+                collideBoxes.push_back(CollideBox({.5, .9}, {.6, .2}, false));
+            break;
     }
 }
 
@@ -119,21 +131,14 @@ void Map::Tile::setMap(Map* map) {
 
 void Map::Tile::setTileType(Map::Tile::TileType type) {
     tileType = type;
-    switch (tileType) {
-        case GRASS:
-        case DIRT:
-            collideBoxes = {};
-            break;
-        case MOAI:
-            collideBoxes = {
-                    CollideBox({.5, .5}, {.6, .6}, true)
-            };
-            break;
-    }
     map->getTile(x - 1, y).neighborUpdate();
     map->getTile(x + 1, y).neighborUpdate();
     map->getTile(x, y - 1).neighborUpdate();
     map->getTile(x, y + 1).neighborUpdate();
+    map->getTile(x - 1, y - 1).neighborUpdate();
+    map->getTile(x + 1, y - 1).neighborUpdate();
+    map->getTile(x - 1, y + 1).neighborUpdate();
+    map->getTile(x + 1, y + 1).neighborUpdate();
     map->getTile(x, y).neighborUpdate(); // chain update is not allowed (only neighbors, just for those simple fences and shit)
 }
 

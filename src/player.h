@@ -11,9 +11,13 @@ private:
 public:
     void loadModel() override;
 
+    void runAction(Action &action, std::vector<Action> &followUpActions) override;
+
     Player();
 
     Player(Game* game);
+
+    void objInit();
 
     Game* game;
 
@@ -28,13 +32,8 @@ public:
 
     void environmentUpdate() override;
 
-    constexpr static auto properties = std::make_tuple(  // reminder: set game*
-            SaveUtilities::property(&Player::id, "Pl.id"),
-            SaveUtilities::property(&Player::type, "Pl.tp"),
-            SaveUtilities::property(&Player::position, "Pl.ps"),
-            SaveUtilities::property(&Player::deleted, "Pl.dl"),
-            SaveUtilities::property(&Player::opacity, "Pl.op")
-    );
+    constexpr static auto properties = std::tuple_cat(Entity::properties, std::make_tuple(
+    ));  // reminder: set game*
 };
 
 #endif

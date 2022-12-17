@@ -37,6 +37,7 @@ public:
             GRASS,
             DIRT,
             MOAI,
+            TRUCK,
         } tileType = GRASS;
 
         Tile();

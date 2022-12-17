@@ -2,6 +2,7 @@
 #include <iomanip>
 #include "duck.h"
 #include "model.h"
+#include "localization.h"
 
 void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
@@ -45,7 +46,8 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
                         followUpActions.push_back(a);
                     }
 
-                } else {
+                }
+                else {
                     double t = 4. + 4. * getRand();
                     {
                         Action a(Timer::getNow() + t, GLOBAL_DESTROY, "egg " + duck_ptr->id); // DIE
@@ -58,6 +60,24 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
                         followUpActions.push_back(a);
                     }
                 }
+            }
+            break;
+        case ENTITY_INVENTORY_ON_CAPTURE:
+            if (action.argInt[0] == InventorySlots::EMBRYO) {
+                action.argEntity[0]->scale = .3;
+                action.argEntity[0]->opacity = .1;
+                action.argEntity[0]->selectable = false;
+                action.argEntity[0]->collisionCollidable = false;
+                action.argEntity[0]->collisionPushable = false;
+            }
+            break;
+        case ENTITY_INVENTORY_ON_RELEASE:
+            if (action.argInt[0] == InventorySlots::EMBRYO) {
+                action.argEntity[0]->scale = 1.;
+                action.argEntity[0]->opacity = 1.;
+                action.argEntity[0]->selectable = true;
+                action.argEntity[0]->collisionCollidable = true;
+                action.argEntity[0]->collisionPushable = true;
             }
             break;
     }
@@ -73,6 +93,7 @@ Egg::Egg(Game* game) : game(game) { objInit(); }
 
 void Egg::objInit() {
     inventory.resize(1, nullptr);
+    inventoryPosition.resize(1);
     type = EGG;
     collisionPushable = false;
     collisionCollidable = false;
@@ -81,58 +102,17 @@ void Egg::objInit() {
 }
 
 void Egg::customUpdate() {
-    if (!motionFrozen) {
-        heading += headingRotationSpeed * elapsedSecs;
-        position.x += velocity * std::cos(heading) * elapsedSecs;
-        position.y += velocity * std::sin(heading) * elapsedSecs;
-        position = position + slideVelocity * elapsedSecs;
-        if (zPosition > 0)
-            zVelocity += GRAVITY * elapsedSecs;
-        zPosition += zVelocity;
-        zPosition = std::max(zPosition, 0.);
-        if (zPosition == 0.)
-            zVelocity = 0.;
-    }
 }
 
 void Egg::setInventoryProps() {
-    for (int slot = 0; slot < inventory.size(); slot++) {
-        if (inventory_last.size() != inventory.size() || !(!inventory_last[slot] && inventory[slot]))
-            continue;
-        /// ON CAPTURE
-        switch (slot) {
-            case InventorySlots::EMBRYO:
-                inventory[InventorySlots::EMBRYO]->scale = .3;
-                inventory[InventorySlots::EMBRYO]->opacity = .1;
-                inventory[InventorySlots::EMBRYO]->selectable = false;
-                inventory[InventorySlots::EMBRYO]->collisionCollidable = false;
-                inventory[InventorySlots::EMBRYO]->collisionPushable = false;
-                break;
-        }
-    }
+    inventoryPosition[InventorySlots::EMBRYO] = position;
     for (int slot = 0; slot < inventory.size(); slot++) {
         if (!inventory[slot])
             continue;
-        /// ON HOLD
-        switch (slot) {
-            case InventorySlots::EMBRYO:
-                inventory[InventorySlots::EMBRYO]->position = position;
-                inventory[InventorySlots::EMBRYO]->zPosition = zPosition;
-                break;
-        }
-    }
-    for (int slot = 0; slot < inventory.size(); slot++) {
-        if (inventory_last.size() != inventory.size() || !(inventory_last[slot] && !inventory[slot]))
-            continue;
-        /// ON RELEASE
-        switch (slot) {
-            case InventorySlots::EMBRYO:
-                inventory_last[InventorySlots::EMBRYO]->scale = 1.;
-                inventory_last[InventorySlots::EMBRYO]->opacity = 1.;
-                inventory_last[InventorySlots::EMBRYO]->selectable = true;
-                inventory_last[InventorySlots::EMBRYO]->collisionCollidable = true;
-                inventory_last[InventorySlots::EMBRYO]->collisionPushable = true;
-                break;
+        if (slot == InventorySlots::EMBRYO) {
+            inventory[InventorySlots::EMBRYO]->position = position;
+            inventory[InventorySlots::EMBRYO]->underlyingPos = position;
+            inventory[InventorySlots::EMBRYO]->zPosition = zPosition;
         }
     }
 }
@@ -147,3 +127,8 @@ std::string Egg::getDescriptionStr() {
     ss << "gender: " << (genderIsMale ? "male" : "female") << "\n";
     return ss.str();
 }
+
+std::wstring Egg::getLocalization(int lang, int strId) {
+    return strEgg[strId][lang];
+}
+

@@ -6,6 +6,8 @@
 #include <vector>
 #include <chrono>
 
+#define TIME_SMALL_INC 1E-6
+
 class Timer {
     inline static std::chrono::steady_clock::time_point globalStart = std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point tp;

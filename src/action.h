@@ -16,6 +16,8 @@ enum Command {
     GLOBAL_DESTROY, // entity e
     ENTITY_OWN_BY, // entity e, int slot
     ENTITY_UNOWN,
+    ENTITY_INVENTORY_ON_CAPTURE, // int slot, entity e
+    ENTITY_INVENTORY_ON_RELEASE, // int slot, entity e
     ENTITY_MOTION_FROZEN, // bool frozen
     ENTITY_SELECTABLE, // bool selectable
     ENTITY_COLLISION_PUSHABLE, // bool pushable
@@ -62,11 +64,11 @@ public:
             : isGlobal(true), time(time), command(command), caller(caller) {
     }
 
-    inline Action(std::shared_ptr<Entity> &entity, const Timer &time, Command command)
+    inline Action(const std::shared_ptr<Entity> &entity, const Timer &time, Command command)
             : isGlobal(false), entity(entity), time(time), command(command) {
     }
 
-    inline Action(std::shared_ptr<Entity> &entity, const Timer &time, Command command, const std::string &caller)
+    inline Action(const std::shared_ptr<Entity> &entity, const Timer &time, Command command, const std::string &caller)
             : isGlobal(false), entity(entity), time(time), command(command), caller(caller) {
     }
 

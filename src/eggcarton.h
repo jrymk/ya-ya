@@ -35,15 +35,12 @@ public:
 
     void setInventoryProps() override;
 
+    std::wstring getLocalization(int lang, int strId) override;
+
     std::string getDescriptionStr() override;
 
-    constexpr static auto properties = std::make_tuple(  /// TODO: set game*
-            SaveUtilities::property(&EggCarton::id, "Ec.id"),
-            SaveUtilities::property(&EggCarton::type, "Ec.tp"),
-            SaveUtilities::property(&EggCarton::position, "Ec.ps"),
-            SaveUtilities::property(&EggCarton::deleted, "Ec.dl"),
-            SaveUtilities::property(&EggCarton::opacity, "Ec.op")
-    );
+    constexpr static auto properties = std::tuple_cat(Entity::properties, std::make_tuple(
+    ));  // reminder: set game*
 };
 
 

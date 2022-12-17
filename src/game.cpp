@@ -4,6 +4,8 @@
 #include "player.h"
 #include "duck.h"
 #include "egg.h"
+#include "eggcarton.h"
+#include "NPC.h"
 #include "ui.h"
 #include "serializationExtended.h"
 
@@ -16,24 +18,7 @@ void Game::update() {
     Timer updateTimer;
 
     neighborsFinder.update();
-    controls.update();
     mapUpdate();
-
-    if (controls.facingEntity) {
-        Graphics::drawText(controls.facingEntity->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(controls.facingEntity->position) + UIVec(0., 40.), 0.,
-                           sf::Color(255, 255, 255, 140), 3.);
-        Graphics::insertUserWireframe(
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
-        );
-    }
 
     processCollisions();
 
@@ -69,33 +54,32 @@ void Game::processCollisions() {
         // entity collision
         if (!e->collisionCollidable)
             continue;
-        auto result = neighborsFinder.findNeighbors(e->position, .3);
+        auto result = neighborsFinder.findNeighbors(e->underlyingPos, 5.);
         for (auto f: result) {
             if (e == f)
                 continue;
             if (!f->collisionPushable)
                 continue;
 
+//            if (f->collideBox.collide(e->collideBox, f->position, e->position).len() > 0.01) {
+//                if (!f->collisionPushable)
+//                    continue;
+//                if (e->ownedBy == f || f->ownedBy == e)
+//                    continue;
+//                if (f->historyPosition.size() >= 2 &&
+//                    (f->historyPosition[1].second.len(f->historyPosition[0].second)) / f->historyPosition[1].first.elapsed(f->historyPosition[0].first) < 0.12) {
+//                    Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
+//                    a.argCoord[0] = f->collideBox.collide(e->collideBox, f->position, e->position) *
+//                                    std::pow(f->collideBox.collide(e->collideBox, f->position, e->position).len(), -3);
+//                    a.argFloat[0] = std::min(std::pow(f->collideBox.collide(e->collideBox, f->position, e->position).len(), 2), 0.2);
+//                    pushAction(a); /// TODO: fix collision
+//                }
+
             if (e->position.len(f->position) < .3) {
                 if (!f->collisionPushable)
                     continue;
                 if (e->ownedBy == f || f->ownedBy == e)
                     continue;
-
-//                if (f->collideBox.collide(e->collideBox, f->position, e->position).len() > 0.) {
-//                    coord delta = f->position - e->position;
-//                    if (delta.len() < .00001)
-//                        delta = coord::getRandCoord();
-//                    coord move = delta / delta.len() / delta.len() / 3.;
-//                    if (f->historyPosition.size() >= 2 &&
-//                        (f->historyPosition[1].second.len(f->historyPosition[0].second)) / f->historyPosition[1].first.elapsed(f->historyPosition[0].first) < 0.12) {
-//                        Action a(f, Timer::getNow(), ENTITY_SLIDE_VELOCITY_DISTANCE);
-//                        a.argCoord[0] = move;
-//                        a.argFloat[0] = .12;
-//                        pushAction(a); /// TODO: use entity collision boxes as entity collision ref
-//                    }
-//                }
-//                f->position = f->position + f->collideBox.collide(e->collideBox, f->position, e->position) * .7;
                 coord delta = f->position - e->position;
                 if (delta.len() < .00001)
                     delta = coord::getRandCoord();
@@ -115,10 +99,11 @@ void Game::processCollisions() {
         if (e->collisionNoEnv)
             continue;
         // map collision
-        for (int tx = int(std::round(e->position.x - e->footprint.x / 2 - 1.)); tx <= int(std::round(e->position.x + e->footprint.x / 2)); tx++) {
-            for (int ty = int(std::round(e->position.y - e->footprint.y / 2 - 1.)); ty <= int(std::round(e->position.y + e->footprint.y / 2)); ty++) {
+        for (int tx = int(std::round(e->underlyingPos.x - e->footprint.x / 2 - 1.)); tx <= int(std::round(e->underlyingPos.x + e->footprint.x / 2)); tx++) {
+            for (int ty = int(std::round(e->underlyingPos.y - e->footprint.y / 2 - 1.)); ty <= int(std::round(e->underlyingPos.y + e->footprint.y / 2)); ty++) {
                 for (auto &cb: map.getTile(tx, ty).collideBoxes) {
-                    e->position = e->position + e->collideBox.collide(cb, e->position, coord(tx, ty));
+                    e->underlyingPos = e->underlyingPos + e->collideBox.collide(cb, e->underlyingPos, coord(tx, ty));
+//                    e->position = e->underlyingPos;
                     if (showCollisionBoxes)
                         Graphics::insertUserWireframe(Camera::getScreenPos(coord(tx, ty) + cb.center + coord(-cb.size.x / 2., -cb.size.y / 2.)),
                                                       Camera::getScreenPos(coord(tx, ty) + cb.center + coord(cb.size.x / 2., -cb.size.y / 2.)),
@@ -135,6 +120,33 @@ void Game::processCollisions() {
                                           Camera::getScreenPos(e->position + e->collideBox.center + coord(-e->collideBox.size.x / 2., e->collideBox.size.y / 2.)),
                                           (e->collideBox.isCircle ? sf::Color::Magenta : sf::Color::Blue), sf::Color::Transparent);
     }
+
+//    for (auto eit: entities) {
+//        auto &e = eit.second;
+//        if (e->collisionNoEnv)
+//            continue;
+//        // map collision
+//        for (int tx = int(std::round(e->position.x - e->footprint.x / 2 - 1.)); tx <= int(std::round(e->position.x + e->footprint.x / 2)); tx++) {
+//            for (int ty = int(std::round(e->position.y - e->footprint.y / 2 - 1.)); ty <= int(std::round(e->position.y + e->footprint.y / 2)); ty++) {
+//                for (auto &cb: map.getTile(tx, ty).collideBoxes) {
+//                    e->position = e->position + e->collideBox.collide(cb, e->position, coord(tx, ty));
+////                    e->position = e->underlyingPos;
+//                    if (showCollisionBoxes)
+//                        Graphics::insertUserWireframe(Camera::getScreenPos(coord(tx, ty) + cb.center + coord(-cb.size.x / 2., -cb.size.y / 2.)),
+//                                                      Camera::getScreenPos(coord(tx, ty) + cb.center + coord(cb.size.x / 2., -cb.size.y / 2.)),
+//                                                      Camera::getScreenPos(coord(tx, ty) + cb.center + coord(cb.size.x / 2., cb.size.y / 2.)),
+//                                                      Camera::getScreenPos(coord(tx, ty) + cb.center + coord(-cb.size.x / 2., cb.size.y / 2.)),
+//                                                      (cb.isCircle ? sf::Color::Magenta : sf::Color::Blue), sf::Color::Transparent);
+//                }
+//            }
+//        }
+//        if (showCollisionBoxes)
+//            Graphics::insertUserWireframe(Camera::getScreenPos(e->position + e->collideBox.center + coord(-e->collideBox.size.x / 2., -e->collideBox.size.y / 2.)),
+//                                          Camera::getScreenPos(e->position + e->collideBox.center + coord(e->collideBox.size.x / 2., -e->collideBox.size.y / 2.)),
+//                                          Camera::getScreenPos(e->position + e->collideBox.center + coord(e->collideBox.size.x / 2., e->collideBox.size.y / 2.)),
+//                                          Camera::getScreenPos(e->position + e->collideBox.center + coord(-e->collideBox.size.x / 2., e->collideBox.size.y / 2.)),
+//                                          (e->collideBox.isCircle ? sf::Color::Magenta : sf::Color::Blue), sf::Color::Transparent);
+//    }
 }
 
 void Game::runActions() {
@@ -147,7 +159,8 @@ void Game::runActions() {
 //                      << (action.isGlobal ? "global" : action.entity->id) << "  " << std::setw(5) << action.command << "  " << action.caller << "\n";
             runAction(action, followUpActions);
             actionList.pop();
-        } else
+        }
+        else
             break;
     }
     for (auto &action: followUpActions)
@@ -164,6 +177,8 @@ void Game::runAction(Action &action, std::vector<Action> &followUpActions) {
     // global actions
     switch (action.command) {
         case GLOBAL_DESTROY:
+            if (action.argEntity[0]->ownedBy != nullptr)
+                action.argEntity[0]->ownedBy->inventory[action.argEntity[0]->ownedSlot] = nullptr;
             destroyEntity(action.argEntity[0]->id);
             break;
         default:
@@ -202,6 +217,11 @@ std::string Game::newId(EntityType type) {
         case EGG_CARTON:
             id = "eggcarton$" + randomId();
             break;
+        case TRUCK:
+            id = "truck$" + randomId();
+        case NPC:
+            id = "npc$" + randomId();
+            break;
         default:
             debug << "hey you forgot me\n";
     }
@@ -231,38 +251,7 @@ void Game::render() {
 
     for (auto entity: entities) {
         entity.second->pushQuads();
-        //        switch (entity.second->type) {
-//            case PLAYER:
-//                std::dynamic_pointer_cast<Player>(entity.second->childClassPtr)->pushQuads();
-//                break;
-//            case DUCK:
-//                std::dynamic_pointer_cast<Duck>(entity.second->childClassPtr)->pushQuads();
-//                break;
-//            case EGG:
-//                std::dynamic_pointer_cast<Egg>(entity.second->childClassPtr)->pushQuads();
-//                break;
-//        }
     }
-
-    // for (auto entity : entities) {
-    //     Graphics::drawText(entity.first, sf::Color::Black, 14, Camera::getScreenPos(entity.second->position) + UIVec(0., 30.), .5, sf::Color(255, 255, 255, 100), 3.);
-    // }
-    if (controls.facingEntity) {
-        Graphics::drawText(controls.facingEntity->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(controls.facingEntity->position) + UIVec(0., 40.), 0.,
-                           sf::Color(255, 255, 255, 140), 3.);
-        Graphics::insertUserWireframe(
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
-        );
-    }
-
 }
 
 void Game::renderMap() {
@@ -303,11 +292,11 @@ void Game::load(const char* filepath) {
     fin >> str;
     Serialization::deserialize(*this, str);
     if (fin.bad()) std::cerr << "file loading failed";
+    debug << "deserialization done\n";
 
     for (auto &e: entities) {
         switch (e.second->type) {
             case PLAYER: {
-                setPlayer(e.second);
                 std::dynamic_pointer_cast<Player>(e.second)->game = this;
                 break;
             }
@@ -321,10 +310,17 @@ void Game::load(const char* filepath) {
                 pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
                 break;
             }
+            case EGG_CARTON: {
+                std::dynamic_pointer_cast<EggCarton>(e.second)->game = this;
+                pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
+                break;
+            }
         }
     }
 
+    SaveUtilities::clearObjTracker();  // don't forget to clear smart ptr ownership here
     fin.close();
+    debug << "game successfully loaded\n";
 }
 
 void Game::setPlayer(std::shared_ptr<Entity> &player) {

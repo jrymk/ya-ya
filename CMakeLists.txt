@@ -12,7 +12,6 @@ FetchContent_MakeAvailable(SFML)
 add_executable(yaya
         src/yaya.cpp
         src/camera.cpp
-        src/camera.cpp
         src/controls.cpp
         src/debugger.cpp
         src/duck.cpp
@@ -26,9 +25,12 @@ add_executable(yaya
         src/timer.cpp
         src/utilities.cpp
         src/map.cpp
-        src/ui.cpp src/eggcarton.cpp src/eggcarton.h src/localization.h)
+        src/ui.cpp
+        src/eggcarton.cpp
+        src/audio.cpp
+        src/truck.cpp)
 
-target_link_libraries(yaya PRIVATE sfml-graphics)
+target_link_libraries(yaya PRIVATE sfml-graphics sfml-audio)
 target_compile_features(yaya PRIVATE cxx_std_17)
 
 add_custom_command(TARGET yaya POST_BUILD

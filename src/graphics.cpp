@@ -112,6 +112,18 @@ void Graphics::drawTextBatch(sf::VertexArray &va, const std::string &str, const 
     }
 }
 
+void Graphics::drawImage(const Image &image, float zDepth, UIVec pos, UIVec align, float scale, sf::Color color) {
+    scale *= image.defaultScale;
+    insertQuad(Quad(
+            zDepth,
+            pos + UIVec(image.textureSize) * UIVec(0., 0.) - (UIVec(image.textureSize) * scale) * align, image.texturePos,
+            pos + UIVec(image.textureSize) * UIVec(scale, 0.) - (UIVec(image.textureSize) * scale) * align, image.texturePos + sf::Vector2f(image.textureSize.x, 0.),
+            pos + UIVec(image.textureSize) * UIVec(scale, scale) - (UIVec(image.textureSize) * scale) * align, image.texturePos + image.textureSize,
+            pos + UIVec(image.textureSize) * UIVec(0., scale) - (UIVec(image.textureSize) * scale) * align, image.texturePos + sf::Vector2f(0., image.textureSize.y),
+            color
+    ));
+}
+
 void Graphics::appendWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color &color, const sf::Color &bgcolor) {
     wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
     wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), bgcolor));

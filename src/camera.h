@@ -50,6 +50,8 @@ struct coord {
         return coord(std::cos(angle), std::sin(angle)) * len;
     }
 
+    inline UIVec getUIVec() { return UIVec(x, y); }
+
     inline constexpr static auto properties = std::make_tuple(
             SaveUtilities::property(&coord::x, "cd.x"),
             SaveUtilities::property(&coord::y, "cd.y")

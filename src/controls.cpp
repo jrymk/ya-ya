@@ -1,6 +1,11 @@
 #include "controls.h"
 #include "game.h"
 #include "player.h"
+#include "duck.h"
+#include "egg.h"
+#include "eggcarton.h"
+#include "model.h"
+#include "audio.h"
 
 Controls::Controls(Game* game) :
         game(game) {
@@ -9,10 +14,85 @@ Controls::Controls(Game* game) :
 void Controls::update() {
     facingEntity = getFacingEntity();
     facingTile = &getFacingTile();
+
+    leftMouseClickAction = UNDEFINED;
+    leftMouseAltClickAction = UNDEFINED;
+    rightMouseClickAction = UNDEFINED;
+    rightMouseAltClickAction = UNDEFINED;
+
+    for (int hand = Player::InventorySlots::LEFT_HAND; hand <= Player::InventorySlots::RIGHT_HAND; hand++) {
+        int otherHand = 1 - hand;
+        ControlsActions clickAction = UNDEFINED;
+        ControlsActions altClickAction = UNDEFINED;
+        auto inv = game->player->inventory[hand];
+        auto otherInv = game->player->inventory[otherHand];
+
+        if (inv == nullptr) { // hand empty
+            if (facingEntity == nullptr) {
+                clickAction = NONE_NO_ITEM_SELECTED;
+                altClickAction = NONE_NO_ITEM_SELECTED;
+            }
+            else {
+                switch (facingEntity->type) {
+                    case DUCK:
+                    case EGG:
+                        clickAction = PICK_UP_ITEM;
+                        break;
+                    case EGG_CARTON:
+                        clickAction = PICK_UP_CONTAINER;
+                        // alt click to pick up from container
+                        if (tryPickUpFromContainer(facingEntity) >= 0)
+                            altClickAction = PICK_UP_ITEM_FROM_FACING_CONTAINER;
+                        break;
+                }
+            }
+        }
+        else { // hand with stuff
+            switch (inv->type) {
+                case DUCK:
+                    clickAction = DROP_ITEM;
+                    break;
+                case EGG:
+                    clickAction = DROP_ITEM;
+                    if (facingEntity && facingEntity->type == EGG_CARTON) {
+                        int slot = tryStoreToContainer(facingEntity, inv);
+                        if (slot == -2)
+                            altClickAction = NONE_CONTAINER_FULL;
+                        else if (slot >= 0)
+                            altClickAction = STORE_ITEM_TO_FACING_CONTAINER;
+                    }
+                    if (otherInv && otherInv->type == EGG_CARTON) {
+                        int slot = tryStoreToContainer(otherInv, inv, true);
+                        if (slot == -2)
+                            altClickAction = NONE_CONTAINER_FULL;
+                        else if (slot >= 0)
+                            altClickAction = STORE_ITEM_TO_OTHER_HAND_CONTAINER;
+                    }
+                    break;
+                case EGG_CARTON:
+                    clickAction = DROP_CONTAINER;
+                    if (facingEntity && facingEntity->type == EGG && otherInv == nullptr) { // other hand is empty
+                        int slot = tryStoreToContainer(inv, facingEntity, true);
+                        if (slot >= 0)
+                            altClickAction = STORE_FACING_ITEM_TO_CONTAINER;
+                    }
+                    break;
+            }
+        }
+
+        if (hand == Player::InventorySlots::LEFT_HAND) {
+            leftMouseClickAction = clickAction;
+            leftMouseAltClickAction = altClickAction;
+        }
+        if (hand == Player::InventorySlots::RIGHT_HAND) {
+            rightMouseClickAction = clickAction;
+            rightMouseAltClickAction = altClickAction;
+        }
+    }
 }
 
 std::shared_ptr<Entity> Controls::getFacingEntity(EntityType filter) {
-    auto nearby = game->neighborsFinder.findNeighbors(game->player->position, 2., filter);
+    auto nearby = game->neighborsFinder.findNeighbors(game->player->position, 4., filter);
     std::shared_ptr<Entity> facingEntity = nullptr;
     double bestScore = 1e8;
     for (auto e: nearby) {
@@ -20,19 +100,70 @@ std::shared_ptr<Entity> Controls::getFacingEntity(EntityType filter) {
             continue;
         if (!e->selectable)
             continue;
-        UIVec epos = Camera::getScreenPos(e->position);
-        UIVec ppos = Camera::getScreenPos(game->player->position);
-        double angle = std::abs(subtractAngle(game->player->position.angle(e->position), game->player->heading));
-        double dist = epos.len(ppos);
-        // debug << subtractAngle(0, 303.13);
-        // debug << e->id << ": " << angle << "  " << dist << "\n";
-        if (dist < 4. * Camera::getScale() && angle < 1.5) {
-            if (angle * dist < bestScore) {
+//        coord epos = e->position;
+//        coord ppos = game->player->position;
+//        double angle = std::abs(subtractAngle(game->player->position.angle(e->position), game->player->heading));
+//        double dist = epos.len(ppos);
+//        // debug << subtractAngle(0, 303.13);
+//        // debug << e->id << ": " << angle << "  " << dist << "\n";
+//        if (dist < 3. && angle < 1.5) {
+//            if (angle * dist < bestScore) {
+//                facingEntity = e;
+//                bestScore = angle * dist;
+//            }
+//        }
+
+        coord c = Camera::getMouseCoord();
+        if (std::abs(c.x - e->position.x) < e->footprint.x / 2. + 1. && std::abs(c.y - e->position.y) < e->footprint.y / 2. + 1.) {
+            if (!facingEntity ||
+                ((coord(std::max(0., std::abs(c.x - e->position.x) - e->footprint.x / 2. - 0.), std::max(0., std::abs(c.y - e->position.y) - e->footprint.y / 2. - 0.)).len()) <
+                 bestScore)) {
+                bestScore = (coord(std::max(0., std::abs(c.x - e->position.x) - e->footprint.x / 2. - 0.),
+                                   std::max(0., std::abs(c.y - e->position.y) - e->footprint.y / 2. - 0.)).len());
                 facingEntity = e;
-                bestScore = angle * dist;
             }
         }
     }
+    if (facingEntity) {
+        double dist = (coord(std::max(0., std::abs(game->player->position.x - facingEntity->position.x) - facingEntity->footprint.x / 2. - 0.),
+                             std::max(0., std::abs(game->player->position.y - facingEntity->position.y) - facingEntity->footprint.y / 2. - 0.)).len());
+        bool inReach = dist < 1.;
+
+        if (dist < 4.) { // don't even render the indicators if TOO far
+            for (int corner = 0; corner < 4; corner++) {
+                auto quad = modelSelector[corner];
+                float speed = 4.; // 2hz
+                coord pulse(.05 * std::sin(Timer::getGlobalStart().elapsed() * speed * PI), .05 * std::sin(Timer::getGlobalStart().elapsed() * speed * PI));
+//            quad.v0 = coord::getAngleVec(quad.v0.len(), facingEntity->heading + quad.v0.angle(UIVec(1., 0.))).getUIVec();
+//            quad.v1 = coord::getAngleVec(quad.v1.len(), facingEntity->heading + quad.v1.angle(UIVec(1., 0.))).getUIVec();
+//            quad.v2 = coord::getAngleVec(quad.v2.len(), facingEntity->heading + quad.v2.angle(UIVec(1., 0.))).getUIVec();
+//            quad.v3 = coord::getAngleVec(quad.v3.len(), facingEntity->heading + quad.v3.angle(UIVec(1., 0.))).getUIVec();
+
+                quad.v0 = Camera::getScreenPos(
+                        coord(quad.v0.x, quad.v0.y) + facingEntity->position + facingEntity->collideBox.center +
+                        (facingEntity->collideBox.size + pulse) * coord((corner & 0b1) ? .5 : -.5, (corner & 0b10) ? .5 : -.5));
+                quad.v1 = Camera::getScreenPos(
+                        coord(quad.v1.x, quad.v1.y) + facingEntity->position + facingEntity->collideBox.center +
+                        (facingEntity->collideBox.size + pulse) * coord((corner & 0b1) ? .5 : -.5, (corner & 0b10) ? .5 : -.5));
+                quad.v2 = Camera::getScreenPos(
+                        coord(quad.v2.x, quad.v2.y) + facingEntity->position + facingEntity->collideBox.center +
+                        (facingEntity->collideBox.size + pulse) * coord((corner & 0b1) ? .5 : -.5, (corner & 0b10) ? .5 : -.5));
+                quad.v3 = Camera::getScreenPos(
+                        coord(quad.v3.x, quad.v3.y) + facingEntity->position + facingEntity->collideBox.center +
+                        (facingEntity->collideBox.size + pulse) * coord((corner & 0b1) ? .5 : -.5, (corner & 0b10) ? .5 : -.5));
+
+                quad.c0 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
+                quad.c1 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
+                quad.c2 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
+                quad.c3 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
+                Graphics::insertQuad(quad);
+
+            }
+        }
+        if (!inReach)
+            facingEntity = nullptr;
+    }
+
     return facingEntity;
 }
 
@@ -140,32 +271,159 @@ void Controls::handleKeyPress(sf::Event &event) {
 
 void Controls::handleMousePress(sf::Event &event) {
     if (event.type == sf::Event::MouseButtonPressed) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) {
-            if (facingTile != nullptr) {
-                facingTile->setTileType(Map::Tile::MOAI);
-            }
-        } else {
-            if (event.mouseButton.button == sf::Mouse::Button::Left) {
-                if (game->player->inventory[Player::InventorySlots::LEFT_HAND] == nullptr && facingEntity) {
-                    Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
-                    a.argEntity[0] = game->player;
-                    a.argInt[0] = Player::InventorySlots::LEFT_HAND;
-                    game->pushAction(a);
-                } else if (game->player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr) {
-                    game->pushAction(Action(game->player->inventory[Player::InventorySlots::LEFT_HAND], Timer::getNow(), ENTITY_UNOWN));
-                }
-            }
-            if (event.mouseButton.button == sf::Mouse::Button::Right) {
-                if (game->player->inventory[Player::InventorySlots::RIGHT_HAND] == nullptr && facingEntity) {
-                    Action a(facingEntity, Timer::getNow(), ENTITY_OWN_BY);
-                    a.argEntity[0] = game->player;
-                    a.argInt[0] = Player::InventorySlots::RIGHT_HAND;
-                    game->pushAction(a);
-                } else if (game->player->inventory[Player::InventorySlots::RIGHT_HAND] != nullptr) {
-                    game->pushAction(Action(game->player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_UNOWN));
-                }
-            }
+        // no alt
+
+        int hand = -1;
+        ControlsActions action = UNDEFINED;
+        if (event.mouseButton.button == sf::Mouse::Button::Left) {
+            action = (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) ? leftMouseAltClickAction : leftMouseClickAction;
+            hand = Player::InventorySlots::LEFT_HAND;
+        }
+        if (event.mouseButton.button == sf::Mouse::Button::Right) {
+            action = (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) ? rightMouseAltClickAction : rightMouseClickAction;
+            hand = Player::InventorySlots::RIGHT_HAND;
+        }
+        if (hand == -1)
+            return;
+        int otherHand = 1 - hand;
+
+        /// we TRUST the results from controls.update, we TRUST the actions they gave is legal. Look how clean this code is
+        switch (action) {
+            case PICK_UP_ITEM:
+            case PICK_UP_CONTAINER:
+                changeOwner(facingEntity, game->player, hand);
+                break;
+            case PICK_UP_ITEM_FROM_FACING_CONTAINER:
+                changeOwner(facingEntity->inventory[tryPickUpFromContainer(facingEntity)], game->player, hand);
+                break;
+            case DROP_ITEM:
+            case DROP_CONTAINER:
+                changeOwner(game->player->inventory[hand]);
+                break;
+            case STORE_ITEM_TO_FACING_CONTAINER:
+                changeOwner(game->player->inventory[hand], facingEntity,
+                            tryStoreToContainer(facingEntity, game->player->inventory[hand]));
+                break;
+            case STORE_ITEM_TO_OTHER_HAND_CONTAINER:
+                changeOwner(game->player->inventory[hand], game->player->inventory[otherHand],
+                            tryStoreToContainer(game->player->inventory[otherHand], game->player->inventory[hand], true));
+                break;
+            case STORE_FACING_ITEM_TO_CONTAINER:
+                changeOwner(facingEntity, game->player->inventory[hand],
+                            tryStoreToContainer(game->player->inventory[hand], facingEntity, true));
+                break;
+
         }
     }
 }
 
+int Controls::tryStoreToContainer(const std::shared_ptr<Entity> &container, const std::shared_ptr<Entity> &item, bool useRandomSlot) {
+    int slotRangeLo = -1, slotRangeHi = -1;
+    switch (container->type) {
+        case EGG_CARTON:
+            switch (item->type) {
+                case EGG:
+                    slotRangeLo = EggCarton::InventorySlots::EGG_0;
+                    slotRangeHi = EggCarton::InventorySlots::EGG_9;
+                    break;
+            }
+            break;
+    }
+    if (slotRangeLo == -1)
+        return -1;
+
+    std::vector<int> candidates;
+    int closestSlot = -1;
+    for (int slot = slotRangeLo; slot <= slotRangeHi; slot++) {
+        if (container->inventory[slot] != nullptr)
+            continue;
+        candidates.push_back(slot);
+        if (closestSlot == -1 || Camera::getMouseCoord().len(container->inventoryPosition[slot]) <
+                                 Camera::getMouseCoord().len(
+                                         container->inventoryPosition[closestSlot])) // should I use on screen closest or ingame coord closest?
+            closestSlot = slot;
+    }
+    if (useRandomSlot && candidates.size() > 0)
+        return int(double(candidates.size()) * getRand());
+    if (closestSlot != -1) {
+        Graphics::insertUserWireframe(
+                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.0 * PI),
+                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.5 * PI),
+                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.0 * PI),
+                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.5 * PI),
+                sf::Color(100, 255, 100, 100), sf::Color(0, 0, 0, 100)
+        );
+        return closestSlot;
+    }
+    return -2;
+}
+
+int Controls::tryPickUpFromContainer(const std::shared_ptr<Entity> &container) {
+    int slotRangeLo = -1, slotRangeHi = -1;
+    switch (container->type) {
+        case EGG_CARTON:
+            slotRangeLo = EggCarton::InventorySlots::EGG_0;
+            slotRangeHi = EggCarton::InventorySlots::EGG_9;
+            break;
+    }
+    if (slotRangeLo == -1)
+        return -1;
+
+    int closestSlot = -1;
+    for (int slot = slotRangeLo; slot <= slotRangeHi; slot++) {
+        if (container->inventory[slot] == nullptr)
+            continue;
+        if (closestSlot == -1 || Camera::getMouseCoord().len(container->inventoryPosition[slot]) <
+                                 Camera::getMouseCoord().len(
+                                         container->inventoryPosition[closestSlot])) // should I use on screen closest or ingame coord closest?
+            closestSlot = slot;
+    }
+    if (closestSlot != -1) {
+        Graphics::insertUserWireframe(
+                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.0 * PI),
+                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.5 * PI),
+                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.0 * PI),
+                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.5 * PI),
+                sf::Color(100, 255, 100, 100), sf::Color(0, 0, 0, 100)
+        );
+        return closestSlot;
+    }
+    return -2;
+}
+
+void Controls::changeOwner(const std::shared_ptr<Entity> &item, const std::shared_ptr<Entity> &newContainer, int newSlot) {
+    if (item != nullptr)
+        game->pushAction(Action(item, Timer::getNow(), ENTITY_UNOWN));
+    if (newContainer == nullptr || newSlot < 0)
+        return;
+    Action a(item, Timer::getNow() + TIME_SMALL_INC, ENTITY_OWN_BY);
+    a.argEntity[0] = newContainer;
+    a.argInt[0] = newSlot;
+    game->pushAction(a);
+}
+
+void Controls::handleSoundOnAction(sf::Event &event) {
+    if (event.type == sf::Event::KeyPressed) {
+        switch (event.key.code) {
+            case sf::Keyboard::W:
+                Audio::playSound("./res/walk.wav");
+            case sf::Keyboard::A:
+                Audio::playSound("./res/walk.wav");
+            case sf::Keyboard::S:
+                Audio::playSound("./res/walk.wav");
+            case sf::Keyboard::D:
+                Audio::playSound("./res/walk.wav");
+        }
+    }
+    if (event.type == sf::Event::MouseButtonPressed) {
+        Audio::playSound("./res/tick.wav");
+    }
+}

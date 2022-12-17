@@ -5,64 +5,118 @@
 #include "entity.h"
 #include "player.h"
 #include "localization.h"
+#include "model.h"
 
 void UserInterface::renderUI() {
-    Graphics::
     Graphics::setFont(4);
-    const float totalHeight = 120.;
-    const float bottomPadding = 8.;
-    const float padding = 12.;
-    const float textLRPadding = 4.;
-
-    UIRect bottomBarRect;
-    bottomBarRect.pos = Camera::getViewport() * UIVec(0., 1.) + UIVec(0., -totalHeight);
-    bottomBarRect.size = UIVec(Camera::getViewport().size.x, totalHeight);
+    const float totalHeight = 90. * displayScaling;
+    const float bottomPadding = 8. * displayScaling;
+    const float padding = 12. * displayScaling;
+    const float textLRPadding = 4. * displayScaling;
+    UIRect bottomBarRect(Camera::getViewport() * UIVec(0., 1.) + UIVec(0., -totalHeight - bottomPadding), Camera::getViewport().size.x, totalHeight);
     Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, bottomBarRect.pos, bottomBarRect.pos + bottomBarRect.size);
+    const float textYOffsetRatio = .34 * displayScaling; // multiply with font size BEFORE scaling
+    const float controlsWidth = 400. * displayScaling;
 
-    const float gapFromCenter = 120.;
-    UIRect leftHandRect;
-    leftHandRect.pos = bottomBarRect * UIVec(0., 0.) + UIVec(0., 0.);
-    leftHandRect.size = bottomBarRect.size * UIVec(.5, 1.) + UIVec(-gapFromCenter, -padding);
-    Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, leftHandRect.pos, leftHandRect.pos + leftHandRect.size);
+    /// CONTROLS
+    UIRect controlsRect(bottomBarRect * UIVec(.5, 0.) - UIVec(controlsWidth / 2, 0.), controlsWidth, bottomBarRect.size.y);
+    {
+        Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, controlsRect.pos, controlsRect.pos + controlsRect.size);
 
-    const float itemWindowSize = 80.;
-    UIRect leftHandItemWindowRect;
-    leftHandItemWindowRect.pos = leftHandRect * UIVec(1., 0.) + UIVec(-padding, padding) + UIVec(-itemWindowSize, 0.);
-    leftHandItemWindowRect.size = UIVec(itemWindowSize, itemWindowSize);
-    Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, leftHandItemWindowRect.pos, leftHandItemWindowRect.pos + leftHandItemWindowRect.size);
-    Graphics::fillRect(sf::Color(255, 255, 255, 120), leftHandItemWindowRect.pos, leftHandItemWindowRect.pos + leftHandItemWindowRect.size);
+        float rowHeight = controlsRect.size.y / 3.;
+        float imgCenterFromEdge = padding + 12. * displayScaling;
+        float textFromEdge = imgCenterFromEdge + 12. * displayScaling + textLRPadding;
 
-    UIRect leftHandInfoRect;
-    leftHandInfoRect.pos = leftHandRect * UIVec(0., 0.) + UIVec(padding, padding);
-    leftHandInfoRect.size = leftHandRect.size * UIVec(1., 1.) + UIVec(-itemWindowSize - 3 * padding, -2 * padding);
-    Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, leftHandInfoRect.pos, leftHandInfoRect.pos + leftHandInfoRect.size);
+        for (int hand = Player::InventorySlots::LEFT_HAND; hand <= Player::InventorySlots::RIGHT_HAND; hand++) {
+            Controls::ControlsActions clickAction = (hand == 0 ? game->controls.leftMouseClickAction : game->controls.rightMouseClickAction);
+            Controls::ControlsActions altClickAction = (hand == 0 ? game->controls.leftMouseAltClickAction : game->controls.rightMouseAltClickAction);
 
-    if (game->player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr) {
-        Graphics::drawText(splitId(game->player->inventory[Player::InventorySlots::LEFT_HAND]->id).second, sf::Color::White, 24,
-                           leftHandInfoRect * UIVec(1., 0.) + UIVec(-textLRPadding, 24.), 1.);
+            for (int isAltAction = 0; isAltAction <= 1; isAltAction++) {
+                Controls::ControlsActions action = (isAltAction ? altClickAction : clickAction);
+                std::wstring actionStr = L"";
 
-        UIRect leftMouseActionRect;
-        leftMouseActionRect.pos = leftHandInfoRect * UIVec(1., 0.) + UIVec(-250, padding);
-        leftMouseActionRect.size = UIVec(80., 24);
+                switch (action) {
+                    case Controls::PICK_UP_ITEM:
+                    case Controls::PICK_UP_CONTAINER:
+                        actionStr = strHoldIn[1][0] + game->controls.facingEntity->getLocalization(1, LOC_ENTITIY_NAME) + strHoldIn[1][1] + strLeftHand[1];
+                        break;
+                    case Controls::PICK_UP_ITEM_FROM_FACING_CONTAINER:
+                        actionStr = L"從容器中拿出物品";
+                        break;
+                    case Controls::DROP_ITEM:
+                    case Controls::DROP_CONTAINER:
+                        actionStr = strDrop[1][0] + game->player->inventory[hand]->getLocalization(1, LOC_ENTITIY_NAME);
+                        break;
+                    case Controls::STORE_ITEM_TO_FACING_CONTAINER:
+                        actionStr = L"儲存物品";
+                        break;
+                    case Controls::STORE_ITEM_TO_OTHER_HAND_CONTAINER:
+                        actionStr = L"STORE_ITEM_TO_OTHER_HAND_CONTAINER";
+                        break;
+                    case Controls::STORE_FACING_ITEM_TO_CONTAINER:
+                        actionStr = L"STORE_FACING_ITEM_TO_CONTAINER";
+                        break;
+                }
 
-        Graphics::insertQuad(Graphics::Quad(
-                1.,
-                leftMouseActionRect * UIVec(0., 0.) + UIVec(0., 4.), sf::Vector2f(33. + 24. * 1., 8192. - 24.),
-                leftMouseActionRect * UIVec(0., 0.) + UIVec(0. + 24., 4.), sf::Vector2f(33. + 24. * 2., 8192. - 24.),
-                leftMouseActionRect * UIVec(0., 0.) + UIVec(0. + 24., 4. + 24.), sf::Vector2f(33. + 24. * 2., 8192.),
-                leftMouseActionRect * UIVec(0., 0.) + UIVec(0., 4. + 24.), sf::Vector2f(33. + 24. * 1., 8192.)
-        ));
+                if (actionStr == L"")
+                    continue;
 
+                if (hand == Player::InventorySlots::LEFT_HAND) {
+                    if (!isAltAction) {
+                        Graphics::drawImage(imageMouseBase, 1., controlsRect * UIVec(0., 0.) + UIVec(imgCenterFromEdge, rowHeight * .5), UIVec(0.5, 0.5), displayScaling,
+                                            sf::Color(255, 255, 255, 255));
+                        Graphics::drawImage(imageMouseLeftBtn, 1., controlsRect * UIVec(0., 0.) + UIVec(imgCenterFromEdge, rowHeight * .5), UIVec(0.5, 0.5), displayScaling,
+                                            sf::Color(255, 170, 174, 255));
+                        Graphics::drawImage(imageMouseRightBtn, 1., controlsRect * UIVec(0., 0.) + UIVec(imgCenterFromEdge, rowHeight * .5), UIVec(0.5, 0.5), displayScaling,
+                                            sf::Color(255, 255, 255, 255));
+                        Graphics::drawText(actionStr, sf::Color(255, 255, 255, 255), 18. * displayScaling,
+                                           controlsRect * UIVec(0., 0.) + UIVec(textFromEdge, rowHeight * .5 + 18. * textYOffsetRatio), 0.);
+                    }
+                    if (isAltAction) {
+                        Graphics::drawImage(imageAltKey, 1., controlsRect * UIVec(0., 0.) + UIVec(imgCenterFromEdge, rowHeight * 1.5), UIVec(0.5, 0.5), displayScaling,
+                                            sf::Color(255, 255, 255, 255));
+                        Graphics::drawText(actionStr, sf::Color(255, 255, 255, 255), 18. * displayScaling,
+                                           controlsRect * UIVec(0., 0.) + UIVec(textFromEdge, rowHeight * 1.5 + 18. * textYOffsetRatio), 0.);
+                    }
+                }
+                if (hand == Player::InventorySlots::RIGHT_HAND) {
+                    if (!isAltAction) {
+                        Graphics::drawImage(imageMouseBase, 1., controlsRect * UIVec(1., 0.) + UIVec(-imgCenterFromEdge, rowHeight * .5), UIVec(0.5, 0.5), displayScaling,
+                                            sf::Color(255, 255, 255, 255));
+                        Graphics::drawImage(imageMouseLeftBtn, 1., controlsRect * UIVec(1., 0.) + UIVec(-imgCenterFromEdge, rowHeight * .5), UIVec(0.5, 0.5), displayScaling,
+                                            sf::Color(255, 255, 255, 255));
+                        Graphics::drawImage(imageMouseRightBtn, 1., controlsRect * UIVec(1., 0.) + UIVec(-imgCenterFromEdge, rowHeight * .5), UIVec(0.5, 0.5), displayScaling,
+                                            sf::Color(255, 170, 174, 255));
+                        Graphics::drawText(actionStr, sf::Color(255, 255, 255, 255), 18. * displayScaling,
+                                           controlsRect * UIVec(1., 0.) + UIVec(-textFromEdge, rowHeight * .5 + 18. * textYOffsetRatio), 1.);
+                    }
+                    if (isAltAction) {
+                        Graphics::drawImage(imageAltKey, 1., controlsRect * UIVec(1., 0.) + UIVec(-imgCenterFromEdge, rowHeight * 1.5), UIVec(0.5, 0.5), displayScaling,
+                                            sf::Color(255, 255, 255, 255));
+                        Graphics::drawText(actionStr, sf::Color(255, 255, 255, 255), 18. * displayScaling,
+                                           controlsRect * UIVec(1., 0.) + UIVec(-textFromEdge, rowHeight * 1.5 + 18. * textYOffsetRatio), 1.);
+                    }
+                }
+            }
+        }
+    } /// CONTROLS
 
-        Graphics::insertQuad(Graphics::Quad(
-                1.,
-                leftMouseActionRect * UIVec(0., 0.) + UIVec(0., 36.), sf::Vector2f(0., 8192. - 20.),
-                leftMouseActionRect * UIVec(0., 0.) + UIVec(0. + 33., 36.), sf::Vector2f(33., 8192. - 20.),
-                leftMouseActionRect * UIVec(0., 0.) + UIVec(0. + 33., 36. + 20.), sf::Vector2f(33., 8192.),
-                leftMouseActionRect * UIVec(0., 0.) + UIVec(0., 36. + 20.), sf::Vector2f(0., 8192.)
-        ));
+    /// INFO
+    UIRect infoRect(bottomBarRect * UIVec(0., 0.), controlsRect.pos.x - bottomBarRect.pos.x - padding, bottomBarRect.size.y);
+    {
+        Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, infoRect.pos, infoRect.pos + infoRect.size);
 
-        Graphics::drawText(strDropItem[1], sf::Color::White, 20,
-                           leftMouseActionRect * UIVec(0., 0.) + UIVec(26. + textLRPadding, 20.), 0.);
-    }
+        float avatarRectSize = 64. * displayScaling;
+        UIRect avatarRect(infoRect * UIVec(1., 0.) + UIVec(-avatarRectSize, 0.), avatarRectSize, avatarRectSize);
+        Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, avatarRect.pos, avatarRect.pos + avatarRect.size);
+
+        float nameRectWidth = 300. * displayScaling;
+        UIRect nameRect(avatarRect.pos.x - padding - nameRectWidth, infoRect.pos.y, nameRectWidth, infoRect.size.y);
+        Graphics::drawRect(sf::Color(0, 0, 0, 40), 1, nameRect.pos, nameRect.pos + nameRect.size);
+
+        if (game->player->inventory[Player::InventorySlots::LEFT_HAND] != nullptr)
+            Graphics::drawText(game->player->inventory[Player::InventorySlots::LEFT_HAND]->id, sf::Color(255, 255, 255, 255), 22. * displayScaling,
+                               nameRect * UIVec(1., 0.) + UIVec(-textLRPadding, 14. * displayScaling + 22. * textYOffsetRatio), 1.);
+    } /// INFO
+
 }

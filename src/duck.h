@@ -33,17 +33,14 @@ public:
 
     void setInventoryProps() override;
 
-    std::string getDescriptionStr() override;
+    std::wstring getLocalization(int lang, int strId) override;
 
-    constexpr static auto properties = std::make_tuple(  // reminder: set game*
-            SaveUtilities::property(&Duck::id, "Dk.id"),
-            SaveUtilities::property(&Duck::type, "Dk.tp"),
-            SaveUtilities::property(&Duck::position, "Dk.ps"),
-            SaveUtilities::property(&Duck::deleted, "Dk.dl"),
+    std::string getDescriptionStr() override;
+    
+    constexpr static auto properties = std::tuple_cat(Entity::properties, std::make_tuple(
             SaveUtilities::property(&Duck::genderIsMale, "Dk.gd"),
-            SaveUtilities::property(&Duck::fertilized, "Dk.fr"),
-            SaveUtilities::property(&Duck::opacity, "Dk.op")
-    );
+            SaveUtilities::property(&Duck::fertilized, "Dk.fr")
+    ));  // reminder: set game*     
 };
 
 #endif

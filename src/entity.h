@@ -13,23 +13,24 @@
 #include <deque>
 
 #define OUT_OF_SIGHT 500
-#define GRAVITY -2.
+#define GRAVITY -5
 
 enum EntityType {
     ENTITY,
     PLAYER,
+    TRUCK,
     DUCK,
     EGG,
-    EGG_CARTON
+    EGG_CARTON,
+    NPC
 };
 
 class Game;
 
+class Entity;
+
 /// @brief Renderer and motion control for entities
 class Entity {
-protected:
-    std::vector<std::shared_ptr<Entity>> inventory_last;
-
 public:
     std::string id = "undefined";
     EntityType type = ENTITY;
@@ -37,6 +38,7 @@ public:
 
     // game logic
     std::vector<std::shared_ptr<Entity>> inventory;
+    std::vector<coord> inventoryPosition; // for inventory slot selection
     std::shared_ptr<Entity> ownedBy = nullptr;
     int ownedSlot = 0;
     uint32_t seed;
@@ -57,12 +59,17 @@ public:
     float scale = 1.;
 
     // motion
+    coord position;
+    Timer lastLandTime;
+    double hopPower = .15;
+    bool hoppable = false;
+    coord _hopVelocity; // internal
     bool motionFrozen = false;
     bool collisionPushable = true;
     bool collisionCollidable = true;
     bool collisionNoEnv = false;
-    coord position;
     std::deque<std::pair<Timer, coord>> historyPosition;
+    coord underlyingPos;
     double zPosition = 0.;
     double velocity = 0.;
     double zVelocity = 0.;
@@ -79,6 +86,8 @@ public:
 
     virtual void objInit();
 
+    virtual std::wstring getLocalization(int lang, int strId);
+
     void pushQuads();
 
     void updateTimer();
@@ -88,6 +97,8 @@ public:
     virtual void environmentUpdate();
 
     virtual std::string getDescriptionStr();
+
+    void motionUpdate();
 
     virtual void customUpdate();
 
@@ -100,9 +111,18 @@ public:
     constexpr static auto properties = std::make_tuple(
             SaveUtilities::property(&Entity::id, "Ey.id"),
             SaveUtilities::property(&Entity::type, "Ey.tp"),
-            SaveUtilities::property(&Entity::position, "Ey.ps"),
             SaveUtilities::property(&Entity::deleted, "Ey.dl"),
-            SaveUtilities::property(&Entity::opacity, "Ey.op")
+            SaveUtilities::property(&Entity::inventory, "Ey.ivt"),
+            SaveUtilities::property(&Entity::ownedBy, "Ey.owb"),
+            SaveUtilities::property(&Entity::ownedSlot, "Ey.ows"),
+            SaveUtilities::property(&Entity::zDepthOffset, "Ey.zd"),
+            SaveUtilities::property(&Entity::zDepthOverride, "Ey.zo"),
+            SaveUtilities::property(&Entity::footprint, "Ey.fp"),
+            SaveUtilities::property(&Entity::opacity, "Ey.op"),
+            SaveUtilities::property(&Entity::scale, "Ey.sc"),
+            SaveUtilities::property(&Entity::position, "Ey.ps"),
+            SaveUtilities::property(&Entity::underlyingPos, "Ey.ulp"),
+            SaveUtilities::property(&Entity::heading, "Ey.hd")
     );
 };
 
