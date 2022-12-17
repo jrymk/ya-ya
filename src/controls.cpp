@@ -362,18 +362,18 @@ void Controls::handleSoundOnAction(sf::Event &event){
     if(event.type == sf::Event::KeyPressed){
         switch(event.key.code){
             case sf::Keyboard::W:
-                Audio::playSound("walk.wav"); // No continuous walking sound QAQ
+                Audio::playSound("./res/walk.wav"); // No continuous walking sound QAQ
             case sf::Keyboard::A:
-                Audio::playSound("walk.wav");
+                Audio::playSound("./res/walk.wav");
             case sf::Keyboard::S:
-                Audio::playSound("walk.wav");
+                Audio::playSound("./res/walk.wav");
             case sf::Keyboard::D:
-                Audio::playSound("walk.wav");
+                Audio::playSound("./res/walk.wav");
         }
     }
 
     if (event.type == sf::Event::MouseButtonPressed){
-        Audio::playSound("tick.wav");
+        Audio::playSound("./res/tick.wav");
     }
 }
 
