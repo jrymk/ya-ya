@@ -90,7 +90,7 @@ void Controls::update() {
 }
 
 std::shared_ptr<Entity> Controls::getFacingEntity(EntityType filter) {
-    auto nearby = game->neighborsFinder.findNeighbors(game->player->position, 2., filter);
+    auto nearby = game->neighborsFinder.findNeighbors(game->player->position, 4., filter);
     std::shared_ptr<Entity> facingEntity = nullptr;
     double bestScore = 1e8;
     for (auto e: nearby) {
@@ -98,13 +98,13 @@ std::shared_ptr<Entity> Controls::getFacingEntity(EntityType filter) {
             continue;
         if (!e->selectable)
             continue;
-        UIVec epos = Camera::getScreenPos(e->position);
-        UIVec ppos = Camera::getScreenPos(game->player->position);
+        coord epos = e->position;
+        coord ppos = game->player->position;
         double angle = std::abs(subtractAngle(game->player->position.angle(e->position), game->player->heading));
         double dist = epos.len(ppos);
         // debug << subtractAngle(0, 303.13);
         // debug << e->id << ": " << angle << "  " << dist << "\n";
-        if (dist < 4. * Camera::getScale() && angle < 1.5) {
+        if (dist < 3. && angle < 1.5) {
             if (angle * dist < bestScore) {
                 facingEntity = e;
                 bestScore = angle * dist;

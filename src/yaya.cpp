@@ -7,6 +7,7 @@
 #include "egg.h"
 #include "ui.h"
 #include "eggcarton.h"
+#include "truck.h"
 
 //#define TESTLOAD
 
@@ -79,12 +80,24 @@ int main() {
             }
         }
     }
+    std::shared_ptr<Truck> truck(new Truck(&game));
+    truck->id = game.newId(TRUCK);
+    truck->opacity = 1.;
+    truck->collisionPushable = false;
+    truck->underlyingPos.x = 5;
+    truck->underlyingPos.y = 0;
+    auto tptr = game.insertEntity(truck);
+    for (int x = 3; x < 10; x++) {
+        for (int y = -2; y < 2; y++)
+            game.map.getTile(x, y).setTileType(Map::Tile::TRUCK); // for collision, because I don't want to make collision boxes work with entities
+    }
+
     {
         std::shared_ptr<EggCarton> eggcarton(new EggCarton(&game));
         eggcarton->id = game.newId(EGG_CARTON);
         eggcarton->opacity = 1.;
-        eggcarton->position.x = 1.;
-        eggcarton->position.y = 1.;
+        eggcarton->underlyingPos.x = 1.;
+        eggcarton->underlyingPos.y = 1.;
         auto cptr = game.insertEntity(eggcarton);
 
         for (int i = 0; i < 10; i++) {
