@@ -50,7 +50,7 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
                 else {
                     double t = 4. + 4. * getRand();
                     {
-                        Action a(Timer::getNow() + t, GLOBAL_DESTROY, "egg " + duck_ptr->id); // DIE
+                        Action a(Timer::getNow() + t, GLOBAL_DESTROY, "egg_" + duck_ptr->id); // DIE
                         a.argEntity[0] = duck_ptr;
                         followUpActions.push_back(a);
                     }

@@ -16,7 +16,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
                 followUpActions.emplace_back(action.entity, Timer::getNow() + 10. + getRand() * 40., DUCK_LOOP_LAY_EGGS);
             }
             followUpActions.emplace_back(action.entity, Timer::getNow(), ENTITY_HOP);
-            followUpActions.emplace_back(action.entity, Timer::getNow() + 50. + getRand() * 200., DUCK_DEATH, "creation " + action.entity->id);
+            followUpActions.emplace_back(action.entity, Timer::getNow() + 50. + getRand() * 200., DUCK_DEATH, "creation_" + action.entity->id);
 
             {
                 Action a(action.entity, Timer::getNow() + .3, DUCK_DUCKWALK_TO_UNTIL);

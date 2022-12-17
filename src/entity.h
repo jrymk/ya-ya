@@ -119,10 +119,18 @@ public:
             SaveUtilities::property(&Entity::zDepthOverride, "Ey.zo"),
             SaveUtilities::property(&Entity::footprint, "Ey.fp"),
             SaveUtilities::property(&Entity::opacity, "Ey.op"),
+            SaveUtilities::property(&Entity::selectable, "Ey.sl"),
             SaveUtilities::property(&Entity::scale, "Ey.sc"),
+            SaveUtilities::property(&Entity::hopPower, "Ey.hpp"),
+            SaveUtilities::property(&Entity::hoppable, "Ey.hpb"),
+            SaveUtilities::property(&Entity::motionFrozen, "Ey.mf"),
+            SaveUtilities::property(&Entity::collisionPushable, "Ey.cpb"),
+            SaveUtilities::property(&Entity::collisionCollidable, "Ey.ccb"),
+            SaveUtilities::property(&Entity::collisionNoEnv, "Ey.cne"),
             SaveUtilities::property(&Entity::position, "Ey.ps"),
             SaveUtilities::property(&Entity::underlyingPos, "Ey.ulp"),
-            SaveUtilities::property(&Entity::heading, "Ey.hd")
+            SaveUtilities::property(&Entity::heading, "Ey.hd"),
+            SaveUtilities::property(&Entity::headingRotationSpeed, "Ey.hrs")
     );
 };
 

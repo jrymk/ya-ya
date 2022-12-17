@@ -5,6 +5,7 @@
 #include "duck.h"
 #include "egg.h"
 #include "eggcarton.h"
+#include "truck.h"
 #include "NPC.h"
 #include "ui.h"
 #include "serializationExtended.h"
@@ -219,6 +220,7 @@ std::string Game::newId(EntityType type) {
             break;
         case TRUCK:
             id = "truck$" + randomId();
+            break;
         case NPC:
             id = "npc$" + randomId();
             break;
@@ -276,6 +278,14 @@ void Game::renderMap() {
 static constexpr const char* defaultFilePath = ".\\save.ya";
 
 void Game::save() {
+    while(actionList.size()){  // process action list
+        actionSaveList.emplace_back(actionList.top());
+        actionList.pop();
+    }
+
+    Timer timerForSave;
+    for(Action& a : actionSaveList) a.time.saveTimer(timerForSave);
+
     std::ofstream fout(defaultFilePath);
     if (!fout.is_open()) std::cerr << "file saving failed";
 
@@ -289,12 +299,12 @@ void Game::load(const char* filepath) {
     if (!fin.is_open()) std::cerr << "file loading failed";
 
     std::string str;
-    fin >> str;
+    std::getline(fin, str);
     Serialization::deserialize(*this, str);
     if (fin.bad()) std::cerr << "file loading failed";
     debug << "deserialization done\n";
 
-    for (auto &e: entities) {
+    for (auto &e: entities) {  // process entities (reminder: set serializationExtended)
         switch (e.second->type) {
             case PLAYER: {
                 std::dynamic_pointer_cast<Player>(e.second)->game = this;
@@ -302,21 +312,33 @@ void Game::load(const char* filepath) {
             }
             case DUCK: {
                 std::dynamic_pointer_cast<Duck>(e.second)->game = this;
-                pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
+                // pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
                 break;
             }
             case EGG: {
                 std::dynamic_pointer_cast<Egg>(e.second)->game = this;
-                pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
+                // pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
                 break;
             }
             case EGG_CARTON: {
                 std::dynamic_pointer_cast<EggCarton>(e.second)->game = this;
-                pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
+                // pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
+                break;
+            }
+            case TRUCK: {
+                std::dynamic_pointer_cast<Truck>(e.second)->game = this;
+                // pushAction(Action(e.second, Timer::getNow(), ON_CREATION));
                 break;
             }
         }
     }
+
+    Timer timerForLoad;
+    for(Action& a : actionSaveList){  // process action list
+        a.time.loadTimer(timerForLoad);
+        actionList.emplace(a);
+    }
+    actionSaveList.clear();
 
     SaveUtilities::clearObjTracker();  // don't forget to clear smart ptr ownership here
     fin.close();

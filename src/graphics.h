@@ -7,6 +7,7 @@
 #include <cmath>
 #include <SFML/Graphics.hpp>
 #include "debugger.h"
+#include "saveUtilities.h"
 
 #define ZDEPTH_LAYER 0.00001 // on-screen y position causes +-0.005 zdepth offset
 #define ZDEPTH_BG 0.
@@ -55,6 +56,11 @@ struct UIVec { // pixel space
     inline float len(const UIVec r) const { return std::sqrt(float((x - r.x) * (x - r.x) + (y - r.y) * (y - r.y))); }
 
     inline float angle(const UIVec r) { return std::acos(float(r.x - x) / len(r)) * ((r.y - y >= 0) ? float(1) : float(-1)); }
+
+    constexpr static auto properties = std::make_tuple(
+        SaveUtilities::property(&UIVec::x, "Uv.xx"),
+        SaveUtilities::property(&UIVec::y, "Uv.yy")
+    );
 };
 
 struct UIRect {

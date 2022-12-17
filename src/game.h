@@ -25,6 +25,7 @@ public:
     bool showCollisionBoxes = false;
 
     std::priority_queue<Action> actionList;
+    std::vector<Action> actionSaveList;  // for game save
     double updateTime;
     std::map<std::string, std::shared_ptr<Entity>> entities;
     std::shared_ptr<Entity> player;
@@ -82,7 +83,8 @@ public:
 
     constexpr static auto properties = std::make_tuple(
             SaveUtilities::property(&Game::entities, "Gm.et"),
-            SaveUtilities::property(&Game::player, "Gm.pl")
+            SaveUtilities::property(&Game::player, "Gm.pl"),
+            SaveUtilities::property(&Game::actionSaveList, "Gm.ac")
     );
 };
 

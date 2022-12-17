@@ -109,6 +109,11 @@ namespace Serialization {
     }
 
     template<>
+    inline std::string serialize(const char &val) {
+        return std::to_string(static_cast<int>(val));
+    }
+
+    template<>
     inline std::string serialize(const float &val) {
         return std::to_string(val);
     }
@@ -129,13 +134,14 @@ namespace Serialization {
             typename std::enable_if_t<!std::is_pointer<T>::value>* = nullptr,
             typename std::enable_if_t<!std::is_enum<T>::value>* = nullptr>
     inline void deserialize(T &obj, const std::string &str) {  // object
+        if(!str.size()) return;  // avoid empty object
         constexpr auto propertyCnt = std::tuple_size<decltype(T::properties)>::value;
 
         int findTagStartStart = 0;  // to avoid <Ivt><zdo> a </zdo></Ivt> <zdo> b </zdo>
         SaveUtilities::forSequence(std::make_index_sequence<propertyCnt>{}, [&](auto i){
             constexpr auto property = std::get<i>(T::properties);
-
             // debug << typeid(T).name() << " finding " << "<" + std::string(property.ID) + ">" << '\n';
+
             int tagStart = str.find("<" + std::string(property.ID) + ">", findTagStartStart),
                 tagLen = strlen(property.ID) + 2,
                 tagEnd = tagStart;
@@ -152,7 +158,6 @@ namespace Serialization {
                 }
                 else tagEnd++;
             }
-            
             rdeserialize(obj.*(property.member), str.substr(tagStart + tagLen, tagEnd - tagStart - tagLen));
             findTagStartStart = tagEnd + tagLen + 1;
         });
@@ -161,6 +166,7 @@ namespace Serialization {
     template<typename T,
             typename std::enable_if_t<std::is_pointer<T>::value>* = nullptr>
     inline void deserialize(T &ptr, const std::string &str) {  // object* and normal type*
+        if(!str.size()) return;  // avoid empty object
         typedef typename std::remove_pointer<T>::type U;
         int addrStart = str.find("<Addr>"),
                 addrEnd = str.find("</Addr>");
@@ -182,11 +188,13 @@ namespace Serialization {
     template<typename T,
             typename std::enable_if_t<std::is_enum<T>::value>* = nullptr>
     inline void deserialize(T &etp, const std::string &str) {  // enum
+        if(!str.size()) return;  // avoid empty object
         etp = static_cast<T>(std::stoi(str));
     }
 
     template<typename T, typename U>  // reminder: modify extended
     inline void deserialize(std::shared_ptr<U> &ptr, const std::string &str) {  // shared_ptr
+        if(!str.size()) return;  // avoid empty object
         int addrStart = str.find("<Addr>"),
                 addrEnd = str.find("</Addr>");
         std::uintptr_t oldAddress = std::stoull(str.substr(addrStart + 6, addrEnd - addrStart - 6));
@@ -207,6 +215,7 @@ namespace Serialization {
     template<typename T, typename U, typename A>
     // vector<object>
     inline void deserialize(std::vector<U, A> &obj, const std::string &str) {
+        if(!str.size()) return;  // avoid empty object
         int sizeTagStart = str.find("<VecSize>"),
                 sizeTagEnd = str.find("</VecSize>");
         int vecSize = std::stoi(str.substr(sizeTagStart + 9, sizeTagEnd - sizeTagStart - 9)),
@@ -232,6 +241,7 @@ namespace Serialization {
     template<typename T, typename K, typename V, typename C, typename A>
     // map<key, object>
     inline void deserialize(std::map<K, V, C, A> &obj, const std::string &str) {
+        if(!str.size()) return;  // avoid empty object
         int sizeTagStart = str.find("<MapSize>"),
                 sizeTagEnd = str.find("</MapSize>");
         int mapSize = std::stoi(str.substr(sizeTagStart + 9, sizeTagEnd - sizeTagStart - 9)),
@@ -266,21 +276,31 @@ namespace Serialization {
 
     template<>
     inline void deserialize(int &val, const std::string &data) {
+        if(!data.size()) return;  // avoid empty object
         val = std::stoi(data);
     }
 
     template<>
     inline void deserialize(bool &val, const std::string &data) {
+        if(!data.size()) return;  // avoid empty object
         val = std::stoi(data);
     }
 
     template<>
+    inline void deserialize(char &val, const std::string &data) {
+        if(!data.size()) return;  // avoid empty object
+        val = static_cast<char>(std::stoi(data));
+    }
+
+    template<>
     inline void deserialize(float &val, const std::string &data) {
+        if(!data.size()) return;  // avoid empty object
         val = std::stof(data);
     }
 
     template<>
     inline void deserialize(double &val, const std::string &data) {
+        if(!data.size()) return;  // avoid empty object
         val = std::stod(data);
     }
 
@@ -298,6 +318,7 @@ inline std::string rserialize(const T &obj) {
 
 template<typename T>
 inline void rdeserialize(T &obj, const std::string &str) {
+    if(!str.size()) return;  // avoid empty object
     Serialization::deserialize<T>(obj, str);
 }
 

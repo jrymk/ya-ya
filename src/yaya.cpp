@@ -9,7 +9,9 @@
 #include "eggcarton.h"
 #include "truck.h"
 
-//#define TESTLOAD
+#define TESTSAVE
+#define TESTLOAD
+//#define SUSPEND_CMD
 
 /**
  * Key definitions
@@ -240,8 +242,12 @@ int main() {
 
         window.display();
     }
-    game.save();
-
-    //getchar();  // for testing with cmd
+    
+    #ifdef TESTSAVE
+        game.save();
+    #endif
+    #ifdef SUSPEND_CMD
+        getchar();  // for testing with cmd
+    #endif
     return 0;
 }

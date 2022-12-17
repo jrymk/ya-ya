@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include "saveUtilities.h"
 
 #define TIME_SMALL_INC 1E-6
 
@@ -30,6 +31,14 @@ public:
     void increment(double seconds);
 
     bool operator<(const Timer &rhs) const;
+
+    double lastTimefromTP = 0.;  // for game load
+    void saveTimer(Timer start);
+    void loadTimer(Timer start);
+
+    constexpr static auto properties = std::make_tuple(
+        SaveUtilities::property(&Timer::lastTimefromTP, "Ti.ltt")
+    );
 };
 
 #endif

@@ -8,6 +8,7 @@
 #include "player.h"
 #include "egg.h"
 #include "eggcarton.h"
+#include "truck.h"
 
 namespace Serialization{
     template<>
@@ -29,6 +30,10 @@ namespace Serialization{
             }
             case EGG_CARTON: {
                 return rserialize(std::dynamic_pointer_cast<EggCarton>(ptr));
+                break;
+            }
+            case TRUCK: {
+                return rserialize(std::dynamic_pointer_cast<Truck>(ptr));
                 break;
             }
             default: {  // from original definition
@@ -76,6 +81,11 @@ namespace Serialization{
             }
             else if(id.find("eggcarton$") != std::string::npos){
                 auto derivedPtr = SaveUtilities::make_derived<EggCarton>(ptr);
+                SaveUtilities::smartObjectTracker[oldAddress] = ptr;
+                rdeserialize(*derivedPtr, str.substr(addrEnd + 7));
+            }
+            else if(id.find("truck$") != std::string::npos){
+                auto derivedPtr = SaveUtilities::make_derived<Truck>(ptr);
                 SaveUtilities::smartObjectTracker[oldAddress] = ptr;
                 rdeserialize(*derivedPtr, str.substr(addrEnd + 7));
             }

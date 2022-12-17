@@ -57,34 +57,55 @@ public:
     inline Action() = default;
 
     inline Action(const Timer &time, Command command)
-            : isGlobal(true), time(time), command(command) {
+            : isGlobal(true), time(time), command(command),
+            argBool(8), argInt(8), argFloat(8), argCoord(8), argUIVec(8), argEntity(8), argString(8) {
     }
 
     inline Action(const Timer &time, Command command, const std::string &caller)
-            : isGlobal(true), time(time), command(command), caller(caller) {
+            : isGlobal(true), time(time), command(command), caller(caller),
+            argBool(8), argInt(8), argFloat(8), argCoord(8), argUIVec(8), argEntity(8), argString(8) {
     }
 
     inline Action(const std::shared_ptr<Entity> &entity, const Timer &time, Command command)
-            : isGlobal(false), entity(entity), time(time), command(command) {
+            : isGlobal(false), entity(entity), time(time), command(command),
+            argBool(8), argInt(8), argFloat(8), argCoord(8), argUIVec(8), argEntity(8), argString(8) {
     }
 
     inline Action(const std::shared_ptr<Entity> &entity, const Timer &time, Command command, const std::string &caller)
-            : isGlobal(false), entity(entity), time(time), command(command), caller(caller) {
+            : isGlobal(false), entity(entity), time(time), command(command), caller(caller),
+            argBool(8), argInt(8), argFloat(8), argCoord(8), argUIVec(8), argEntity(8), argString(8) {
     }
 
-    bool argBool[8] = {0};
-    int argInt[8] = {0};
-    double argFloat[8] = {0};
-    coord argCoord[8];
-    UIVec argUIVec[8];
-    std::shared_ptr<Entity> argEntity[8];
-    std::string argString[8];
+    std::vector<char> argBool;  // due to std::vector<bool> problem
+    std::vector<int> argInt;
+    std::vector<double> argFloat;
+    std::vector<coord> argCoord;
+    std::vector<UIVec> argUIVec;
+    std::vector<std::shared_ptr<Entity> > argEntity;
+    std::vector<std::string> argString;
 
     inline bool operator<(const Action &rhs) const {
         if (deleteFlag != rhs.deleteFlag)
             return rhs.deleteFlag;
         return !(time < rhs.time);
     }
+
+    constexpr static auto properties = std::make_tuple(
+        SaveUtilities::property(&Action::ranFlag, "Ac.rf"),
+        SaveUtilities::property(&Action::deleteFlag, "Ac.df"),
+        SaveUtilities::property(&Action::time, "Ac.ti"),
+        SaveUtilities::property(&Action::caller, "Ac.cl"),
+        SaveUtilities::property(&Action::isGlobal, "Ac.ig"),
+        SaveUtilities::property(&Action::entity, "Ac.ey"),
+        SaveUtilities::property(&Action::command, "Ac.cmd"),
+        SaveUtilities::property(&Action::argBool, "Ac.ab"),
+        SaveUtilities::property(&Action::argInt, "Ac.ai"),
+        SaveUtilities::property(&Action::argFloat, "Ac.af"),
+        SaveUtilities::property(&Action::argCoord, "Ac.acd"),
+        SaveUtilities::property(&Action::argUIVec, "Ac.auv"),
+        SaveUtilities::property(&Action::argEntity, "Ac.aey"),
+        SaveUtilities::property(&Action::argString, "Ac.as")
+    );
 };
 
 

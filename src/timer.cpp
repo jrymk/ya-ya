@@ -35,3 +35,12 @@ bool Timer::operator<(const Timer &rhs) const {
     return (tp < rhs.tp);
 }
 
+void Timer::saveTimer(Timer start) {
+    lastTimefromTP = std::chrono::duration<double>(tp - start.tp).count() + 7.5;
+}
+
+void Timer::loadTimer(Timer start) {
+    tp = start.tp;
+    increment(lastTimefromTP);
+}
+
