@@ -100,19 +100,70 @@ std::shared_ptr<Entity> Controls::getFacingEntity(EntityType filter) {
             continue;
         if (!e->selectable)
             continue;
-        coord epos = e->position;
-        coord ppos = game->player->position;
-        double angle = std::abs(subtractAngle(game->player->position.angle(e->position), game->player->heading));
-        double dist = epos.len(ppos);
-        // debug << subtractAngle(0, 303.13);
-        // debug << e->id << ": " << angle << "  " << dist << "\n";
-        if (dist < 3. && angle < 1.5) {
-            if (angle * dist < bestScore) {
+//        coord epos = e->position;
+//        coord ppos = game->player->position;
+//        double angle = std::abs(subtractAngle(game->player->position.angle(e->position), game->player->heading));
+//        double dist = epos.len(ppos);
+//        // debug << subtractAngle(0, 303.13);
+//        // debug << e->id << ": " << angle << "  " << dist << "\n";
+//        if (dist < 3. && angle < 1.5) {
+//            if (angle * dist < bestScore) {
+//                facingEntity = e;
+//                bestScore = angle * dist;
+//            }
+//        }
+
+        coord c = Camera::getMouseCoord();
+        if (std::abs(c.x - e->position.x) < e->footprint.x / 2. + 1. && std::abs(c.y - e->position.y) < e->footprint.y / 2. + 1.) {
+            if (!facingEntity ||
+                ((coord(std::max(0., std::abs(c.x - e->position.x) - e->footprint.x / 2. - 0.), std::max(0., std::abs(c.y - e->position.y) - e->footprint.y / 2. - 0.)).len()) <
+                 bestScore)) {
+                bestScore = (coord(std::max(0., std::abs(c.x - e->position.x) - e->footprint.x / 2. - 0.),
+                                   std::max(0., std::abs(c.y - e->position.y) - e->footprint.y / 2. - 0.)).len());
                 facingEntity = e;
-                bestScore = angle * dist;
             }
         }
     }
+    if (facingEntity) {
+        double dist = (coord(std::max(0., std::abs(game->player->position.x - facingEntity->position.x) - facingEntity->footprint.x / 2. - 0.),
+                             std::max(0., std::abs(game->player->position.y - facingEntity->position.y) - facingEntity->footprint.y / 2. - 0.)).len());
+        bool inReach = dist < 1.;
+
+        if (dist < 4.) { // don't even render the indicators if TOO far
+            for (int corner = 0; corner < 4; corner++) {
+                auto quad = modelSelector[corner];
+                float speed = 4.; // 2hz
+                coord pulse(.05 * std::sin(Timer::getGlobalStart().elapsed() * speed * PI), .05 * std::sin(Timer::getGlobalStart().elapsed() * speed * PI));
+//            quad.v0 = coord::getAngleVec(quad.v0.len(), facingEntity->heading + quad.v0.angle(UIVec(1., 0.))).getUIVec();
+//            quad.v1 = coord::getAngleVec(quad.v1.len(), facingEntity->heading + quad.v1.angle(UIVec(1., 0.))).getUIVec();
+//            quad.v2 = coord::getAngleVec(quad.v2.len(), facingEntity->heading + quad.v2.angle(UIVec(1., 0.))).getUIVec();
+//            quad.v3 = coord::getAngleVec(quad.v3.len(), facingEntity->heading + quad.v3.angle(UIVec(1., 0.))).getUIVec();
+
+                quad.v0 = Camera::getScreenPos(
+                        coord(quad.v0.x, quad.v0.y) + facingEntity->position + facingEntity->collideBox.center +
+                        (facingEntity->collideBox.size + pulse) * coord((corner & 0b1) ? .5 : -.5, (corner & 0b10) ? .5 : -.5));
+                quad.v1 = Camera::getScreenPos(
+                        coord(quad.v1.x, quad.v1.y) + facingEntity->position + facingEntity->collideBox.center +
+                        (facingEntity->collideBox.size + pulse) * coord((corner & 0b1) ? .5 : -.5, (corner & 0b10) ? .5 : -.5));
+                quad.v2 = Camera::getScreenPos(
+                        coord(quad.v2.x, quad.v2.y) + facingEntity->position + facingEntity->collideBox.center +
+                        (facingEntity->collideBox.size + pulse) * coord((corner & 0b1) ? .5 : -.5, (corner & 0b10) ? .5 : -.5));
+                quad.v3 = Camera::getScreenPos(
+                        coord(quad.v3.x, quad.v3.y) + facingEntity->position + facingEntity->collideBox.center +
+                        (facingEntity->collideBox.size + pulse) * coord((corner & 0b1) ? .5 : -.5, (corner & 0b10) ? .5 : -.5));
+
+                quad.c0 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
+                quad.c1 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
+                quad.c2 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
+                quad.c3 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
+                Graphics::insertQuad(quad);
+
+            }
+        }
+        if (!inReach)
+            facingEntity = nullptr;
+    }
+
     return facingEntity;
 }
 
@@ -359,9 +410,9 @@ void Controls::changeOwner(const std::shared_ptr<Entity> &item, const std::share
     game->pushAction(a);
 }
 
-void Controls::handleSoundOnAction(sf::Event &event){
+void Controls::handleSoundOnAction(sf::Event &event) {
     if (event.type == sf::Event::KeyPressed) {
-        switch(event.key.code){
+        switch (event.key.code) {
             case sf::Keyboard::W:
                 Audio::playSound("./res/walk.wav");
             case sf::Keyboard::A:
