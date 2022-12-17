@@ -31,7 +31,7 @@
 
 **Compiler:** `mingw64 x86_64-12.1.0-release-posix-seh-rt_v10-rev3`
 
-**Working directory:** `/build/`
+**Working directory:** `/`
 
 **SFML version:** `2.6.x` (fetched from GitHub)
 

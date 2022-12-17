@@ -27,11 +27,11 @@ int main() {
     Camera::tieRenderWindow(window);
     Graphics::setRenderWindow(window);
     Graphics::createWindow(false);
-    Graphics::loadFont(0, "yourStar.ttf");
-    Graphics::loadFont(1, "CascadiaCode.ttf");
-    Graphics::loadFont(2, "Aero Matics Regular.ttf");
-    Graphics::loadFont(3, "Barlow-SemiBold.ttf");
-    Graphics::loadFont(4, "SourceHanSansTC-Bold.otf");
+    Graphics::loadFont(0, "./res/yourStar.ttf");
+    Graphics::loadFont(1, "./res/CascadiaCode.ttf");
+    Graphics::loadFont(2, "./res/Aero Matics Regular.ttf");
+    Graphics::loadFont(3, "./res/Barlow-SemiBold.ttf");
+    Graphics::loadFont(4, "./res/SourceHanSansTC-Bold.otf");
     FramerateCounter fc;
 
     Game game;
@@ -109,7 +109,7 @@ int main() {
 #endif
 
     sf::Texture tilemap;
-    if (!tilemap.loadFromFile("tilemap.png"))
+    if (!tilemap.loadFromFile("./res/tilemap.png"))
         debug << "failed to load tilemap.png";
     else
         debug << "maximum texture size: " << sf::Texture::getMaximumSize() << "\n";
