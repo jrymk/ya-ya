@@ -72,7 +72,7 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             break;
         case ENTITY_HOP:
             if (zPosition == 0.)
-                zVelocity = .3;
+                zVelocity = .1;
             break;
         case ENTITY_SLIDE_INSTANT:
             underlyingPos = underlyingPos + action.argCoord[0];
@@ -111,14 +111,10 @@ void Entity::loadModel() {
 void Entity::pushQuads() {
     loadModel();
     for (auto quad: *model) {
-        quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) * scale + position) +
-                  UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
-        quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) * scale + position) +
-                  UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
-        quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) * scale + position) +
-                  UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
-        quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) * scale + position) +
-                  UIVec(0, -zPosition * quad.zPosScale * Camera::getScale());
+        quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) * scale + position, zPosition * quad.zPosScale);
+        quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) * scale + position, zPosition * quad.zPosScale);
+        quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) * scale + position, zPosition * quad.zPosScale);
+        quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) * scale + position, zPosition * quad.zPosScale);
         quad.zDepth += (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100. + zDepthOffset;
 
         if (zDepthOverride > -100.)
@@ -231,8 +227,8 @@ void Entity::motionUpdate() {
         if (position.len(underlyingPos) > .01 && zPosition == 0. && lastLandTime.elapsed() > .15 * hopPower) {
             zVelocity = hopPower;
             _hopVelocity =
-                    (underlyingPos - position).unit() * std::min(hopPower * 1.9, position.len(underlyingPos)) /
-                    (2. * hopPower / (- GRAVITY)) /* hop time (requires physics knowledge 'o') */;
+                    (underlyingPos - position).unit() * std::min(hopPower * 4.2, position.len(underlyingPos)) /
+                    (2. * hopPower / (-GRAVITY)) /* hop time (requires physics knowledge 'o') */;
         }
         if (zPosition > 0.) {
             if (position.len(underlyingPos) < _hopVelocity.len() * elapsedSecs)

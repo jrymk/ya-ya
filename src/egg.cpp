@@ -105,7 +105,7 @@ void Egg::customUpdate() {
 }
 
 void Egg::setInventoryProps() {
-    inventoryPosition[InventorySlots::EMBRYO] = position;
+    inventoryPosition[InventorySlots::EMBRYO] = {position, zPosition};
     for (int slot = 0; slot < inventory.size(); slot++) {
         if (!inventory[slot])
             continue;
@@ -113,6 +113,7 @@ void Egg::setInventoryProps() {
             inventory[InventorySlots::EMBRYO]->position = position;
             inventory[InventorySlots::EMBRYO]->underlyingPos = position;
             inventory[InventorySlots::EMBRYO]->zPosition = zPosition;
+            inventory[slot]->zVelocity = 0.;
         }
     }
 }

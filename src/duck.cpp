@@ -328,7 +328,7 @@ void Duck::objInit() {
     type = DUCK;
     footprint = coord(.5, .5);
     collideBox = CollideBox({0., 0.}, {.4, .4}, true);
-    hopPower = .15;
+    hopPower = .08;
     hoppable = true;
 }
 
@@ -336,16 +336,16 @@ void Duck::customUpdate() {
 }
 
 void Duck::setInventoryProps() {
-    inventoryPosition[InventorySlots::EGG_0] = position + coord::getAngleVec(-.1, heading);
-    inventoryPosition[InventorySlots::EGG_1] = position + coord::getAngleVec(-.2, heading);
+    inventoryPosition[InventorySlots::EGG_0] = {position + coord::getAngleVec(-.1, heading), zPosition};
+    inventoryPosition[InventorySlots::EGG_1] = {position + coord::getAngleVec(-.2, heading), zPosition};
     for (int slot = 0; slot < inventory.size(); slot++) {
         if (!inventory[slot])
             continue;
         if (slot == InventorySlots::EGG_0 || slot == InventorySlots::EGG_1) {
-            inventory[slot]->position = inventoryPosition[slot];
-            inventory[slot]->underlyingPos = inventoryPosition[slot];
+            inventory[slot]->position = inventoryPosition[slot].first;
+            inventory[slot]->underlyingPos = inventoryPosition[slot].first;
             inventory[slot]->heading = heading;
-            inventory[slot]->zPosition = zPosition;
+            inventory[slot]->zPosition = inventoryPosition[slot].second;
         }
     }
 }

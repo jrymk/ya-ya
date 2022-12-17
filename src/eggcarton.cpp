@@ -45,16 +45,17 @@ void EggCarton::customUpdate() {
 }
 
 void EggCarton::setInventoryProps() {
-    double cartonZDepth = modelEggCarton[1].zDepth + (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
+    double cartonZDepth = zDepthOverride > -100 ? zDepthOverride : modelEggCarton[1].zDepth + (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
 
     for (int slot = 0; slot < inventory.size(); slot++) {
-        inventoryPosition[slot] = position + coord(-.3 + (slot % 5) * .15, (slot < 5 ? .075 : -.075));
+        inventoryPosition[slot] = {position + coord(-.3 + (slot % 5) * .15, (slot < 5 ? .075 : -.075)), zPosition + .12};
         if (!inventory[slot])
             continue;
         if (slot >= EGG_0 && slot <= EGG_9) {
-            inventory[slot]->position = inventoryPosition[slot];
-            inventory[slot]->underlyingPos = inventoryPosition[slot];
-            inventory[slot]->zPosition = zPosition + .3; // do every update or else gravity will do its thing
+            inventory[slot]->position = inventoryPosition[slot].first;
+            inventory[slot]->underlyingPos = inventoryPosition[slot].first;
+            inventory[slot]->zPosition = inventoryPosition[slot].second; // do every update or else gravity will do its thing
+            inventory[slot]->zVelocity = 0.;
             inventory[slot]->zDepthOverride = cartonZDepth + (slot < 5 ? -ZDEPTH_LAYER : ZDEPTH_LAYER);
         }
     }

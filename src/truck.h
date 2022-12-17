@@ -19,16 +19,22 @@ public:
     void objInit() override;
 
     enum InventorySlots {
-        TRUCK_0,
-        TRUCK_1,
-        TRUCK_2,
-        TRUCK_3,
-        TRUCK_4,
-        TRUCK_5,
-        TRUCK_6,
-        TRUCK_7,
-        TRUCK_8,
-        TRUCK_9,
+        TRUCK_A0,
+        TRUCK_A1,
+        TRUCK_A2,
+        TRUCK_A3,
+        TRUCK_B0,
+        TRUCK_B1,
+        TRUCK_B2,
+        TRUCK_B3,
+        TRUCK_C0,
+        TRUCK_C1,
+        TRUCK_C2,
+        TRUCK_C3,
+        TRUCK_D0,
+        TRUCK_D1,
+        TRUCK_D2,
+        TRUCK_D3,
     };
 
     void customUpdate() override;

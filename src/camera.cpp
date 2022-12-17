@@ -1,6 +1,6 @@
 #include "camera.h"
 
-void Camera::tieRenderWindow(sf::RenderWindow& window) {
+void Camera::tieRenderWindow(sf::RenderWindow &window) {
     renderWindow = &window;
 }
 
@@ -16,16 +16,16 @@ UIRect Camera::getViewport() {
 sf::Transform Camera::getTransform() {
     updateScale();
     sf::Transform transform(
-            3.840, -1.280, 0.000,
-        -0.905, -2.715, 0.000,
-            0.000,  0.000, 1.000
+            3.840 / 3., -1.280 / 3., 0.000,
+            -0.905 / 3., -2.715 / 3., 0.000,
+            0.000, 0.000, 1.000
     );
     transform.scale(sf::Vector2f(scale, scale));
     return transform;
 }
 
-UIVec Camera::getScreenPos(coord loc) {
-    return viewport.pos + viewport.size * UIVec(.5, .5) + getTransform().transformPoint(sf::Vector2f(loc.x - center.x, loc.y - center.y));
+UIVec Camera::getScreenPos(coord loc, double zPos) {
+    return viewport.pos + viewport.size * UIVec(.5, .5) + getTransform().transformPoint(sf::Vector2f(loc.x - center.x, loc.y - center.y)) + UIVec(0, -zPos * Camera::getScale());;
 }
 
 coord Camera::getCoord(UIVec pos) {
@@ -33,7 +33,8 @@ coord Camera::getCoord(UIVec pos) {
 }
 
 coord Camera::getMouseCoord() {
-    return center + coord(getTransform().getInverse().transformPoint((UIVec(sf::Mouse::getPosition(*renderWindow).x, sf::Mouse::getPosition(*renderWindow).y) - (viewport.pos + viewport.size * UIVec(.5, .5))).getVec2f()));
+    return center + coord(getTransform().getInverse().transformPoint(
+            (UIVec(sf::Mouse::getPosition(*renderWindow).x, sf::Mouse::getPosition(*renderWindow).y) - (viewport.pos + viewport.size * UIVec(.5, .5))).getVec2f()));
 }
 
 UIVec Camera::getMousePos() {
