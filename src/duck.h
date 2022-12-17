@@ -13,6 +13,8 @@ public:
 
     void loadModel() override;
 
+    std::vector<Graphics::Quad> duckModel;
+
     Game* game;
 
     Duck();
@@ -36,7 +38,7 @@ public:
     std::wstring getLocalization(int lang, int strId) override;
 
     std::string getDescriptionStr() override;
-    
+
     constexpr static auto properties = std::tuple_cat(Entity::properties, std::make_tuple(
             SaveUtilities::property(&Duck::genderIsMale, "Dk.gd"),
             SaveUtilities::property(&Duck::fertilized, "Dk.fr")

@@ -58,24 +58,12 @@ const std::vector<Graphics::Quad> modelPlayer = {
         )
 };
 
-const std::vector<Graphics::Quad> modelDuck = {
-        Graphics::Quad(ZDEPTH_GROUND_OVERLAY,
-                       UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 7, 90.5 + 90.5 * 1),
-                       UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 7, 0 + 90.5 * 1),
-                       UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 7, 271.5 + 90.5 * 1),
-                       UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 7, 362 + 90.5 * 1),
-                       0.0),
+const Graphics::Quad modelGrownDuck =
         Graphics::Quad(ZDEPTH_ABOVE_GROUND,
-                       UIVec(-0.5, 0.5), sf::Vector2f(0 + 128 * 4, 90.5 + 90.5 * 2),
-                       UIVec(0.5, 0.5), sf::Vector2f(384 + 128 * 4, 0 + 90.5 * 2),
-                       UIVec(0.5, -0.5), sf::Vector2f(512 + 128 * 4, 271.5 + 90.5 * 2),
-                       UIVec(-0.5, -0.5), sf::Vector2f(128 + 128 * 4, 362 + 90.5 * 2)),
-        Graphics::Quad(ZDEPTH_ABOVE_GROUND + ZDEPTH_LAYER,
-                       UIVec(-0.5, 0.5), sf::Vector2f(0 + 128, 90.5 + 90.5 * 3),
-                       UIVec(0.5, 0.5), sf::Vector2f(384 + 128, 0 + 90.5 * 3),
-                       UIVec(0.5, -0.5), sf::Vector2f(512 + 128, 271.5 + 90.5 * 3),
-                       UIVec(-0.5, -0.5), sf::Vector2f(128 + 128, 362 + 90.5 * 3))
-};
+                       UIVec(-0.5, 1.5), TILEMAP_COORD(25, 10),
+                       UIVec(0.5, 1.5), TILEMAP_COORD(30, 10),
+                       UIVec(0.5, -0.5), TILEMAP_COORD(30, 18),
+                       UIVec(-0.5, -0.5), TILEMAP_COORD(25, 18));
 
 const std::vector<Graphics::Quad> modelTruck = {
         Graphics::Quad(
@@ -147,7 +135,7 @@ const std::vector<Graphics::Quad> modelNPC = {
         // Why not use texture ... ?
 };
 
-const std::vector<Graphics::Quad> modelGrass = {
+const Graphics::Quad modelGrass = {
         Graphics::Quad(
                 ZDEPTH_GROUND,
                 UIVec(0., 1.), TILEMAP_COORD(1, 20),

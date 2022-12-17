@@ -73,7 +73,7 @@ coord CollideBox::collide(const CollideBox &rhs, coord myOffset, coord rhsOffset
 
 void Map::Tile::pushQuads() {
     std::vector<Graphics::Quad> grassSubTile;
-    grassSubTile.push_back(modelGrass[0]);
+    grassSubTile.push_back(modelGrass);
     UIVec xDelta = UIVec(grassSubTile[0].t2 - grassSubTile[0].t3) / 10.;
     UIVec yDelta = UIVec(grassSubTile[0].t0 - grassSubTile[0].t3) / 10.;
     grassSubTile[0].t0 = (UIVec(grassSubTile[0].t3) + xDelta * ((seed / 10) % 10 + 0) + yDelta * (seed % 10 + 1)).getVec2f();

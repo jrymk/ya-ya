@@ -315,7 +315,17 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
 }
 
 void Duck::loadModel() {
-    model = &modelDuck;
+    duckModel.clear();
+    duckModel.push_back(modelGrownDuck);
+    int modelId = int((-heading * 10. / PI) + 10 + 20.5) % 20;
+    UIVec xDelta = UIVec(duckModel[0].t2 - duckModel[0].t3) / 5.;
+    UIVec yDelta = UIVec(duckModel[0].t0 - duckModel[0].t3) / 4.;
+    duckModel[0].t0 = (UIVec(duckModel[0].t3) + xDelta * (modelId % 5 + 0) + yDelta * (3 - modelId / 5 % 4 + 1)).getVec2f();
+    duckModel[0].t1 = (UIVec(duckModel[0].t3) + xDelta * (modelId % 5 + 1) + yDelta * (3 - modelId / 5 % 4 + 1)).getVec2f();
+    duckModel[0].t2 = (UIVec(duckModel[0].t3) + xDelta * (modelId % 5 + 1) + yDelta * (3 - modelId / 5 % 4 + 0)).getVec2f();
+    duckModel[0].t3 = (UIVec(duckModel[0].t3) + xDelta * (modelId % 5 + 0) + yDelta * (3 - modelId / 5 % 4 + 0)).getVec2f();
+
+    model = &duckModel;
 }
 
 Duck::Duck() { objInit(); }
