@@ -370,17 +370,28 @@ int Controls::tryStoreToContainer(const std::shared_ptr<Entity> &container, cons
     if (useRandomSlot && candidates.size() > 0)
         return int(double(candidates.size()) * getRand());
     if (closestSlot != -1) {
-        Graphics::insertUserWireframe(
-                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
-                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.0 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
-                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.5 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
-                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.0 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
-                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.5 * PI),
-                sf::Color(100, 255, 100, 100), sf::Color(0, 0, 0, 100)
-        );
+        auto quad = modelEmptySlotSelector;
+        quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) + container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second);
+        quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second);
+        quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second);
+        quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) + container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second);
+        quad.zDepth += (Camera::getScreenPos(container->inventoryPosition[closestSlot].first).y / Camera::getViewport().size.y - 0.5) / 100. + .1;
+        quad.c0 = quad.c1 = quad.c2 = quad.c3 = sf::Color(255, 100, 100, 170 + 50 * std::sin(Timer::getGlobalStart().elapsed() * PI * 3));
+
+        Graphics::insertQuad(quad);
+
+
+//        Graphics::insertUserWireframe(
+//                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
+//                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.0 * PI),
+//                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
+//                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.5 * PI),
+//                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
+//                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.0 * PI),
+//                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
+//                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.5 * PI),
+//                sf::Color(100, 255, 100, 100), sf::Color(0, 0, 0, 100)
+//        );
         return closestSlot;
     }
     return -2;
@@ -411,17 +422,23 @@ int Controls::tryPickUpFromContainer(const std::shared_ptr<Entity> &container) {
             closestSlot = slot;
     }
     if (closestSlot != -1) {
-        Graphics::insertUserWireframe(
-                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
-                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.0 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
-                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.5 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
-                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.0 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
-                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.5 * PI),
-                sf::Color(100, 255, 100, 100), sf::Color(0, 0, 0, 100)
-        );
+
+        UIVec ospos = Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second);
+        Graphics::drawImage(imagaInventorySlotIndicator, ZDEPTH_ABOVE_GROUND + (ospos.y / Camera::getViewport().size.y - 0.5) / 100. + .1,
+                            ospos + UIVec(0, -24 + 8 * std::sin(Timer::getGlobalStart().elapsed() * PI * 2)),
+                            UIVec(.5, 1.), 1., sf::Color(255, 231, 122, 255));
+
+//        Graphics::insertUserWireframe(
+//                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
+//                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.0 * PI),
+//                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
+//                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.5 * PI),
+//                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
+//                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.0 * PI),
+//                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
+//                Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.5 * PI),
+//                sf::Color(100, 255, 100, 100), sf::Color(0, 0, 0, 100)
+//        );
         return closestSlot;
     }
     return -2;
