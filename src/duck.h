@@ -6,6 +6,10 @@
 
 class Duck : public Entity {
 public:
+    enum GrowStage {
+        DUCKLING, CHILD, GROWN
+    } growStage;
+    
     bool genderIsMale = true;
     bool fertilized = false; // will the next egg be fertilized, set after having sex
 

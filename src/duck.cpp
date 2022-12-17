@@ -7,14 +7,19 @@
 
 void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
-        case ON_CREATION: // actual creation
+        case ON_CREATION: { // actual creation
             followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 25., DUCK_LOOP_WANDER);
+            double growUpTime = 20. + 30. * getRand();
+            followUpActions.emplace_back(action.entity, Timer::getNow() + growUpTime * .2, DUCK_GROW);
+            followUpActions.emplace_back(action.entity, Timer::getNow() + growUpTime, DUCK_GROW);
+
             if (genderIsMale) {
-                followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 20., DUCK_LOOP_FIND_MATE);
+                followUpActions.emplace_back(action.entity, Timer::getNow() + growUpTime * .9 + getRand() * 20., DUCK_LOOP_FIND_MATE);
             }
             else {
-                followUpActions.emplace_back(action.entity, Timer::getNow() + 10. + getRand() * 40., DUCK_LOOP_LAY_EGGS);
+                followUpActions.emplace_back(action.entity, Timer::getNow() + growUpTime + getRand() * 40., DUCK_LOOP_LAY_EGGS);
             }
+
             followUpActions.emplace_back(action.entity, Timer::getNow(), ENTITY_HOP);
             followUpActions.emplace_back(action.entity, Timer::getNow() + 50. + getRand() * 200., DUCK_DEATH, "creation " + action.entity->id);
 
@@ -30,9 +35,13 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
             collisionPushable = true;
             collisionCollidable = true;
             break;
+        }
         case ON_UNOWNED:
 
             break;
+        case DUCK_GROW:
+            if (growStage != GROWN)
+                growStage = static_cast<GrowStage>(growStage + 1);
         case DUCK_LOOP_WANDER: {
             followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 25., DUCK_LOOP_WANDER);
             Action a(action.entity, Timer::getNow(), DUCK_DUCKWALK_TO_UNTIL);
@@ -316,7 +325,18 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
 
 void Duck::loadModel() {
     duckModel.clear();
-    duckModel.push_back(modelGrownDuck);
+    switch (growStage) {
+        case DUCKLING:
+            duckModel.push_back(modelDuckling);
+            break;
+        case CHILD:
+            duckModel.push_back(modelChildDuck);
+            break;
+        case GROWN:
+        default:
+            duckModel.push_back(modelGrownDuck);
+            break;
+    }
     int modelId = int((-heading * 10. / PI) + 10 + 20.5) % 20;
     UIVec xDelta = UIVec(duckModel[0].t2 - duckModel[0].t3) / 5.;
     UIVec yDelta = UIVec(duckModel[0].t0 - duckModel[0].t3) / 4.;
@@ -333,6 +353,7 @@ Duck::Duck() { objInit(); }
 Duck::Duck(Game* game) : game(game) { objInit(); }
 
 void Duck::objInit() {
+    growStage = DUCKLING;
     inventory.resize(3, nullptr);
     inventoryPosition.resize(3);
     type = DUCK;
