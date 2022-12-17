@@ -64,11 +64,11 @@ public:
             : isGlobal(true), time(time), command(command), caller(caller) {
     }
 
-    inline Action(std::shared_ptr<Entity> &entity, const Timer &time, Command command)
+    inline Action(const std::shared_ptr<Entity> &entity, const Timer &time, Command command)
             : isGlobal(false), entity(entity), time(time), command(command) {
     }
 
-    inline Action(std::shared_ptr<Entity> &entity, const Timer &time, Command command, const std::string &caller)
+    inline Action(const std::shared_ptr<Entity> &entity, const Timer &time, Command command, const std::string &caller)
             : isGlobal(false), entity(entity), time(time), command(command), caller(caller) {
     }
 

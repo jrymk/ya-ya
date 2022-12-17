@@ -13,6 +13,8 @@ Player::Player(Game* game) : game(game) { objInit(); }
 void Player::objInit() {
     inventory.resize(2, nullptr);
     inventoryPosition.resize(2);
+    footprint = coord(.7, .7);
+    collideBox = CollideBox({0., 0.}, {.6, .6}, true);
     type = PLAYER;
     hopPower = .3;
     hoppable = true;

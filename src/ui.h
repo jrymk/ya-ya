@@ -15,7 +15,7 @@ public:
 //    enum ControlsDisplay {
 //        PICK_UP_ITEM,
 //        DROP_ITEM,
-//        STORE_ITEM_TO_CONTAINER,
+//        STORE_ITEM_TO_FACING_CONTAINER,
 //    };
 
     inline UserInterface(Game* game) : game(game) {}

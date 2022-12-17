@@ -7,8 +7,9 @@
 #include "egg.h"
 #include "ui.h"
 #include "eggcarton.h"
+#include "truck.h"
 
-#define TESTLOAD
+//#define TESTLOAD
 
 /**
  * Key definitions
@@ -27,11 +28,11 @@ int main() {
     Camera::tieRenderWindow(window);
     Graphics::setRenderWindow(window);
     Graphics::createWindow(false);
-    Graphics::loadFont(0, "yourStar.ttf");
-    Graphics::loadFont(1, "CascadiaCode.ttf");
-    Graphics::loadFont(2, "Aero Matics Regular.ttf");
-    Graphics::loadFont(3, "Barlow-SemiBold.ttf");
-    Graphics::loadFont(4, "SourceHanSansTC-Bold.otf");
+    Graphics::loadFont(0, "./res/yourStar.ttf");
+    Graphics::loadFont(1, "./res/CascadiaCode.ttf");
+    Graphics::loadFont(2, "./res/Aero Matics Regular.ttf");
+    Graphics::loadFont(3, "./res/Barlow-SemiBold.ttf");
+    Graphics::loadFont(4, "./res/SourceHanSansTC-Bold.otf");
     FramerateCounter fc;
 
     Game game;
@@ -79,12 +80,24 @@ int main() {
             }
         }
     }
+    std::shared_ptr<Truck> truck(new Truck(&game));
+    truck->id = game.newId(TRUCK);
+    truck->opacity = 1.;
+    truck->collisionPushable = false;
+    truck->underlyingPos.x = 5;
+    truck->underlyingPos.y = 0;
+    auto tptr = game.insertEntity(truck);
+    for (int x = 3; x < 10; x++) {
+        for (int y = -2; y < 2; y++)
+            game.map.getTile(x, y).setTileType(Map::Tile::TRUCK); // for collision, because I don't want to make collision boxes work with entities
+    }
+
     {
         std::shared_ptr<EggCarton> eggcarton(new EggCarton(&game));
         eggcarton->id = game.newId(EGG_CARTON);
         eggcarton->opacity = 1.;
-        eggcarton->position.x = 1.;
-        eggcarton->position.y = 1.;
+        eggcarton->underlyingPos.x = 1.;
+        eggcarton->underlyingPos.y = 1.;
         auto cptr = game.insertEntity(eggcarton);
 
         for (int i = 0; i < 10; i++) {
@@ -109,7 +122,7 @@ int main() {
 #endif
 
     sf::Texture tilemap;
-    if (!tilemap.loadFromFile("tilemap.png"))
+    if (!tilemap.loadFromFile("./res/tilemap.png"))
         debug << "failed to load tilemap.png";
     else
         debug << "maximum texture size: " << sf::Texture::getMaximumSize() << "\n";

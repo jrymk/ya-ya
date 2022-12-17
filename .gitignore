@@ -5,4 +5,8 @@
 /out/
 /.vs/
 /cmake-build-debug-mingw-810/
+/sfml-graphics-d-2.dll
+/sfml-system-d-2.dll
+/sfml-window-d-2.dll
+/yaya.exe
 /res/

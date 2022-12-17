@@ -18,6 +18,7 @@
 enum EntityType {
     ENTITY,
     PLAYER,
+    TRUCK,
     DUCK,
     EGG,
     EGG_CARTON,

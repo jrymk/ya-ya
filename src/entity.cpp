@@ -76,6 +76,7 @@ void Entity::runActionEntity(Action &action, std::vector<Action> &followUpAction
             break;
         case ENTITY_SLIDE_INSTANT:
             underlyingPos = underlyingPos + action.argCoord[0];
+            position = underlyingPos; // have sex?
             break;
         case ENTITY_SLIDE_VELOCITY: {
             underlyingPos = underlyingPos + action.argCoord[0] / elapsedSecs;

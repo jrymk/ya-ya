@@ -46,6 +46,16 @@ const std::vector<Graphics::Quad> modelDuck = {
                        UIVec(-0.5, -0.5), sf::Vector2f(128 + 128, 362 + 90.5 * 3))
 };
 
+const std::vector<Graphics::Quad> modelTruck = {
+        Graphics::Quad(
+                ZDEPTH_ABOVE_GROUND,
+                UIVec(-2, 7), TILEMAP_COORD(4, 6),
+                UIVec(6, 7), TILEMAP_COORD(12, 6),
+                UIVec(6, -2), TILEMAP_COORD(12, 15),
+                UIVec(-2, -2), TILEMAP_COORD(4, 15)
+        )
+};
+
 const std::vector<Graphics::Quad> modelEgg[3] = {
         {
                 Graphics::Quad(
