@@ -6,6 +6,7 @@
 #include "eggcarton.h"
 #include "model.h"
 #include "audio.h"
+#include "truck.h"
 
 Controls::Controls(Game* game) :
         game(game) {
@@ -44,6 +45,10 @@ void Controls::update() {
                         if (tryPickUpFromContainer(facingEntity) >= 0)
                             altClickAction = PICK_UP_ITEM_FROM_FACING_CONTAINER;
                         break;
+                    case TRUCK:
+                        // alt click to pick up from container
+                        if (tryPickUpFromContainer(facingEntity) >= 0)
+                            altClickAction = PICK_UP_ITEM_FROM_FACING_CONTAINER;
                 }
             }
         }
@@ -54,6 +59,7 @@ void Controls::update() {
                     break;
                 case EGG:
                     clickAction = DROP_ITEM;
+                    // egg -> egg carton
                     if (facingEntity && facingEntity->type == EGG_CARTON) {
                         int slot = tryStoreToContainer(facingEntity, inv);
                         if (slot == -2)
@@ -61,6 +67,7 @@ void Controls::update() {
                         else if (slot >= 0)
                             altClickAction = STORE_ITEM_TO_FACING_CONTAINER;
                     }
+                    // egg -> egg carton (other hand)
                     if (otherInv && otherInv->type == EGG_CARTON) {
                         int slot = tryStoreToContainer(otherInv, inv, true);
                         if (slot == -2)
@@ -71,10 +78,19 @@ void Controls::update() {
                     break;
                 case EGG_CARTON:
                     clickAction = DROP_CONTAINER;
+                    // egg carton <- egg
                     if (facingEntity && facingEntity->type == EGG && otherInv == nullptr) { // other hand is empty
                         int slot = tryStoreToContainer(inv, facingEntity, true);
                         if (slot >= 0)
                             altClickAction = STORE_FACING_ITEM_TO_CONTAINER;
+                    }
+                    // egg carton -> truck
+                    if (facingEntity && facingEntity->type == TRUCK) {
+                        int slot = tryStoreToContainer(facingEntity, inv);
+                        if (slot == -2)
+                            altClickAction = NONE_CONTAINER_FULL;
+                        else if (slot >= 0)
+                            altClickAction = STORE_ITEM_TO_FACING_CONTAINER;
                     }
                     break;
             }
@@ -328,6 +344,14 @@ int Controls::tryStoreToContainer(const std::shared_ptr<Entity> &container, cons
                     break;
             }
             break;
+        case TRUCK:
+            switch (item->type) {
+                case EGG_CARTON:
+                    slotRangeLo = Truck::InventorySlots::TRUCK_A0;
+                    slotRangeHi = Truck::InventorySlots::TRUCK_D3;
+                    break;
+            }
+            break;
     }
     if (slotRangeLo == -1)
         return -1;
@@ -338,22 +362,22 @@ int Controls::tryStoreToContainer(const std::shared_ptr<Entity> &container, cons
         if (container->inventory[slot] != nullptr)
             continue;
         candidates.push_back(slot);
-        if (closestSlot == -1 || Camera::getMouseCoord().len(container->inventoryPosition[slot]) <
-                                 Camera::getMouseCoord().len(
-                                         container->inventoryPosition[closestSlot])) // should I use on screen closest or ingame coord closest?
+        if (closestSlot == -1 || Camera::getMousePos().len(Camera::getScreenPos(container->inventoryPosition[slot].first, container->inventoryPosition[slot].second)) <
+                                 Camera::getMousePos().len(Camera::getScreenPos(container->inventoryPosition[closestSlot].first,
+                                                                                container->inventoryPosition[closestSlot].second))) // should I use on screen closest or ingame coord closest?
             closestSlot = slot;
     }
     if (useRandomSlot && candidates.size() > 0)
         return int(double(candidates.size()) * getRand());
     if (closestSlot != -1) {
         Graphics::insertUserWireframe(
-                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
                 Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.0 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
                 Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.5 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
                 Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.0 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
                 Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.5 * PI),
                 sf::Color(100, 255, 100, 100), sf::Color(0, 0, 0, 100)
         );
@@ -369,6 +393,10 @@ int Controls::tryPickUpFromContainer(const std::shared_ptr<Entity> &container) {
             slotRangeLo = EggCarton::InventorySlots::EGG_0;
             slotRangeHi = EggCarton::InventorySlots::EGG_9;
             break;
+        case TRUCK:
+            slotRangeLo = Truck::InventorySlots::TRUCK_A0;
+            slotRangeHi = Truck::InventorySlots::TRUCK_D3;
+            break;
     }
     if (slotRangeLo == -1)
         return -1;
@@ -377,20 +405,20 @@ int Controls::tryPickUpFromContainer(const std::shared_ptr<Entity> &container) {
     for (int slot = slotRangeLo; slot <= slotRangeHi; slot++) {
         if (container->inventory[slot] == nullptr)
             continue;
-        if (closestSlot == -1 || Camera::getMouseCoord().len(container->inventoryPosition[slot]) <
-                                 Camera::getMouseCoord().len(
-                                         container->inventoryPosition[closestSlot])) // should I use on screen closest or ingame coord closest?
+        if (closestSlot == -1 || Camera::getMousePos().len(Camera::getScreenPos(container->inventoryPosition[slot].first, container->inventoryPosition[slot].second)) <
+                                 Camera::getMousePos().len(Camera::getScreenPos(container->inventoryPosition[closestSlot].first,
+                                                                                container->inventoryPosition[closestSlot].second))) // should I use on screen closest or ingame coord closest?
             closestSlot = slot;
     }
     if (closestSlot != -1) {
         Graphics::insertUserWireframe(
-                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
                 Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.0 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
                 Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 0.5 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
                 Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.0 * PI),
-                Camera::getScreenPos(container->inventoryPosition[closestSlot]) +
+                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +
                 Camera::getAngleVector(.1, Timer::getGlobalStart().elapsed() * -4. * PI + 1.5 * PI),
                 sf::Color(100, 255, 100, 100), sf::Color(0, 0, 0, 100)
         );

@@ -63,7 +63,7 @@ class Camera {
     inline static sf::RenderWindow* renderWindow;
     inline static UIRect viewport;
     inline static coord center;
-    inline static double zoom = 50.; // the span of the camera, in sqrt(w*h) coord space
+    inline static double zoom = 15.; // the span of the camera, in sqrt(w*h) coord space
     inline static double scale = 1.;
 
     inline static void updateScale() { scale = std::sqrt(viewport.size.x * viewport.size.y) / zoom; }
@@ -93,7 +93,7 @@ public:
 
     static sf::Transform getTransform();
 
-    static UIVec getScreenPos(coord loc);
+    static UIVec getScreenPos(coord loc, double zPos = 0.);
 
     static coord getCoord(UIVec pos);
 

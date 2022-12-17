@@ -13,7 +13,7 @@
 #include <deque>
 
 #define OUT_OF_SIGHT 500
-#define GRAVITY -5
+#define GRAVITY (-2.4)
 
 enum EntityType {
     ENTITY,
@@ -38,7 +38,7 @@ public:
 
     // game logic
     std::vector<std::shared_ptr<Entity>> inventory;
-    std::vector<coord> inventoryPosition; // for inventory slot selection
+    std::vector<std::pair<coord, double>> inventoryPosition; // for inventory slot selection
     std::shared_ptr<Entity> ownedBy = nullptr;
     int ownedSlot = 0;
     uint32_t seed;

@@ -16,7 +16,7 @@ void Player::objInit() {
     footprint = coord(.7, .7);
     collideBox = CollideBox({0., 0.}, {.6, .6}, true);
     type = PLAYER;
-    hopPower = .3;
+    hopPower = .18;
     hoppable = true;
 }
 
@@ -28,7 +28,7 @@ void Player::runAction(Action &action, std::vector<Action> &followUpActions) {
                 action.argEntity[0]->selectable = false;
                 {
                     Action a(action.argEntity[0], Timer::getNow(), ENTITY_ZPOS_TO_APPROACH_UNTIL);
-                    a.argFloat[0] = 1.;
+                    a.argFloat[0] = .4;
                     a.argFloat[1] = .00000001;
                     game->pushAction(a);
                 }
@@ -44,8 +44,8 @@ void Player::runAction(Action &action, std::vector<Action> &followUpActions) {
 }
 
 void Player::setInventoryProps() {
-    inventoryPosition[InventorySlots::LEFT_HAND] = position + coord::getAngleVec(0.5, heading + PI / 4);
-    inventoryPosition[InventorySlots::RIGHT_HAND] = position + coord::getAngleVec(0.5, heading + -PI / 4);
+    inventoryPosition[InventorySlots::LEFT_HAND] = {position + coord::getAngleVec(0.5, heading + PI / 4), zPosition + .4};
+    inventoryPosition[InventorySlots::RIGHT_HAND] = {position + coord::getAngleVec(0.5, heading + -PI / 4), zPosition + .4};
 
     for (int slot = 0; slot < inventory.size(); slot++) {
         if (!inventory[slot])
@@ -56,7 +56,7 @@ void Player::setInventoryProps() {
             inventory[slot]->heading = heading;
             {
                 Action a(inventory[slot], Timer::getNow(), ENTITY_MOVE_TO_APPROACH);
-                a.argCoord[0] = inventoryPosition[slot];
+                a.argCoord[0] = inventoryPosition[slot].first;
                 a.argFloat[0] = 0.90343660158;
                 game->pushAction(a);
             }
