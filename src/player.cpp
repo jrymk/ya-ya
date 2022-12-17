@@ -3,7 +3,17 @@
 #include "model.h"
 
 void Player::loadModel() {
-    model = &modelPlayer;
+    playerModel.clear();
+    playerModel.push_back(modelPlayer);
+    int modelId = int((-heading * 10. / PI) + 14 + 20.5) % 20;
+    UIVec xDelta = UIVec(playerModel[0].t2 - playerModel[0].t3) / 5.;
+    UIVec yDelta = UIVec(playerModel[0].t0 - playerModel[0].t3) / 4.;
+    playerModel[0].t0 = (UIVec(playerModel[0].t3) + xDelta * (modelId % 5 + 0) + yDelta * (3 - modelId / 5 % 4 + 1)).getVec2f();
+    playerModel[0].t1 = (UIVec(playerModel[0].t3) + xDelta * (modelId % 5 + 1) + yDelta * (3 - modelId / 5 % 4 + 1)).getVec2f();
+    playerModel[0].t2 = (UIVec(playerModel[0].t3) + xDelta * (modelId % 5 + 1) + yDelta * (3 - modelId / 5 % 4 + 0)).getVec2f();
+    playerModel[0].t3 = (UIVec(playerModel[0].t3) + xDelta * (modelId % 5 + 0) + yDelta * (3 - modelId / 5 % 4 + 0)).getVec2f();
+
+    model = &playerModel;
 }
 
 Player::Player() { objInit(); }

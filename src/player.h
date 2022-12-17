@@ -9,9 +9,12 @@ class Player : public Entity {
 private:
 
 public:
+    std::vector<Graphics::Quad> playerModel;
+
     void loadModel() override;
 
     void runAction(Action &action, std::vector<Action> &followUpActions) override;
+
 
     Player();
 

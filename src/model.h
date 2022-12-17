@@ -41,29 +41,21 @@ const Graphics::Quad modelSelector[4] = {
         )
 };
 
-const std::vector<Graphics::Quad> modelPlayer = {
-        Graphics::Quad(
-                ZDEPTH_GROUND_OVERLAY,
-                UIVec(-0.5, 0.5), TILEMAP_COORD(2, 1),
-                UIVec(0.5, 0.5), TILEMAP_COORD(3, 1),
-                UIVec(0.5, -0.5), TILEMAP_COORD(3, 2),
-                UIVec(-0.5, -0.5), TILEMAP_COORD(2, 2)
-        ),
+const Graphics::Quad modelPlayer =
         Graphics::Quad(
                 ZDEPTH_ABOVE_GROUND,
-                UIVec(-0.5, 1.5), TILEMAP_COORD(0, 2),
-                UIVec(0.5, 1.5), TILEMAP_COORD(1, 2),
-                UIVec(0.5, -0.5), TILEMAP_COORD(1, 4),
-                UIVec(-0.5, -0.5), TILEMAP_COORD(0, 4)
-        )
-};
+                UIVec(-0.5, 1.5), TILEMAP_COORD(15, 8),
+                UIVec(1.5, 1.5), TILEMAP_COORD(25, 8),
+                UIVec(1.5, -0.5), TILEMAP_COORD(25, 16),
+                UIVec(-0.5, -0.5), TILEMAP_COORD(15, 16)
+        );
 
 const Graphics::Quad modelGrownDuck =
         Graphics::Quad(ZDEPTH_ABOVE_GROUND,
-                       UIVec(-0.5, 1.5), TILEMAP_COORD(25, 10),
-                       UIVec(0.5, 1.5), TILEMAP_COORD(30, 10),
-                       UIVec(0.5, -0.5), TILEMAP_COORD(30, 18),
-                       UIVec(-0.5, -0.5), TILEMAP_COORD(25, 18));
+                       UIVec(-0.5, 1.5), TILEMAP_COORD(11, 16),
+                       UIVec(0.5, 1.5), TILEMAP_COORD(16, 16),
+                       UIVec(0.5, -0.5), TILEMAP_COORD(16, 24),
+                       UIVec(-0.5, -0.5), TILEMAP_COORD(11, 24));
 
 const std::vector<Graphics::Quad> modelTruck = {
         Graphics::Quad(
