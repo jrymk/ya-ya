@@ -147,88 +147,14 @@ const std::vector<Graphics::Quad> modelNPC = {
         // Why not use texture ... ?
 };
 
-const std::vector<Graphics::Quad> modelGrass[9] = {
-        {
-                Graphics::Quad(
-                        ZDEPTH_GROUND,
-                        UIVec(0., 1.), TILEMAP_COORD(-5, 15),
-                        UIVec(1., 1.), TILEMAP_COORD(-4, 15),
-                        UIVec(1., 0.), TILEMAP_COORD(-4, 16),
-                        UIVec(0., 0.), TILEMAP_COORD(-5, 16)
-                )
-        },
-        {
-                Graphics::Quad(
-                        ZDEPTH_GROUND,
-                        UIVec(0., 1.), TILEMAP_COORD(-4, 15),
-                        UIVec(1., 1.), TILEMAP_COORD(-3, 15),
-                        UIVec(1., 0.), TILEMAP_COORD(-3, 16),
-                        UIVec(0., 0.), TILEMAP_COORD(-4, 16)
-                )
-        },
-        {
-                Graphics::Quad(
-                        ZDEPTH_GROUND,
-                        UIVec(0., 1.), TILEMAP_COORD(-3, 15),
-                        UIVec(1., 1.), TILEMAP_COORD(-2, 15),
-                        UIVec(1., 0.), TILEMAP_COORD(-2, 16),
-                        UIVec(0., 0.), TILEMAP_COORD(-3, 16)
-                )
-        },
-        {
-                Graphics::Quad(
-                        ZDEPTH_GROUND,
-                        UIVec(0., 1.), TILEMAP_COORD(-5, 16),
-                        UIVec(1., 1.), TILEMAP_COORD(-4, 16),
-                        UIVec(1., 0.), TILEMAP_COORD(-4, 17),
-                        UIVec(0., 0.), TILEMAP_COORD(-5, 17)
-                )
-        },
-        {
-                Graphics::Quad(
-                        ZDEPTH_GROUND,
-                        UIVec(0., 1.), TILEMAP_COORD(-4, 16),
-                        UIVec(1., 1.), TILEMAP_COORD(-3, 16),
-                        UIVec(1., 0.), TILEMAP_COORD(-3, 17),
-                        UIVec(0., 0.), TILEMAP_COORD(-4, 17)
-                )
-        },
-        {
-                Graphics::Quad(
-                        ZDEPTH_GROUND,
-                        UIVec(0., 1.), TILEMAP_COORD(-3, 16),
-                        UIVec(1., 1.), TILEMAP_COORD(-2, 16),
-                        UIVec(1., 0.), TILEMAP_COORD(-2, 17),
-                        UIVec(0., 0.), TILEMAP_COORD(-3, 17)
-                )
-        },
-        {
-                Graphics::Quad(
-                        ZDEPTH_GROUND,
-                        UIVec(0., 1.), TILEMAP_COORD(-5, 17),
-                        UIVec(1., 1.), TILEMAP_COORD(-4, 17),
-                        UIVec(1., 0.), TILEMAP_COORD(-4, 18),
-                        UIVec(0., 0.), TILEMAP_COORD(-5, 18)
-                )
-        },
-        {
-                Graphics::Quad(
-                        ZDEPTH_GROUND,
-                        UIVec(0., 1.), TILEMAP_COORD(-4, 17),
-                        UIVec(1., 1.), TILEMAP_COORD(-3, 17),
-                        UIVec(1., 0.), TILEMAP_COORD(-3, 18),
-                        UIVec(0., 0.), TILEMAP_COORD(-4, 18)
-                )
-        },
-        {
-                Graphics::Quad(
-                        ZDEPTH_GROUND,
-                        UIVec(0., 1.), TILEMAP_COORD(-3, 17),
-                        UIVec(1., 1.), TILEMAP_COORD(-2, 17),
-                        UIVec(1., 0.), TILEMAP_COORD(-2, 18),
-                        UIVec(0., 0.), TILEMAP_COORD(-3, 18)
-                )
-        }
+const std::vector<Graphics::Quad> modelGrass = {
+        Graphics::Quad(
+                ZDEPTH_GROUND,
+                UIVec(0., 1.), TILEMAP_COORD(1, 20),
+                UIVec(1., 1.), TILEMAP_COORD(11, 20),
+                UIVec(1., 0.), TILEMAP_COORD(11, 30),
+                UIVec(0., 0.), TILEMAP_COORD(1, 30)
+        )
 };
 
 const std::vector<Graphics::Quad> modelDirt = {

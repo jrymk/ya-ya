@@ -72,19 +72,28 @@ coord CollideBox::collide(const CollideBox &rhs, coord myOffset, coord rhsOffset
 }
 
 void Map::Tile::pushQuads() {
+    std::vector<Graphics::Quad> grassSubTile;
+    grassSubTile.push_back(modelGrass[0]);
+    UIVec xDelta = UIVec(grassSubTile[0].t2 - grassSubTile[0].t3) / 10.;
+    UIVec yDelta = UIVec(grassSubTile[0].t0 - grassSubTile[0].t3) / 10.;
+    grassSubTile[0].t0 = (UIVec(grassSubTile[0].t3) + xDelta * ((seed / 10) % 10 + 0) + yDelta * (seed % 10 + 1)).getVec2f();
+    grassSubTile[0].t1 = (UIVec(grassSubTile[0].t3) + xDelta * ((seed / 10) % 10 + 1) + yDelta * (seed % 10 + 1)).getVec2f();
+    grassSubTile[0].t2 = (UIVec(grassSubTile[0].t3) + xDelta * ((seed / 10) % 10 + 1) + yDelta * (seed % 10 + 0)).getVec2f();
+    grassSubTile[0].t3 = (UIVec(grassSubTile[0].t3) + xDelta * ((seed / 10) % 10 + 0) + yDelta * (seed % 10 + 0)).getVec2f();
+
     switch (tileType) {
         case GRASS:
-            _pushQuads(&modelGrass[seed % 9]);
+            _pushQuads(&grassSubTile);
             break;
         case DIRT:
             _pushQuads(&modelDirt);
             break;
         case MOAI:
-            _pushQuads(&modelGrass[seed % 9]);
+            _pushQuads(&grassSubTile);
             _pushQuads(&modelMoai);
             break;
         case TRUCK:
-            _pushQuads(&modelGrass[seed % 9]);
+            _pushQuads(&grassSubTile);
             break;
     }
 }
