@@ -124,7 +124,7 @@ const std::vector<Graphics::Quad> modelEgg[3] = {
 const std::vector<Graphics::Quad> modelEggCarton = {
         {
                 Graphics::Quad(
-                        ZDEPTH_ABOVE_GROUND - ZDEPTH_LAYER * 2,
+                        ZDEPTH_ABOVE_GROUND, -ZDEPTH_LAYER * 2,
                         UIVec(-0.5, 0.5), TILEMAP_COORD(-3, 10),
                         UIVec(0.5, 0.5), TILEMAP_COORD(-2, 10),
                         UIVec(0.5, -0.5), TILEMAP_COORD(-2, 11),
@@ -138,7 +138,7 @@ const std::vector<Graphics::Quad> modelEggCarton = {
                         UIVec(-0.5, -0.5), TILEMAP_COORD(-2, 11)
                 ),
                 Graphics::Quad(
-                        ZDEPTH_ABOVE_GROUND + ZDEPTH_LAYER * 2,
+                        ZDEPTH_ABOVE_GROUND, ZDEPTH_LAYER * 2,
                         UIVec(-0.5, 0.5), TILEMAP_COORD(-1, 10),
                         UIVec(0.5, 0.5), TILEMAP_COORD(0, 10),
                         UIVec(0.5, -0.5), TILEMAP_COORD(0, 11),
@@ -187,6 +187,6 @@ const Graphics::Image imageAltKey(sf::Vector2f(0, 7932), sf::Vector2f(260, 260),
 const Graphics::Image imageMouseLeftBtn(sf::Vector2f(260, 7932), sf::Vector2f(260, 260), 24. / 256.);
 const Graphics::Image imageMouseRightBtn(sf::Vector2f(520, 7932), sf::Vector2f(260, 260), 24. / 256.);
 const Graphics::Image imageMouseBase(sf::Vector2f(780, 7932), sf::Vector2f(260, 260), 24. / 256.);
-const Graphics::Image imagaInventorySlotIndicator(sf::Vector2f(1300, 8062), sf::Vector2f(81, 130), 32. / 130.);
+const Graphics::Image imagaInventorySlotIndicator(sf::Vector2f(1300, 8062), sf::Vector2f(81, 130), 34. / 130.);
 
 #endif //YAYA_MODEL_H

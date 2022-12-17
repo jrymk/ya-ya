@@ -375,8 +375,9 @@ int Controls::tryStoreToContainer(const std::shared_ptr<Entity> &container, cons
         quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second);
         quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) + container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second);
         quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) + container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second);
-        quad.zDepth += (Camera::getScreenPos(container->inventoryPosition[closestSlot].first).y / Camera::getViewport().size.y - 0.5) / 100. + .1;
-        quad.c0 = quad.c1 = quad.c2 = quad.c3 = sf::Color(255, 100, 100, 170 + 50 * std::sin(Timer::getGlobalStart().elapsed() * PI * 3));
+//        quad.zDepth += (Camera::getScreenPos(container->inventoryPosition[closestSlot].first).y / Camera::getViewport().size.y - 0.5) / 100. + .1;
+        quad.zDepth = 1.;
+        quad.c0 = quad.c1 = quad.c2 = quad.c3 = sf::Color(255, 140, 140, 170 + 50 * std::sin(Timer::getGlobalStart().elapsed() * PI * 3));
 
         Graphics::insertQuad(quad);
 
@@ -424,9 +425,9 @@ int Controls::tryPickUpFromContainer(const std::shared_ptr<Entity> &container) {
     if (closestSlot != -1) {
 
         UIVec ospos = Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second);
-        Graphics::drawImage(imagaInventorySlotIndicator, ZDEPTH_ABOVE_GROUND + (ospos.y / Camera::getViewport().size.y - 0.5) / 100. + .1,
+        Graphics::drawImage(imagaInventorySlotIndicator, 1.,//ZDEPTH_ABOVE_GROUND + (ospos.y / Camera::getViewport().size.y - 0.5) / 100. + .1,
                             ospos + UIVec(0, -24 + 8 * std::sin(Timer::getGlobalStart().elapsed() * PI * 2)),
-                            UIVec(.5, 1.), 1., sf::Color(255, 231, 122, 255));
+                            UIVec(.5, 1.), Camera::getScale() / 100., sf::Color(255, 231, 122, 255));
 
 //        Graphics::insertUserWireframe(
 //                Camera::getScreenPos(container->inventoryPosition[closestSlot].first, container->inventoryPosition[closestSlot].second) +

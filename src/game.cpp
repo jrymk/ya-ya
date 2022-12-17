@@ -102,6 +102,8 @@ void Game::processCollisions() {
         for (int tx = int(std::round(e->underlyingPos.x - e->footprint.x / 2 - 1.)); tx <= int(std::round(e->underlyingPos.x + e->footprint.x / 2)); tx++) {
             for (int ty = int(std::round(e->underlyingPos.y - e->footprint.y / 2 - 1.)); ty <= int(std::round(e->underlyingPos.y + e->footprint.y / 2)); ty++) {
                 for (auto &cb: map.getTile(tx, ty).collideBoxes) {
+                    if (!e->collisionPushable)
+                        continue;
                     e->underlyingPos = e->underlyingPos + e->collideBox.collide(cb, e->underlyingPos, coord(tx, ty));
 //                    e->position = e->underlyingPos;
                     if (showCollisionBoxes)
