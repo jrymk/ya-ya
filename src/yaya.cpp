@@ -126,12 +126,15 @@ int main() {
                     Graphics::resizeView(event.size.width, event.size.height);
                     break;
                 case sf::Event::KeyPressed:
+                
                 case sf::Event::KeyReleased:
                     game.controls.handleKeyPress(event);
+                    game.controls.handleSoundOnAction(event);
                     break;
                 case sf::Event::MouseButtonPressed:
                 case sf::Event::MouseButtonReleased:
                     game.controls.handleMousePress(event);
+                    game.controls.handleSoundOnAction(event);
                     break;
             }
 

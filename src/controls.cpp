@@ -4,6 +4,7 @@
 #include "duck.h"
 #include "egg.h"
 #include "eggcarton.h"
+#include "audio.h"
 
 Controls::Controls(Game* game) :
         game(game) {
@@ -383,6 +384,25 @@ void Controls::handleMousePress(sf::Event &event) {
 //                    game->pushAction(Action(game->player->inventory[Player::InventorySlots::RIGHT_HAND], Timer::getNow(), ENTITY_UNOWN));
 //                }
 //            }
+    }
+}
+
+void Controls::handleSoundOnAction(sf::Event &event){
+    if(event.type == sf::Event::KeyPressed){
+        switch(event.key.code){
+            case sf::Keyboard::W:
+                Audio::playSound("walk.wav"); // No continuous walking sound QAQ
+            case sf::Keyboard::A:
+                Audio::playSound("walk.wav");
+            case sf::Keyboard::S:
+                Audio::playSound("walk.wav");
+            case sf::Keyboard::D:
+                Audio::playSound("walk.wav");
+        }
+    }
+
+    if (event.type == sf::Event::MouseButtonPressed){
+        Audio::playSound("tick.wav");
     }
 }
 

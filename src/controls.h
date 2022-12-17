@@ -49,6 +49,8 @@ public:
     void handleKeyPress(sf::Event &event);
 
     void handleMousePress(sf::Event &event);
+
+    void handleSoundOnAction(sf::Event &event);
 };
 
 #endif

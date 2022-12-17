@@ -2,7 +2,7 @@
 #include "debugger.h"
 
 void Audio::playSound(std::string fileName){
-    try {
+    try{
         buffer.loadFromFile(fileName);
         sound.setBuffer(buffer);
         sound.play();
