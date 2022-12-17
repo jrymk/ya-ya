@@ -4,22 +4,22 @@
 
 #include <SFML/Audio.hpp>
 #include <string>
+#include <vector>
 
 class Audio {
 private :
+    inline static int samples;
     inline static sf::SoundBuffer buffer;
+    inline static std::vector<sf::SoundBuffer> bufferVec;
     inline static sf::Sound sound;
 public :
     inline Audio() = default;
 
-    inline Audio(sf::SoundBuffer b, sf::Sound s){
-        this->buffer = b;
-        this->sound = s;
-    }
-
     inline ~Audio() = default;
 
-    static void playSound(std::string fileName);
+    static void loadSound(std::string fileName);
+
+    static void playSound(int id);
 };
 
 #endif
