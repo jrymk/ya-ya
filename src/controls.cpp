@@ -359,3 +359,20 @@ void Controls::changeOwner(const std::shared_ptr<Entity> &item, const std::share
     game->pushAction(a);
 }
 
+void Controls::handleSoundOnAction(sf::Event &event){
+    if (event.type == sf::Event::KeyPressed) {
+        switch(event.key.code){
+            case sf::Keyboard::W:
+                Audio::playSound("./res/walk.wav");
+            case sf::Keyboard::A:
+                Audio::playSound("./res/walk.wav");
+            case sf::Keyboard::S:
+                Audio::playSound("./res/walk.wav");
+            case sf::Keyboard::D:
+                Audio::playSound("./res/walk.wav");
+        }
+    }
+    if (event.type == sf::Event::MouseButtonPressed) {
+        Audio::playSound("./res/tick.wav");
+    }
+}
