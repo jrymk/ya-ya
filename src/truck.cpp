@@ -38,7 +38,7 @@ void Truck::objInit() {
     inventoryPosition.resize(10);
     type = TRUCK;
     footprint = coord(7., 4.);
-    collideBox = CollideBox({1.5, 0.}, {6.8, 3.8}, false);
+    collideBox = CollideBox({0., 0.}, {6.8, 3.8}, false);
 }
 
 void Truck::customUpdate() {

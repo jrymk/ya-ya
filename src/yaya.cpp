@@ -84,7 +84,7 @@ int main() {
     truck->id = game.newId(TRUCK);
     truck->opacity = 1.;
     truck->collisionPushable = false;
-    truck->underlyingPos.x = 5;
+    truck->underlyingPos.x = 6.5;
     truck->underlyingPos.y = 0;
     auto tptr = game.insertEntity(truck);
     for (int x = 3; x < 10; x++) {

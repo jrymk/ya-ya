@@ -10,6 +10,37 @@ const std::vector<Graphics::Quad> modelEntity = {
 
 };
 
+const Graphics::Quad modelSelector[4] = {
+        Graphics::Quad(
+                ZDEPTH_GROUND_OVERLAY,
+                UIVec(0, 0), sf::Vector2f(1045, 8064),
+                UIVec(0.25, 0), sf::Vector2f(1045 + 128, 8064),
+                UIVec(0.25, 0.25), sf::Vector2f(1045 + 128, 8064 + 128),
+                UIVec(0, 0.25), sf::Vector2f(1045, 8064 + 128)
+        ),
+        Graphics::Quad(
+                ZDEPTH_GROUND_OVERLAY,
+                UIVec(0, 0), sf::Vector2f(1045, 8064),
+                UIVec(-0.25, 0), sf::Vector2f(1045 + 128, 8064),
+                UIVec(-0.25, 0.25), sf::Vector2f(1045 + 128, 8064 + 128),
+                UIVec(0, 0.25), sf::Vector2f(1045, 8064 + 128)
+        ),
+        Graphics::Quad(
+                ZDEPTH_GROUND_OVERLAY,
+                UIVec(0, 0), sf::Vector2f(1045, 8064),
+                UIVec(0.25, 0), sf::Vector2f(1045 + 128, 8064),
+                UIVec(0.25, -0.25), sf::Vector2f(1045 + 128, 8064 + 128),
+                UIVec(0, -0.25), sf::Vector2f(1045, 8064 + 128)
+        ),
+        Graphics::Quad(
+                ZDEPTH_GROUND_OVERLAY,
+                UIVec(0, 0), sf::Vector2f(1045, 8064),
+                UIVec(-0.25, 0), sf::Vector2f(1045 + 128, 8064),
+                UIVec(-0.25, -0.25), sf::Vector2f(1045 + 128, 8064 + 128),
+                UIVec(0, -0.25), sf::Vector2f(1045, 8064 + 128)
+        )
+};
+
 const std::vector<Graphics::Quad> modelPlayer = {
         Graphics::Quad(
                 ZDEPTH_GROUND_OVERLAY,
@@ -49,10 +80,10 @@ const std::vector<Graphics::Quad> modelDuck = {
 const std::vector<Graphics::Quad> modelTruck = {
         Graphics::Quad(
                 ZDEPTH_ABOVE_GROUND,
-                UIVec(-2, 7), TILEMAP_COORD(4, 6),
-                UIVec(6, 7), TILEMAP_COORD(12, 6),
-                UIVec(6, -2), TILEMAP_COORD(12, 15),
-                UIVec(-2, -2), TILEMAP_COORD(4, 15)
+                UIVec(-3.5, 7), TILEMAP_COORD(4, 6),
+                UIVec(4.5, 7), TILEMAP_COORD(12, 6),
+                UIVec(4.5, -2), TILEMAP_COORD(12, 15),
+                UIVec(-3.5, -2), TILEMAP_COORD(4, 15)
         )
 };
 

@@ -83,6 +83,9 @@ void Map::Tile::pushQuads() {
             _pushQuads(&modelGrass[seed % 9]);
             _pushQuads(&modelMoai);
             break;
+        case TRUCK:
+            _pushQuads(&modelGrass[seed % 9]);
+            break;
     }
 }
 

@@ -120,7 +120,7 @@ void Game::processCollisions() {
                                           Camera::getScreenPos(e->position + e->collideBox.center + coord(-e->collideBox.size.x / 2., e->collideBox.size.y / 2.)),
                                           (e->collideBox.isCircle ? sf::Color::Magenta : sf::Color::Blue), sf::Color::Transparent);
     }
-    
+
 //    for (auto eit: entities) {
 //        auto &e = eit.second;
 //        if (e->collisionNoEnv)
@@ -251,38 +251,7 @@ void Game::render() {
 
     for (auto entity: entities) {
         entity.second->pushQuads();
-        //        switch (entity.second->type) {
-//            case PLAYER:
-//                std::dynamic_pointer_cast<Player>(entity.second->childClassPtr)->pushQuads();
-//                break;
-//            case DUCK:
-//                std::dynamic_pointer_cast<Duck>(entity.second->childClassPtr)->pushQuads();
-//                break;
-//            case EGG:
-//                std::dynamic_pointer_cast<Egg>(entity.second->childClassPtr)->pushQuads();
-//                break;
-//        }
     }
-
-    // for (auto entity : entities) {
-    //     Graphics::drawText(entity.first, sf::Color::Black, 14, Camera::getScreenPos(entity.second->position) + UIVec(0., 30.), .5, sf::Color(255, 255, 255, 100), 3.);
-    // }
-    if (controls.facingEntity) {
-        Graphics::drawText(controls.facingEntity->getDescriptionStr(), sf::Color::Black, 12., Camera::getScreenPos(controls.facingEntity->position) + UIVec(0., 40.), 0.,
-                           sf::Color(255, 255, 255, 140), 3.);
-        Graphics::insertUserWireframe(
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.0 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 0.5 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.0 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                Camera::getScreenPos(controls.facingEntity->position) + Camera::getAngleVector(.3, Timer::getGlobalStart().elapsed() * -2. * PI + 1.5 * PI) +
-                UIVec(0, -controls.facingEntity->zPosition * Camera::getScale()),
-                sf::Color(255, 150, 60, 100), sf::Color(0, 0, 0, 100)
-        );
-    }
-
 }
 
 void Game::renderMap() {
