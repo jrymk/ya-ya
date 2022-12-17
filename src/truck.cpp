@@ -13,7 +13,8 @@ void Truck::runAction(Action &action, std::vector<Action> &followUpActions) {
             if (action.argInt[0] >= TRUCK_A0 && action.argInt[0] <= TRUCK_D3) {
                 action.argEntity[0]->zPosition = zPosition + .3;
                 action.argEntity[0]->selectable = false;
-                // eggs are not pushable anyways
+                action.argEntity[0]->collisionPushable = false;
+                action.argEntity[0]->motionFrozen = true;
             }
             break;
         case ENTITY_INVENTORY_ON_RELEASE:
@@ -58,7 +59,7 @@ void Truck::setInventoryProps() {
             inventory[slot]->underlyingPos = inventoryPosition[slot].first;
             inventory[slot]->zPosition = inventoryPosition[slot].second; // do every update or else gravity will do its thing
             inventory[slot]->zVelocity = 0.;
-            inventory[slot]->zDepthOverride = truckZDepth + .1; //(slot < 5 ? -ZDEPTH_LAYER : ZDEPTH_LAYER);
+            inventory[slot]->zDepthOverride = truckZDepth + .2; //(slot < 5 ? -ZDEPTH_LAYER : ZDEPTH_LAYER);
         }
     }
 }

@@ -9,7 +9,7 @@
 #include "debugger.h"
 #include "saveUtilities.h"
 
-#define ZDEPTH_LAYER 0.00001 // on-screen y position causes +-0.005 zdepth offset
+#define ZDEPTH_LAYER 0.0001 // on-screen y position causes +-0.005 zdepth offset
 #define ZDEPTH_BG 0.
 #define ZDEPTH_GROUND 0.1
 #define ZDEPTH_GROUND_OVERLAY 0.2
@@ -102,6 +102,7 @@ class Graphics {
 public:
     struct Quad {
         float zDepth = 1.0;
+        float zDepthOffset = 0.;
         UIVec v0;
         UIVec v1;
         UIVec v2;
@@ -118,6 +119,10 @@ public:
 
         inline Quad(float zDepth, UIVec v0, sf::Vector2f t0, UIVec v1, sf::Vector2f t1, UIVec v2, sf::Vector2f t2, UIVec v3, sf::Vector2f t3)
                 : zDepth(zDepth), v0(v0), t0(t0), v1(v1), t1(t1), v2(v2), t2(t2), v3(v3), t3(t3) {}
+
+        inline Quad(float zDepth, float zDepthOffset, UIVec v0, sf::Vector2f t0, UIVec v1, sf::Vector2f t1, UIVec v2, sf::Vector2f t2, UIVec v3,
+                    sf::Vector2f t3) // for egg carton :angry:
+                : zDepth(zDepth), v0(v0), t0(t0), v1(v1), t1(t1), v2(v2), t2(t2), v3(v3), t3(t3), zDepthOffset(zDepthOffset) {}
 
         inline Quad(float zDepth, UIVec v0, sf::Vector2f t0, UIVec v1, sf::Vector2f t1, UIVec v2, sf::Vector2f t2, UIVec v3, sf::Vector2f t3, const sf::Color &gc)
                 : zDepth(zDepth), v0(v0), t0(t0), c0(gc), v1(v1), t1(t1), c1(gc), v2(v2), t2(t2), c2(gc), v3(v3), t3(t3), c3(gc) {}

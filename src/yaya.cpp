@@ -8,6 +8,7 @@
 #include "ui.h"
 #include "eggcarton.h"
 #include "truck.h"
+#include "audio.h"
 
 #define TESTSAVE
 #define TESTLOAD
@@ -130,6 +131,13 @@ int main() {
         debug << "maximum texture size: " << sf::Texture::getMaximumSize() << "\n";
     tilemap.setSmooth(true);
 
+    std::vector<Audio> audioVec;
+    Audio audio;
+    audio.loadSound("./res/walk.wav");
+    audioVec.push_back(audio);
+    audio.loadSound("./res/tick.wav");
+    audioVec.push_back(audio);
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -144,12 +152,12 @@ int main() {
 
                 case sf::Event::KeyReleased:
                     game.controls.handleKeyPress(event);
-                    game.controls.handleSoundOnAction(event);
+                    game.controls.handleSoundOnAction(event, audioVec[0]);
                     break;
                 case sf::Event::MouseButtonPressed:
                 case sf::Event::MouseButtonReleased:
                     game.controls.handleMousePress(event);
-                    game.controls.handleSoundOnAction(event);
+                    game.controls.handleSoundOnAction(event, audioVec[1]);
                     break;
             }
 

@@ -35,6 +35,7 @@ enum Command {
     DUCK_LOOP_LAY_EGGS,
     DUCK_LOOP_FIND_MATE,
     DUCK_DEATH,
+    DUCK_GROW,
     DUCK_DUCKWALK_TO_UNTIL, // coord pos, float timeout
     DUCK_DUCKWALK_TO_DUCK, // entity e, float timeout
     DUCK_UNTIL_MATE_CONTACT, // entity e, entity mate

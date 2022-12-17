@@ -115,10 +115,10 @@ void Entity::pushQuads() {
         quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) * scale + position, zPosition * quad.zPosScale);
         quad.v2 = Camera::getScreenPos(coord(quad.v2.x, quad.v2.y) * scale + position, zPosition * quad.zPosScale);
         quad.v3 = Camera::getScreenPos(coord(quad.v3.x, quad.v3.y) * scale + position, zPosition * quad.zPosScale);
-        quad.zDepth += (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100. + zDepthOffset;
+        quad.zDepth += (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100. + zDepthOffset + quad.zDepthOffset;
 
         if (zDepthOverride > -100.)
-            quad.zDepth = zDepthOverride;
+            quad.zDepth = zDepthOverride + quad.zDepthOffset;
 
         quad.c0 = sf::Color(255, 255, 255, opacity * 255);
         quad.c1 = sf::Color(255, 255, 255, opacity * 255);
