@@ -458,18 +458,17 @@ void Controls::changeOwner(const std::shared_ptr<Entity> &item, const std::share
 
 void Controls::handleSoundOnAction(sf::Event &event, Audio &audio) {
     if (event.type == sf::Event::KeyPressed) {
-        switch (event.key.code) {
-            case sf::Keyboard::W:
-                audio.playSound(0);
-            case sf::Keyboard::A:
-                audio.playSound(0);
-            case sf::Keyboard::S:
-                audio.playSound(0);
-            case sf::Keyboard::D:
+        if (event.key.code == sf::Keyboard::W ||
+            event.key.code == sf::Keyboard::A ||
+            event.key.code == sf::Keyboard::S ||
+            event.key.code == sf::Keyboard::D) {
                 audio.playSound(0);
         }
     }
     if (event.type == sf::Event::MouseButtonPressed) {
         audio.playSound(1);
+    }
+    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::M) {
+        audio.muteSound();
     }
 }

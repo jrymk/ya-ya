@@ -131,12 +131,11 @@ int main() {
         debug << "maximum texture size: " << sf::Texture::getMaximumSize() << "\n";
     tilemap.setSmooth(true);
 
-    std::vector<Audio> audioVec;
     Audio audio;
     audio.loadSound("./res/walk.wav");
-    audioVec.push_back(audio);
     audio.loadSound("./res/tick.wav");
-    audioVec.push_back(audio);
+    audio.loadSound("./res/yaya music.wav");
+    audio.playBGM(2);
 
     while (window.isOpen()) {
         sf::Event event;
@@ -149,15 +148,14 @@ int main() {
                     Graphics::resizeView(event.size.width, event.size.height);
                     break;
                 case sf::Event::KeyPressed:
-
                 case sf::Event::KeyReleased:
                     game.controls.handleKeyPress(event);
-                    game.controls.handleSoundOnAction(event, audioVec[0]);
+                    game.controls.handleSoundOnAction(event, audio);   
                     break;
                 case sf::Event::MouseButtonPressed:
                 case sf::Event::MouseButtonReleased:
                     game.controls.handleMousePress(event);
-                    game.controls.handleSoundOnAction(event, audioVec[1]);
+                    game.controls.handleSoundOnAction(event, audio);
                     break;
             }
 
