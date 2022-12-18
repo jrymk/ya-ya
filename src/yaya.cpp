@@ -90,10 +90,6 @@ int main() {
     truck->underlyingPos.x = 6.5;
     truck->underlyingPos.y = 0;
     auto tptr = game.insertEntity(truck);
-    for (int x = 3; x < 10; x++) {
-        for (int y = -2; y < 2; y++)
-            game.map.getTile(x, y).setTileType(Map::Tile::TRUCK); // for collision, because I don't want to make collision boxes work with entities
-    }
 
     {
         std::shared_ptr<EggCarton> eggcarton(new EggCarton(&game));
@@ -123,6 +119,11 @@ int main() {
 #else
     game.load();
 #endif
+
+    for (int x = 3; x < 10; x++) {  // truck collision
+        for (int y = -2; y < 2; y++)
+            game.map.getTile(x, y).setTileType(Map::Tile::TRUCK); // for collision, because I don't want to make collision boxes work with entities
+    }
 
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("./res/tilemap.png"))

@@ -44,6 +44,7 @@ public:
     std::string getDescriptionStr() override;
 
     constexpr static auto properties = std::tuple_cat(Entity::properties, std::make_tuple(
+            SaveUtilities::property(&Duck::growStage, "Dk.gsg"),
             SaveUtilities::property(&Duck::genderIsMale, "Dk.gd"),
             SaveUtilities::property(&Duck::fertilized, "Dk.fr")
     ));  // reminder: set game*     
