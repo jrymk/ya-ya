@@ -133,6 +133,7 @@ void UserInterface::renderOverlay() {
                 Graphics::fillRect(sf::Color(62, 88, 122, 255), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
                 Graphics::drawText(L"烤鴨鴨", sf::Color(255, 255, 255, 255), displayScaling * 150, Camera::getViewport() * UIVec(.5, .5), .5);
                 Graphics::drawText(L"按F10啦", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
+                Graphics::drawText(L"弱弱的說: F9 to load", sf::Color(255, 255, 255, 255), displayScaling * 20, Camera::getViewport() * UIVec(.5, .9), .5);
 
                 break;
 

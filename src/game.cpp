@@ -332,6 +332,8 @@ void Game::save() {
 }
 
 void Game::load(const char* filepath) {
+    entities.clear();
+    while(!actionList.empty()) actionList.pop();
     std::ifstream fin(filepath);
     if (!fin.is_open()) std::cerr << "file loading failed";
 

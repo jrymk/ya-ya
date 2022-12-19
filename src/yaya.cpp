@@ -10,8 +10,6 @@
 #include "truck.h"
 #include "audio.h"
 
-#define TESTSAVE
-//#define TESTLOAD
 //#define SUSPEND_CMD
 
 /**
@@ -48,13 +46,7 @@ int main() {
 
     /// game initialization
     Game game;
-
-#ifndef TESTLOAD
-    game.controller.loadTestWorld();
-#else
-    game.controller.loadToSaveFile();
-#endif
-
+    game.controller.loadTestWorld();  // load initial world no matter what
     game.initTruckCollisionBoxes(3, -2);
 
     audio.playBGM();
@@ -70,8 +62,13 @@ int main() {
                     Graphics::resizeView(event.size.width, event.size.height);
                     break;
                 case sf::Event::KeyPressed:
-                    if (event.key.code == sf::Keyboard::F10)
+                    if (event.key.code == sf::Keyboard::F10) {
                         game.controller.handleAction(GameController::BTN_START_NEW_GAME);
+                    }
+                    if (event.key.code == sf::Keyboard::F9) {
+                        game.controller.loadToSaveFile();
+                        game.controller.handleAction(GameController::BTN_START_LOAD_GAME);
+                    }
                 case sf::Event::KeyReleased:
                     game.controls.handleKeyPress(event);
                     game.controls.handleSoundOnAction(event, audio);
@@ -121,9 +118,8 @@ int main() {
         window.display();
     }
 
-    #ifdef TESTSAVE
-        game.controller.saveToSaveFile();
-    #endif
+    game.controller.saveToSaveFile();
+
     #ifdef SUSPEND_CMD
         getchar();  // for testing with cmd
     #endif

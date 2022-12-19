@@ -36,11 +36,10 @@ bool Timer::operator<(const Timer &rhs) const {
 }
 
 void Timer::saveTimer(Timer start) {
-    lastTimefromTP = std::chrono::duration<double>(tp - start.tp).count() + 7.5;
+    lastTimefromTP = this->elapsed(start);
 }
 
 void Timer::loadTimer(Timer start) {
-    tp = start.tp;
-    increment(lastTimefromTP);
+    *this = start + (-lastTimefromTP);
 }
 

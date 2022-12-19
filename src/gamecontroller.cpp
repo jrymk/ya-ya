@@ -21,7 +21,7 @@ void GameController::handleAction(GameController::GameActions action) {
             startDaySequence();
             break;
         case BTN_START_LOAD_GAME:
-            startOfDayTp = Timer::getNow() + dayTpSaver;
+            startOfDayTp.loadTimer();
             gameState = GAMEPLAY;  // TBD
     }
 }
@@ -54,7 +54,6 @@ void GameController::update() {
 
 void GameController::loadToSaveFile() {
     game->load();
-    game->controller.handleAction(BTN_START_LOAD_GAME);
 }
 
 void GameController::loadTestWorld() {
@@ -136,7 +135,7 @@ void GameController::loadTestWorld() {
 }
 
 void GameController::saveToSaveFile() {
-    dayTpSaver = startOfDayTp.elapsed();  // save dayTp
+    startOfDayTp.saveTimer();
     game->save();
 }
 

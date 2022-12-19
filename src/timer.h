@@ -33,8 +33,8 @@ public:
     bool operator<(const Timer &rhs) const;
 
     double lastTimefromTP = 0.;  // for game load
-    void saveTimer(Timer start);
-    void loadTimer(Timer start);
+    void saveTimer(Timer start = std::chrono::steady_clock::now());
+    void loadTimer(Timer start = std::chrono::steady_clock::now());
 
     constexpr static auto properties = std::make_tuple(
         SaveUtilities::property(&Timer::lastTimefromTP, "Ti.ltt")
