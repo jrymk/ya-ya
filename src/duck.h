@@ -3,6 +3,7 @@
 #define YAYA_DUCK_H
 
 #include "entity.h"
+#include "audio.h"
 
 class Duck : public Entity {
 public:
@@ -20,6 +21,8 @@ public:
     std::vector<Graphics::Quad> duckModel;
 
     Game* game;
+
+    Audio duckAudio;
 
     Duck();
 
@@ -47,7 +50,7 @@ public:
             SaveUtilities::property(&Duck::growStage, "Dk.gsg"),
             SaveUtilities::property(&Duck::genderIsMale, "Dk.gd"),
             SaveUtilities::property(&Duck::fertilized, "Dk.fr")
-    ));  // reminder: set game*     
+    ));  // reminder: set game*
 };
 
 #endif

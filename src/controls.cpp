@@ -56,6 +56,14 @@ void Controls::update() {
             switch (inv->type) {
                 case DUCK:
                     clickAction = DROP_ITEM;
+                    // duck -> truck
+                    if (facingEntity && facingEntity->type == TRUCK) {
+                        int slot = tryStoreToContainer(facingEntity, inv);
+                        if (slot == -2)
+                            altClickAction = NONE_CONTAINER_FULL;
+                        else if (slot >= 0)
+                            altClickAction = STORE_ITEM_TO_FACING_CONTAINER;
+                    }
                     break;
                 case EGG:
                     clickAction = DROP_ITEM;
@@ -168,10 +176,10 @@ std::shared_ptr<Entity> Controls::getFacingEntity(EntityType filter) {
                         coord(quad.v3.x, quad.v3.y) + facingEntity->position + facingEntity->collideBox.center +
                         (facingEntity->collideBox.size + pulse) * coord((corner & 0b1) ? .5 : -.5, (corner & 0b10) ? .5 : -.5));
 
-                quad.c0 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
-                quad.c1 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
-                quad.c2 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
-                quad.c3 = inReach ? sf::Color(173, 240, 255, 255) : sf::Color(217, 217, 217, 255);
+                quad.c0 = inReach ? sf::Color(135, 233, 255, 255) : sf::Color(217, 217, 217, 255);
+                quad.c1 = inReach ? sf::Color(135, 233, 255, 255) : sf::Color(217, 217, 217, 255);
+                quad.c2 = inReach ? sf::Color(135, 233, 255, 255) : sf::Color(217, 217, 217, 255);
+                quad.c3 = inReach ? sf::Color(135, 233, 255, 255) : sf::Color(217, 217, 217, 255);
                 Graphics::insertQuad(quad);
 
             }
@@ -347,6 +355,7 @@ int Controls::tryStoreToContainer(const std::shared_ptr<Entity> &container, cons
         case TRUCK:
             switch (item->type) {
                 case EGG_CARTON:
+                case DUCK:
                     slotRangeLo = Truck::InventorySlots::TRUCK_A0;
                     slotRangeHi = Truck::InventorySlots::TRUCK_D3;
                     break;
@@ -470,5 +479,14 @@ void Controls::handleSoundOnAction(sf::Event &event, Audio &audio) {
     }
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::M) {
         audio.muteSound();
+    }
+}
+
+void Controls::handleMouseScroll(sf::Event &event) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+        game->ui.displayScaling += event.mouseWheel.delta * .25;
+        game->ui.displayScaling = std::max(game->ui.displayScaling, .25f);
+        Camera::setZoom(15. / game->ui.displayScaling);
+        debug << "Display scaling: " << game->ui.displayScaling << "\n";
     }
 }

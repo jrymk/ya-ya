@@ -9,6 +9,12 @@ std::string toStr(int a) {
     return ss.str();
 }
 
+std::wstring toWStr(int a) {
+    std::wstringstream ss;
+    ss << a;
+    return ss.str();
+}
+
 std::string toStr(double a, const int digits) {
     std::stringstream ss;
     if (digits >= 0)

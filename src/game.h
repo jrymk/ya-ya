@@ -14,9 +14,14 @@
 #include "neighborsfinder.h"
 #include "map.h"
 #include "ui.h"
+#include "gamecontroller.h"
+
+class Player;
+class Truck;
 
 class Game {
 public:
+    GameController controller;
     NeighborsFinder neighborsFinder;
     Controls controls;
     UserInterface ui;
@@ -28,7 +33,8 @@ public:
     std::vector<Action> actionSaveList;  // for game save
     double updateTime;
     std::map<std::string, std::shared_ptr<Entity>> entities;
-    std::shared_ptr<Entity> player;
+    std::shared_ptr<Player> player;
+    std::shared_ptr<Truck> truck;
 
     Map map;
 
@@ -38,7 +44,8 @@ public:
 
     void mapUpdate();
 
-    void setPlayer(std::shared_ptr<Entity> &player);
+    void setPlayer(std::shared_ptr<Player> &player);
+    void setTruck(std::shared_ptr<Truck> &truck);
 
     void processCollisions();
 
@@ -80,6 +87,8 @@ public:
     void save();
 
     void load(const char* filepath = defaultFilePath);
+
+    void initTruckCollisionBoxes(int baseX, int baseY);
 
     constexpr static auto properties = std::make_tuple(
             SaveUtilities::property(&Game::entities, "Gm.et"),

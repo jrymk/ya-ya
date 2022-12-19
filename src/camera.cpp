@@ -50,6 +50,6 @@ UIVec Camera::getAngleVector(float len, double angle) {
 }
 
 void Camera::printCameraInfo() {
-    Graphics::setFont(1);
+    Graphics::setFont(0);
     Graphics::drawText("(" + toStr(getMouseCoord().x, 3) + ", " + toStr(getMouseCoord().y, 3) + ")", sf::Color::Green, 16, viewport.pos + viewport.size - UIVec(5, 10), 1.);
 }
