@@ -17,6 +17,7 @@ Game::Game() :
         ui(this) {}
 
 void Game::update() {
+    if(controller.gameState == GameController::TITLE_SCREEN) return;  // no update on title
     Timer updateTimer;
 
     // control player movement
@@ -268,6 +269,7 @@ void Game::destroyEntity(std::string id) {
 }
 
 void Game::render() {
+    if(controller.gameState == GameController::TITLE_SCREEN) return;  // no render on title
     renderMap();
 
     for (auto entity: entities) {

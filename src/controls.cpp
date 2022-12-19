@@ -13,6 +13,7 @@ Controls::Controls(Game* game) :
 }
 
 void Controls::update() {
+    if(game->controller.gameState == GameController::TITLE_SCREEN) return;  // no update on title
     facingEntity = getFacingEntity();
     facingTile = &getFacingTile();
 

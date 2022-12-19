@@ -46,9 +46,6 @@ int main() {
 
     /// game initialization
     Game game;
-    game.controller.loadTestWorld();  // load initial world no matter what
-    game.initTruckCollisionBoxes(3, -2);
-
     audio.playBGM();
 
     while (window.isOpen()) {
@@ -63,10 +60,13 @@ int main() {
                     break;
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::F10) {
+                        game.controller.loadTestWorld();  // TBD
+                        game.initTruckCollisionBoxes(3, -2);
                         game.controller.handleAction(GameController::BTN_START_NEW_GAME);
                     }
                     if (event.key.code == sf::Keyboard::F9) {
                         game.controller.loadToSaveFile();
+                        game.initTruckCollisionBoxes(3, -2);
                         game.controller.handleAction(GameController::BTN_START_LOAD_GAME);
                     }
                 case sf::Event::KeyReleased:
@@ -83,15 +83,16 @@ int main() {
                     break;
             }
         }
-
+        
         window.clear(sf::Color(129, 214, 131));
         UIRect rectWindow(sf::FloatRect(0, 0, window.getView().getSize().x, window.getView().getSize().y));
         Camera::setViewport(rectWindow);
-
+        
         /// render pass 1
-        Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.1); /// TODO: decide underlying pos or pos
+        if(game.controller.gameState != GameController::TITLE_SCREEN)
+            Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.1); /// TODO: decide underlying pos or pos
         Graphics::clearQuadsArray();
-
+        
         game.controller.update();
 
         game.update();
@@ -99,11 +100,10 @@ int main() {
         game.controls.update();
         // this should be AFTER game.update() so when the next main loop comes, the controls event are polled and executed, the states are up to date
         // but BEFORE renderUI() so it gets the newest states
-
+        
         game.render();
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
-
-
+        
         /// render pass 2
         Graphics::clearQuadsArray();
         game.ui.renderUI();
@@ -113,8 +113,7 @@ int main() {
         Graphics::clearQuadsArray();
         game.ui.renderOverlay();
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
-
-
+        
         window.display();
     }
 
