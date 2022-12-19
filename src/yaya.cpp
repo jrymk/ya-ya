@@ -135,8 +135,8 @@ int main() {
     Audio audio;
     audio.loadSound("./res/walk.wav");
     audio.loadSound("./res/tick.wav");
-    audio.loadSound("./res/yaya music.wav");
-    audio.playBGM(2);
+    audio.loadSound("./res/yaya music.wav"); // always have to be the 3rd audio input unless you change BGM_ID
+    audio.playBGM();
 
     while (window.isOpen()) {
         sf::Event event;

@@ -26,16 +26,16 @@ void Audio::playSound(int id) {
     
 }
 
-void Audio::playBGM(int id) {
+void Audio::playBGM() {
     try{
-        soundVec[id].setBuffer(bufferVec[id]);
-        loop[id] = true;
-        soundVec[id].setLoop(loop[id]);
-        soundVec[id].setVolume(5);
-        soundVec[id].play();
+        soundVec[BGM_ID].setBuffer(bufferVec[BGM_ID]);
+        loop[BGM_ID] = true;
+        soundVec[BGM_ID].setLoop(loop[BGM_ID]);
+        soundVec[BGM_ID].setVolume(5);
+        soundVec[BGM_ID].play();
     }
     catch(...){
-        debug << "Error occured, could not play file or the file isn't loaded yet : " << id << "\n";
+        debug << "Error occured, could not play file or the file isn't loaded yet : " << BGM_ID << "\n";
     }
     
 }

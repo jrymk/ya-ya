@@ -27,7 +27,7 @@ public :
 
     static void playSound(int id);
 
-    static void playBGM(int id);
+    static void playBGM();
 
     static void muteSound();
 
