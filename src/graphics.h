@@ -17,6 +17,7 @@
 
 #define PI 3.14159265359
 
+class GameController;
 extern bool graphicsIsFullscreen;
 
 struct UIVec { // pixel space
@@ -216,6 +217,8 @@ public:
     static void setupWindow();
 
     static void createWindow(bool fullscreen);
+
+    static void noobFilter(sf::RenderWindow& window, GameController& controller);
 };
 
 #endif

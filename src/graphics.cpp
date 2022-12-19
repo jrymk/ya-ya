@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include "gamecontroller.h"
 
 bool graphicsIsFullscreen = false;
 
@@ -327,4 +328,31 @@ void Graphics::createWindow(bool fullscreen) {
     else
         getRenderWindow().create(sf::VideoMode(1600, 900), L"Ya-Ya!", sf::Style::Default, getContextSettings());
     setupWindow();
+}
+
+void Graphics::noobFilter(sf::RenderWindow& window, GameController& controller) {
+    sf::RectangleShape rect(sf::Vector2f(window.getSize().x, window.getSize().y));
+
+    // trial noob filter xD
+    double timeUntilEnd = DAY_LENGTH - controller.startOfDayTp.elapsed();
+    
+    if(controller.gameState == GameController::DAY_END_SCENE)
+        rect.setFillColor(sf::Color(180, 40, 0, 100));
+    else if(controller.gameState == GameController::DAY_START_SCENE)
+        rect.setFillColor(sf::Color(225, 240, 255, 25));
+    else if(timeUntilEnd > DAY_LENGTH / 2) {
+        timeUntilEnd -= DAY_LENGTH / 2;
+        rect.setFillColor(sf::Color(255 - 30 * timeUntilEnd / (DAY_LENGTH / 2),
+                                    255 - 15 * timeUntilEnd / (DAY_LENGTH / 2),
+                                    255,  25 * timeUntilEnd / (DAY_LENGTH / 2)));
+    }
+    else if(timeUntilEnd < DAY_LENGTH / 3){
+        rect.setFillColor(sf::Color(180 +  75 * timeUntilEnd / (DAY_LENGTH / 3),
+                                    40  + 215 * timeUntilEnd / (DAY_LENGTH / 3),
+                                          255 * timeUntilEnd / (DAY_LENGTH / 3),
+                                    100 - 100 * timeUntilEnd / (DAY_LENGTH / 3)));
+    }
+    else
+        rect.setFillColor(sf::Color(255, 255, 255, 0));
+    window.draw(rect);
 }

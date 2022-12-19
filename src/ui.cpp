@@ -180,6 +180,8 @@ void UserInterface::renderOverlay() {
 
 
     }
+
+    if(game->controller.gameState == GameController::TITLE_SCREEN) return;  // no truck pos on title
     UIVec pos = Camera::getViewport() * UIVec(.5, .5) + (Camera::getScreenPos(game->truck->position) - Camera::getViewport() * UIVec(.5, .5)) * 1.;
     pos = pos.max(Camera::getViewport() * UIVec(0., 0.) + UIVec(36, 36) * displayScaling);
     pos = pos.min(Camera::getViewport() * UIVec(1., 1.) - UIVec(36, 36) * displayScaling);

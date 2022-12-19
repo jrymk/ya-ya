@@ -47,13 +47,6 @@ int main() {
 
     /// game initialization
     Game game;
-
-#ifndef TESTLOAD
-    game.controller.loadTestWorld();
-#else
-    game.controller.loadToSaveFile();
-#endif
-
     game.initTruckCollisionBoxes(3, -2);
 
     audio.playBGM();
@@ -72,6 +65,7 @@ int main() {
                     if (event.key.code == sf::Keyboard::F10) {
                         game.controller.loadTestWorld();  // TBD
                         game.initTruckCollisionBoxes(3, -2);
+                        game.controller.handleAction(GameController::BTN_START_NEW_GAME);
                     }
                     if (event.key.code == sf::Keyboard::F9) {
                         game.controller.loadToSaveFile();
@@ -95,7 +89,7 @@ int main() {
         window.clear(sf::Color(129, 214, 131));
         UIRect rectWindow(sf::FloatRect(0, 0, window.getView().getSize().x, window.getView().getSize().y));
         Camera::setViewport(rectWindow);
-
+        
         /// render pass 1
         if (game.controller.gameState != GameController::TITLE_SCREEN)
             Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.1); /// TODO: decide underlying pos or pos
@@ -111,18 +105,17 @@ int main() {
 
         game.render();
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
-
-
+        Graphics::noobFilter(window, game.controller);
+        
         /// render pass 2
         Graphics::clearQuadsArray();
         game.ui.renderUI();
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
-
+        
         /// render pass 3 (overlay)
         Graphics::clearQuadsArray();
         game.ui.renderOverlay();
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
-
 
         window.display();
     }
