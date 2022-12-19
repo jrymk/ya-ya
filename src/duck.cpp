@@ -9,7 +9,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
         case ON_CREATION: { // actual creation
             followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 25., DUCK_LOOP_WANDER);
-            double growUpTime = 20. + 30. * getRand();
+            double growUpTime = 40. + 120. * getRand();
             followUpActions.emplace_back(action.entity, Timer::getNow() + growUpTime * .2, DUCK_GROW);
             followUpActions.emplace_back(action.entity, Timer::getNow() + growUpTime, DUCK_GROW);
 
@@ -21,7 +21,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
             }
 
             followUpActions.emplace_back(action.entity, Timer::getNow(), ENTITY_HOP);
-            followUpActions.emplace_back(action.entity, Timer::getNow() + 50. + getRand() * 200., DUCK_DEATH, "creation_" + action.entity->id);
+            followUpActions.emplace_back(action.entity, Timer::getNow() + 120. + getRand() * 360., DUCK_DEATH, "creation_" + action.entity->id);
 
             {
                 Action a(action.entity, Timer::getNow() + .3, DUCK_DUCKWALK_TO_UNTIL);
@@ -371,7 +371,7 @@ void Duck::objInit() {
     duckAudio.loadSound("./res/quack-1.wav");
     duckAudio.setVolume(1);
     duckAudio.loadSound("./res/quack-2.wav");
-    
+
 }
 
 void Duck::customUpdate() {
