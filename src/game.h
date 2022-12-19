@@ -91,8 +91,10 @@ public:
     void initTruckCollisionBoxes(int baseX, int baseY);
 
     constexpr static auto properties = std::make_tuple(
+            SaveUtilities::property(&Game::controller, "Gm.ctr"),
             SaveUtilities::property(&Game::entities, "Gm.et"),
             SaveUtilities::property(&Game::player, "Gm.pl"),
+            SaveUtilities::property(&Game::truck, "Gm.tk"),
             SaveUtilities::property(&Game::actionSaveList, "Gm.ac")
     );
 };

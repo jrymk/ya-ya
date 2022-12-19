@@ -7,14 +7,22 @@
 
 GameController::GameController(Game* game): game(game) {}
 
+void GameController::setGame(Game* game) {
+    this->game = game;
+}
+
 void GameController::handleAction(GameController::GameActions action) {
     switch (action) {
         case BTN_START_NEW_GAME:
             startOfDayTp = Timer::getNow() + DAY_START_CUTSCENE_LENGTH;
             gameState = DAY_START_SCENE;
+            cash = 0;
             dayCount = 1;
             startDaySequence();
             break;
+        case BTN_START_LOAD_GAME:
+            startOfDayTp = Timer::getNow() + dayTpSaver;
+            gameState = GAMEPLAY;  // TBD
     }
 }
 
@@ -46,6 +54,7 @@ void GameController::update() {
 
 void GameController::loadToSaveFile() {
     game->load();
+    game->controller.handleAction(BTN_START_LOAD_GAME);
 }
 
 void GameController::loadTestWorld() {
@@ -127,6 +136,7 @@ void GameController::loadTestWorld() {
 }
 
 void GameController::saveToSaveFile() {
+    dayTpSaver = startOfDayTp.elapsed();  // save dayTp
     game->save();
 }
 

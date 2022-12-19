@@ -31,9 +31,12 @@ public:
     double cash = 0.;
     int dayCount = 0; // 1 is first day. no question asked
     Timer startOfDayTp;
+    double dayTpSaver = 0.;
 
 public:
     GameController(Game* game);
+
+    void setGame(Game* game);
 
     void handleAction(GameActions action);
 
@@ -48,6 +51,12 @@ public:
     void saveToSaveFile();
 
     void loadTestWorld();
+
+    constexpr static auto properties = std::make_tuple(  // remember to set game*
+            SaveUtilities::property(&GameController::cash, "Gc.ca"),
+            SaveUtilities::property(&GameController::dayCount, "Gc.dc"),
+            SaveUtilities::property(&GameController::dayTpSaver, "Gc.tp")
+    );
 };
 
 #endif //YAYA_GAMECONTROLLER_H

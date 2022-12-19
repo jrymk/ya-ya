@@ -341,6 +341,8 @@ void Game::load(const char* filepath) {
     if (fin.bad()) std::cerr << "file loading failed";
     debug << "deserialization done\n";
 
+    // setting game*
+    controller.setGame(this);
     for (auto &e: entities) {  // process entities (reminder: set serializationExtended)
         switch (e.second->type) {
             case PLAYER: {
