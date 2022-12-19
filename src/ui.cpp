@@ -161,7 +161,7 @@ void UserInterface::renderOverlay() {
     switch (game->controller.gameState) {
         case GameController::TITLE_SCREEN:
             Graphics::setFont(0);
-            Graphics::fillRect(sf::Color(62, 88, 122, 255), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
+            Graphics::fillRect(sf::Color(61, 156, 81, 255), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
             Graphics::drawText(L"鴨鴨！", sf::Color(255, 255, 255, 255), displayScaling * 150, Camera::getViewport() * UIVec(.5, .5), .5);
             Graphics::drawText(L"按F9啦", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
 
@@ -186,7 +186,7 @@ void UserInterface::renderOverlay() {
             double time = -game->controller.startOfDayTp.elapsed();
             int opacity = time < .5 ? std::max(.0, (time / .5 * 255)) : 255;
             Graphics::setFont(0);
-            Graphics::fillRect(sf::Color(62, 88, 122, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
+            Graphics::fillRect(sf::Color(61, 156, 81, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
             Graphics::drawText(L"第" + toWStr(game->controller.dayCount) + L"天", sf::Color(255, 255, 255, opacity), displayScaling * 120,
                                Camera::getViewport() * UIVec(.5, .5), .5);
             /// TODO: change animation
