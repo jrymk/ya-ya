@@ -197,6 +197,10 @@ Map::Chunk::Chunk(int bx, int by, Map* map) : basex(bx), basey(by), map(map) {
     }
 }
 
+void Map::Chunk::setMap(Map* map) {
+    this->map = map;
+}
+
 
 Map::Tile &Map::getTile(int x, int y) {
     auto c = std::make_pair(x & ~0b1111, y & ~0b1111);

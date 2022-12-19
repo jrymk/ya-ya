@@ -11,9 +11,16 @@ struct CollideBox {
     coord size;
     bool isCircle = false;
 
+    inline CollideBox(){}
     inline CollideBox(coord center, coord size, bool isCircle = false) : center(center), size(size), isCircle(isCircle) {}
 
     coord collide(const CollideBox &rhs, coord myOffset, coord rhsOffset) const;
+
+    constexpr static auto properties = std::make_tuple(
+            SaveUtilities::property(&CollideBox::center, "Cb.ct"),
+            SaveUtilities::property(&CollideBox::size, "CB.sz"),
+            SaveUtilities::property(&CollideBox::isCircle, "CB.ic")
+    );
 };
 
 class Map {
@@ -48,6 +55,14 @@ public:
         void neighborUpdate();
 
         void setTileType(TileType type, bool noUpdate = false);
+
+        constexpr static auto properties = std::make_tuple(  // reminder: set map*
+                SaveUtilities::property(&Tile::seed, "Tl.sd"),
+                SaveUtilities::property(&Tile::x, "Tl.xx"),
+                SaveUtilities::property(&Tile::y, "Tl.yy"),
+                SaveUtilities::property(&Tile::collideBoxes, "Tl.clb"),
+                SaveUtilities::property(&Tile::tileType, "Tl.tp")
+        );
     };
 
     // the map will be divided into 16x16 chunks
@@ -60,7 +75,16 @@ public:
 
         std::vector<Tile> tiles; // yyyyxxxx (x = lsb)
 
+        Chunk(){}
         Chunk(int bx, int by, Map* map);
+
+        void setMap(Map* map);
+
+        constexpr static auto properties = std::make_tuple(  // reminder: set map*
+                SaveUtilities::property(&Chunk::basex, "Cn.xx"),
+                SaveUtilities::property(&Chunk::basey, "Cn.yy"),
+                SaveUtilities::property(&Chunk::tiles, "Cn.tl")
+        );
     };
 
     std::map<std::pair<int, int>, Chunk> tileData;
@@ -68,6 +92,9 @@ public:
     bool exists(int x, int y);
 
     Tile &getTile(int x, int y);
+    constexpr static auto properties = std::make_tuple(  // reminder: set map*
+            SaveUtilities::property(&Map::tileData, "Mpp.td")
+    );
 };
 
 #endif

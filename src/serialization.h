@@ -72,6 +72,16 @@ namespace Serialization {
         }
     }
 
+    template<typename T, typename PF, typename PS>  // pair
+    inline std::string serialize(const std::pair<PF, PS> &obj) {
+        std::string str,
+                    fr = rserialize(obj.first),
+                    sc = rserialize(obj.second);
+        str.append("<PairF>" + std::to_string(fr.size()) + "</PairF>" + fr);
+        str.append("<PairS>" + std::to_string(sc.size()) + "</PairS>" + sc);
+        return str;
+    }
+
     template<typename T, typename U, typename A>
     // vector<object>
     inline std::string serialize(const std::vector<U, A> &obj) {
@@ -100,6 +110,11 @@ namespace Serialization {
 
     template<>
     inline std::string serialize(const int &val) {
+        return std::to_string(val);
+    }
+
+    template<>
+    inline std::string serialize(const unsigned &val) {
         return std::to_string(val);
     }
 
@@ -211,6 +226,20 @@ namespace Serialization {
             rdeserialize(*ptr, str.substr(addrEnd + 7));
         }
     }
+    
+    template<typename T, typename TF, typename TS>  // pair
+    inline void deserialize(std::pair<TF, TS> &obj, const std::string &str) {
+        if(!str.size()) return;  // avoid empty object
+        int sizeTagStart = str.find("<PairF>"),
+            sizeTagEnd = str.find("</PairF>"),
+            frSize = std::stoi(str.substr(sizeTagStart + 7, sizeTagEnd - sizeTagStart - 7));
+        rdeserialize(obj.first, str.substr(sizeTagEnd + 8, frSize));
+
+        sizeTagStart = str.find("<PairS>", sizeTagEnd + 8 + frSize);
+        sizeTagEnd = str.find("</PairS>", sizeTagEnd + 8 + frSize);
+        int scSize = std::stoi(str.substr(sizeTagStart + 7, sizeTagEnd - sizeTagStart - 7));
+        rdeserialize(obj.second, str.substr(sizeTagEnd + 8, scSize));
+    }
 
     template<typename T, typename U, typename A>
     // vector<object>
@@ -278,6 +307,12 @@ namespace Serialization {
     inline void deserialize(int &val, const std::string &data) {
         if(!data.size()) return;  // avoid empty object
         val = std::stoi(data);
+    }
+
+    template<>
+    inline void deserialize(unsigned &val, const std::string &data) {
+        if(!data.size()) return;  // avoid empty object
+        val = std::stoul(data);
     }
 
     template<>

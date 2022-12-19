@@ -384,6 +384,12 @@ void Game::load(const char* filepath) {
     }
     actionSaveList.clear();
 
+    for(auto& p : map.tileData) {  // process map
+        p.second.setMap(&map);
+        for(auto& t : p.second.tiles)
+            t.setMap(&map);
+    }
+
     SaveUtilities::clearObjTracker();  // don't forget to clear smart ptr ownership here
     fin.close();
     debug << "game successfully loaded\n";

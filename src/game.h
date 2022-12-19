@@ -97,7 +97,8 @@ public:
             SaveUtilities::property(&Game::entities, "Gm.et"),
             SaveUtilities::property(&Game::player, "Gm.pl"),
             SaveUtilities::property(&Game::truck, "Gm.tk"),
-            SaveUtilities::property(&Game::actionSaveList, "Gm.ac")
+            SaveUtilities::property(&Game::actionSaveList, "Gm.ac"),
+            SaveUtilities::property(&Game::map, "Gm.mpp")
     );
 };
 

@@ -47,7 +47,6 @@ int main() {
 
     /// game initialization
     Game game;
-    game.initTruckCollisionBoxes(3, -2);
 
     audio.playBGM();
 
@@ -69,7 +68,6 @@ int main() {
                     }
                     if (event.key.code == sf::Keyboard::F9) {
                         game.controller.loadToSaveFile();
-                        game.initTruckCollisionBoxes(3, -2);
                         game.controller.handleAction(GameController::BTN_START_LOAD_GAME);
                     }
                 case sf::Event::KeyReleased:
