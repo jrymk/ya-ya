@@ -4,9 +4,9 @@
 
 #include "timer.h"
 
-#define DAY_LENGTH 10.
+#define DAY_LENGTH 30.
 #define DAY_START_CUTSCENE_LENGTH 2.
-#define DAY_END_CUTSCENE_LENGTH 10.
+#define DAY_END_CUTSCENE_LENGTH 5.
 class Game;
 
 class GameController {
@@ -28,6 +28,7 @@ public:
 
     };
 
+    double cash = 0.;
     int dayCount = 0; // 1 is first day. no question asked
     Timer startOfDayTp;
 

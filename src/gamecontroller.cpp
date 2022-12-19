@@ -136,8 +136,6 @@ void GameController::startDaySequence() {
 }
 
 void GameController::endDaySequence() {
-    // TODO: count up truck goods
-
     double goodsAvailableForSale = 0.;
     debug << game->truck->id << ", " << game->truck->inventory.size() << "\n";
     for (int slot = Truck::InventorySlots::TRUCK_A0; slot <= Truck::InventorySlots::TRUCK_D3; slot++) {
@@ -160,6 +158,9 @@ void GameController::endDaySequence() {
                         goodsAvailableForSale += 800. + 200. * getRand();
                         break;
                 }
+                Action a(Timer::getNow(), GLOBAL_DESTROY);
+                a.argEntity[0] = e;
+                game->pushAction(a);
                 break;
             }
             case EGG_CARTON:
@@ -172,14 +173,17 @@ void GameController::endDaySequence() {
                             goodsAvailableForSale += 0.; // can you sell fertilized eggs?
                         else
                             goodsAvailableForSale += 10. + 2. * getRand(); // can you sell fertilized eggs?
+
+                        Action a(Timer::getNow(), GLOBAL_DESTROY);
+                        a.argEntity[0] = e->inventory[eslot];
+                        game->pushAction(a);
                     }
                 }
                 break;
-
         }
     }
     debug << "$" << goodsAvailableForSale << "\n";
-
+    cash += goodsAvailableForSale;
 }
 
 

@@ -123,23 +123,29 @@ void UserInterface::renderUI() {
 
 void UserInterface::renderOverlay() {
     /// OVERLAY
+    Graphics::drawText(L"$" + toWStr(game->controller.cash),
+                       sf::Color(255, 255, 255, 255), displayScaling * 32,
+                       Camera::getViewport() * UIVec(1., 0.) + UIVec(-12, displayScaling * 32 * 0.9), 1.);
     {
         switch (game->controller.gameState) {
             case GameController::TITLE_SCREEN:
                 Graphics::setFont(0);
                 Graphics::fillRect(sf::Color(62, 88, 122, 255), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
                 Graphics::drawText(L"烤鴨鴨", sf::Color(255, 255, 255, 255), displayScaling * 150, Camera::getViewport() * UIVec(.5, .5), .5);
+                Graphics::drawText(L"按F10啦", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
 
                 break;
 
-            case GameController::DAY_START_SCENE:
+            case GameController::DAY_START_SCENE: {
                 double time = -game->controller.startOfDayTp.elapsed();
                 int opacity = time < .5 ? (time / .5 * 255) : 255;
                 Graphics::setFont(0);
                 Graphics::fillRect(sf::Color(62, 88, 122, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
-                Graphics::drawText(L"第" + toWStr(game->controller.dayCount) + L"天", sf::Color(255, 255, 255, opacity), displayScaling * 120, Camera::getViewport() * UIVec(.5, .5), .5);
+                Graphics::drawText(L"第" + toWStr(game->controller.dayCount) + L"天", sf::Color(255, 255, 255, opacity), displayScaling * 120,
+                                   Camera::getViewport() * UIVec(.5, .5), .5);
                 /// TODO: change animation
                 break;
+            }
 
         }
     } /// OVERLAY

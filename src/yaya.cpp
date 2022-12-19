@@ -23,6 +23,7 @@
  * F5: duckwalk to cursor
  * F6: toggle action list
  * F7: destroy all ducks
+ * F10: exit title screen
  * F11: toggle fullscreen
  */
 
@@ -69,7 +70,7 @@ int main() {
                     Graphics::resizeView(event.size.width, event.size.height);
                     break;
                 case sf::Event::KeyPressed:
-                    if (event.key.code == sf::Keyboard::F12)
+                    if (event.key.code == sf::Keyboard::F10)
                         game.controller.handleAction(GameController::BTN_START_NEW_GAME);
                 case sf::Event::KeyReleased:
                     game.controls.handleKeyPress(event);
