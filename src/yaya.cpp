@@ -10,6 +10,8 @@
 #include "truck.h"
 #include "audio.h"
 
+#define TESTSAVE
+//#define TESTLOAD
 //#define SUSPEND_CMD
 
 /**
@@ -21,6 +23,7 @@
  * F5: duckwalk to cursor
  * F6: toggle action list
  * F7: destroy all ducks
+ * F8: show truck
  * F10: exit title screen
  * F11: toggle fullscreen
  */
@@ -32,7 +35,7 @@ int main() {
     Graphics::setRenderWindow(window);
     Graphics::createWindow(false);
     Graphics::loadFont(0, "./res/SourceHanSansTC-Bold.otf");
-//    Graphics::loadFont(1, "./res/PlusJakartaSans-ExtraBold.ttf");
+    Graphics::loadFont(1, "./res/PlusJakartaSans-Bold.ttf");
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("./res/tilemap.png"))
         debug << "failed to load tilemap.png";
@@ -46,6 +49,15 @@ int main() {
 
     /// game initialization
     Game game;
+
+#ifndef TESTLOAD
+    game.controller.loadTestWorld();
+#else
+    game.controller.loadToSaveFile();
+#endif
+
+    game.initTruckCollisionBoxes(3, -2);
+
     audio.playBGM();
 
     while (window.isOpen()) {
@@ -59,16 +71,8 @@ int main() {
                     Graphics::resizeView(event.size.width, event.size.height);
                     break;
                 case sf::Event::KeyPressed:
-                    if (event.key.code == sf::Keyboard::F10) {
-                        game.controller.loadTestWorld();  // TBD
-                        game.initTruckCollisionBoxes(3, -2);
+                    if (event.key.code == sf::Keyboard::F10)
                         game.controller.handleAction(GameController::BTN_START_NEW_GAME);
-                    }
-                    if (event.key.code == sf::Keyboard::F9) {
-                        game.controller.loadToSaveFile();
-                        game.initTruckCollisionBoxes(3, -2);
-                        game.controller.handleAction(GameController::BTN_START_LOAD_GAME);
-                    }
                 case sf::Event::KeyReleased:
                     game.controls.handleKeyPress(event);
                     game.controls.handleSoundOnAction(event, audio);
@@ -83,16 +87,15 @@ int main() {
                     break;
             }
         }
-        
+
         window.clear(sf::Color(129, 214, 131));
         UIRect rectWindow(sf::FloatRect(0, 0, window.getView().getSize().x, window.getView().getSize().y));
         Camera::setViewport(rectWindow);
-        
+
         /// render pass 1
-        if(game.controller.gameState != GameController::TITLE_SCREEN)
-            Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.1); /// TODO: decide underlying pos or pos
+        Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.1); /// TODO: decide underlying pos or pos
         Graphics::clearQuadsArray();
-        
+
         game.controller.update();
 
         game.update();
@@ -100,10 +103,11 @@ int main() {
         game.controls.update();
         // this should be AFTER game.update() so when the next main loop comes, the controls event are polled and executed, the states are up to date
         // but BEFORE renderUI() so it gets the newest states
-        
+
         game.render();
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
-        
+
+
         /// render pass 2
         Graphics::clearQuadsArray();
         game.ui.renderUI();
@@ -113,14 +117,16 @@ int main() {
         Graphics::clearQuadsArray();
         game.ui.renderOverlay();
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
-        
+
+
         window.display();
     }
 
+#ifdef TESTSAVE
     game.controller.saveToSaveFile();
-
-    #ifdef SUSPEND_CMD
-        getchar();  // for testing with cmd
-    #endif
+#endif
+#ifdef SUSPEND_CMD
+    getchar();  // for testing with cmd
+#endif
     return 0;
 }

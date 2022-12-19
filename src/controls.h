@@ -9,6 +9,8 @@
 #include "neighborsfinder.h"
 #include "audio.h"
 
+#define MOAI_COST 1000
+
 class Game;
 
 class Controls {
@@ -39,6 +41,13 @@ public:
         STORE_ITEM_TO_OTHER_HAND_CONTAINER,
         STORE_FACING_ITEM_TO_CONTAINER, // using the other hand, so it has to be empty (for this action the errors will be hidden)
     };
+
+    enum UIButtons {
+        NONE,
+        BUILD_MOAI,
+    };
+    UIButtons onHoverButton = NONE;
+    UIButtons onMouseClickButton = NONE;
 
     ControlsActions leftMouseClickAction;
     ControlsActions leftMouseAltClickAction;

@@ -23,6 +23,8 @@ public:
     void renderUI();
 
     void renderOverlay();
+
+    bool drawButton(const std::wstring &str, UIRect buttonRect, sf::Color bgColor, sf::Color textColor);
 };
 
 #endif //YAYA_UI_H

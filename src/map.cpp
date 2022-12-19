@@ -71,7 +71,7 @@ coord CollideBox::collide(const CollideBox &rhs, coord myOffset, coord rhsOffset
     return correctionVec;
 }
 
-void Map::Tile::pushQuads() {
+void Map::Tile::pushQuads(float zDepthOffset, sf::Color color) {
     std::vector<Graphics::Quad> grassSubTile;
     grassSubTile.push_back(modelGrass);
     UIVec xDelta = UIVec(grassSubTile[0].t2 - grassSubTile[0].t3) / 10.;
@@ -83,17 +83,17 @@ void Map::Tile::pushQuads() {
 
     switch (tileType) {
         case GRASS:
-            _pushQuads(&grassSubTile);
+            _pushQuads(&grassSubTile, zDepthOffset);
             break;
         case DIRT:
-            _pushQuads(&modelDirt);
+            _pushQuads(&modelDirt, zDepthOffset);
             break;
         case MOAI:
-            _pushQuads(&grassSubTile);
-            _pushQuads(&modelMoai);
+            _pushQuads(&grassSubTile, zDepthOffset);
+            _pushQuads(&modelMoai, zDepthOffset, color);
             break;
         case TRUCK:
-            _pushQuads(&grassSubTile);
+            _pushQuads(&grassSubTile, zDepthOffset, color);
             break;
     }
 }
@@ -138,8 +138,10 @@ void Map::Tile::setMap(Map* map) {
     this->map = map;
 }
 
-void Map::Tile::setTileType(Map::Tile::TileType type) {
+void Map::Tile::setTileType(Map::Tile::TileType type, bool noUpdate) {
     tileType = type;
+    if (noUpdate)
+        return;
     map->getTile(x - 1, y).neighborUpdate();
     map->getTile(x + 1, y).neighborUpdate();
     map->getTile(x, y - 1).neighborUpdate();
@@ -155,7 +157,7 @@ Map::Tile::Tile() {
     seed = getRandInt();
 }
 
-void Map::Tile::_pushQuads(std::vector<Graphics::Quad> const* model, double zDepthOffset) {
+void Map::Tile::_pushQuads(std::vector<Graphics::Quad> const* model, double zDepthOffset, sf::Color color) {
     for (auto quad: *model) {
         quad.v0 = Camera::getScreenPos(coord(quad.v0.x, quad.v0.y) + coord(x, y));
         quad.v1 = Camera::getScreenPos(coord(quad.v1.x, quad.v1.y) + coord(x, y));
@@ -164,10 +166,10 @@ void Map::Tile::_pushQuads(std::vector<Graphics::Quad> const* model, double zDep
         quad.zDepth += zDepthOffset + (Camera::getScreenPos(coord(float(x) + .5, float(y) + .5)).y / Camera::getViewport().size.y - 0.5) / 100.;
         // add (.5, .5) because map tiles have origins different from entities
 
-        quad.c0 = sf::Color(255, 255, 255, 255);
-        quad.c1 = sf::Color(255, 255, 255, 255);
-        quad.c2 = sf::Color(255, 255, 255, 255);
-        quad.c3 = sf::Color(255, 255, 255, 255);
+        quad.c0 = color;
+        quad.c1 = color;
+        quad.c2 = color;
+        quad.c3 = color;
 
         Graphics::insertQuad(quad);
 

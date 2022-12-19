@@ -5,7 +5,7 @@
 #include "truck.h"
 #include "duck.h"
 
-GameController::GameController(Game* game): game(game) {}
+GameController::GameController(Game* game) : game(game) {}
 
 void GameController::setGame(Game* game) {
     this->game = game;
@@ -14,6 +14,7 @@ void GameController::setGame(Game* game) {
 void GameController::handleAction(GameController::GameActions action) {
     switch (action) {
         case BTN_START_NEW_GAME:
+//            loadTestWorld();
             startOfDayTp = Timer::getNow() + DAY_START_CUTSCENE_LENGTH;
             gameState = DAY_START_SCENE;
             cash = 0;
@@ -42,7 +43,7 @@ void GameController::update() {
             }
             break;
         case DAY_END_SCENE:
-            if (startOfDayTp.elapsed() >= DAY_LENGTH + DAY_END_SCENE) {
+            if (startOfDayTp.elapsed() >= DAY_LENGTH + DAY_END_CUTSCENE_LENGTH) {
                 dayCount++;
                 startOfDayTp = Timer::getNow() + DAY_START_CUTSCENE_LENGTH;
                 gameState = DAY_START_SCENE;

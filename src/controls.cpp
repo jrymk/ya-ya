@@ -114,6 +114,18 @@ void Controls::update() {
             rightMouseAltClickAction = altClickAction;
         }
     }
+
+    if (onMouseClickButton != NONE) {
+        if (onMouseClickButton == BUILD_MOAI) {
+            Map::Tile previewTile;
+            previewTile.x = std::floor(Camera::getMouseCoord().x);
+            previewTile.y = std::floor(Camera::getMouseCoord().y);
+            previewTile.seed = game->map.getTile(previewTile.x, previewTile.y).seed;
+            previewTile.setTileType(Map::Tile::MOAI, true);
+            bool inReach = coord(0.5 + previewTile.x, 0.5 + previewTile.y).len(game->player->position) < 2.5;
+            previewTile.pushQuads(0.001, inReach ? sf::Color(255, 255, 255, 100) : sf::Color(255, 180, 180, 100));
+        }
+    }
 }
 
 std::shared_ptr<Entity> Controls::getFacingEntity(EntityType filter) {
@@ -203,13 +215,13 @@ Map::Tile &Controls::getFacingTile() {
             sf::Color(255, 255, 255, 255), sf::Color(0, 0, 0, 100)
     );
     std::pair<int, int> tile = {std::floor(refPnt.x), std::floor(refPnt.y)};
-    Graphics::insertUserWireframe(
-            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.1, 0.1)),
-            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.9, 0.1)),
-            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.9, 0.9)),
-            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.1, 0.9)),
-            sf::Color(100, 255, 255, 255), sf::Color(0, 0, 0, 100)
-    );
+//    Graphics::insertUserWireframe(
+//            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.1, 0.1)),
+//            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.9, 0.1)),
+//            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.9, 0.9)),
+//            Camera::getScreenPos(coord(tile.first, tile.second) + coord(0.1, 0.9)),
+//            sf::Color(100, 255, 255, 255), sf::Color(0, 0, 0, 100)
+//    );
     return game->map.getTile(tile.first, tile.second);
 }
 
@@ -296,48 +308,68 @@ void Controls::handleKeyPress(sf::Event &event) {
 
 void Controls::handleMousePress(sf::Event &event) {
     if (event.type == sf::Event::MouseButtonPressed) {
-        // no alt
+        if (onHoverButton == NONE) {
+            // no alt
 
-        int hand = -1;
-        ControlsActions action = UNDEFINED;
-        if (event.mouseButton.button == sf::Mouse::Button::Left) {
-            action = (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) ? leftMouseAltClickAction : leftMouseClickAction;
-            hand = Player::InventorySlots::LEFT_HAND;
+            int hand = -1;
+            ControlsActions action = UNDEFINED;
+            if (event.mouseButton.button == sf::Mouse::Button::Left) {
+                action = (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) ? leftMouseAltClickAction : leftMouseClickAction;
+                hand = Player::InventorySlots::LEFT_HAND;
+            }
+            if (event.mouseButton.button == sf::Mouse::Button::Right) {
+                action = (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) ? rightMouseAltClickAction : rightMouseClickAction;
+                hand = Player::InventorySlots::RIGHT_HAND;
+            }
+            if (hand == -1)
+                return;
+            int otherHand = 1 - hand;
+
+            /// we TRUST the results from controls.update, we TRUST the actions they gave is legal. Look how clean this code is
+            switch (action) {
+                case PICK_UP_ITEM:
+                case PICK_UP_CONTAINER:
+                    changeOwner(facingEntity, game->player, hand);
+                    break;
+                case PICK_UP_ITEM_FROM_FACING_CONTAINER:
+                    changeOwner(facingEntity->inventory[tryPickUpFromContainer(facingEntity)], game->player, hand);
+                    break;
+                case DROP_ITEM:
+                case DROP_CONTAINER:
+                    changeOwner(game->player->inventory[hand]);
+                    break;
+                case STORE_ITEM_TO_FACING_CONTAINER:
+                    changeOwner(game->player->inventory[hand], facingEntity,
+                                tryStoreToContainer(facingEntity, game->player->inventory[hand]));
+                    break;
+                case STORE_ITEM_TO_OTHER_HAND_CONTAINER:
+                    changeOwner(game->player->inventory[hand], game->player->inventory[otherHand],
+                                tryStoreToContainer(game->player->inventory[otherHand], game->player->inventory[hand], true));
+                    break;
+                case STORE_FACING_ITEM_TO_CONTAINER:
+                    changeOwner(facingEntity, game->player->inventory[hand],
+                                tryStoreToContainer(game->player->inventory[hand], facingEntity, true));
+                    break;
+            }
         }
-        if (event.mouseButton.button == sf::Mouse::Button::Right) {
-            action = (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) ? rightMouseAltClickAction : rightMouseClickAction;
-            hand = Player::InventorySlots::RIGHT_HAND;
+        else {
+
+            onMouseClickButton = onHoverButton;
         }
-        if (hand == -1)
-            return;
-        int otherHand = 1 - hand;
+    }
+    else if (event.type == sf::Event::MouseButtonReleased) {
+        if (onMouseClickButton != NONE) {
+            if (onMouseClickButton == BUILD_MOAI) {
+                int x = std::floor(Camera::getMouseCoord().x);
+                int y = std::floor(Camera::getMouseCoord().y);
+                bool inReach = coord(0.5 + x, 0.5 + y).len(game->player->position) < 2.5;
+                if (inReach) {
+                    game->map.getTile(x, y).setTileType(Map::Tile::MOAI);
+                    game->controller.cash -= MOAI_COST;
+                }
+            }
 
-        /// we TRUST the results from controls.update, we TRUST the actions they gave is legal. Look how clean this code is
-        switch (action) {
-            case PICK_UP_ITEM:
-            case PICK_UP_CONTAINER:
-                changeOwner(facingEntity, game->player, hand);
-                break;
-            case PICK_UP_ITEM_FROM_FACING_CONTAINER:
-                changeOwner(facingEntity->inventory[tryPickUpFromContainer(facingEntity)], game->player, hand);
-                break;
-            case DROP_ITEM:
-            case DROP_CONTAINER:
-                changeOwner(game->player->inventory[hand]);
-                break;
-            case STORE_ITEM_TO_FACING_CONTAINER:
-                changeOwner(game->player->inventory[hand], facingEntity,
-                            tryStoreToContainer(facingEntity, game->player->inventory[hand]));
-                break;
-            case STORE_ITEM_TO_OTHER_HAND_CONTAINER:
-                changeOwner(game->player->inventory[hand], game->player->inventory[otherHand],
-                            tryStoreToContainer(game->player->inventory[otherHand], game->player->inventory[hand], true));
-                break;
-            case STORE_FACING_ITEM_TO_CONTAINER:
-                changeOwner(facingEntity, game->player->inventory[hand],
-                            tryStoreToContainer(game->player->inventory[hand], facingEntity, true));
-                break;
-
+            onMouseClickButton = NONE;
         }
     }
 }
@@ -472,7 +504,7 @@ void Controls::handleSoundOnAction(sf::Event &event, Audio &audio) {
             event.key.code == sf::Keyboard::A ||
             event.key.code == sf::Keyboard::S ||
             event.key.code == sf::Keyboard::D) {
-                audio.playSound(0);
+            audio.playSound(0);
         }
     }
     if (event.type == sf::Event::MouseButtonPressed) {
@@ -487,7 +519,7 @@ void Controls::handleMouseScroll(sf::Event &event) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
         game->ui.displayScaling += event.mouseWheel.delta * .25;
         game->ui.displayScaling = std::max(game->ui.displayScaling, .25f);
-        Camera::setZoom(15. / game->ui.displayScaling);
+        Camera::setZoom(22. / game->ui.displayScaling);
         debug << "Display scaling: " << game->ui.displayScaling << "\n";
     }
 }

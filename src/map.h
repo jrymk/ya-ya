@@ -20,11 +20,12 @@ class Map {
 public:
     class Tile {
         Map* map = nullptr;
-        uint32_t seed;
 
-        void _pushQuads(std::vector<Graphics::Quad> const* model, double zDepthOffset = 0.);
+        void _pushQuads(std::vector<Graphics::Quad> const* model, double zDepthOffset = 0., sf::Color color = sf::Color::White);
 
     public:
+        uint32_t seed;
+
         int x = 0;
         int y = 0;
         std::vector<CollideBox> collideBoxes;
@@ -42,11 +43,11 @@ public:
 
         Tile();
 
-        void pushQuads();
+        void pushQuads(float zDepthOffset = 0., sf::Color color = sf::Color::White);
 
         void neighborUpdate();
 
-        void setTileType(TileType type);
+        void setTileType(TileType type, bool noUpdate = false);
     };
 
     // the map will be divided into 16x16 chunks

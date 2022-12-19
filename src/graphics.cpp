@@ -124,6 +124,22 @@ void Graphics::drawImage(const Image &image, float zDepth, UIVec pos, UIVec alig
     ));
 }
 
+UIRect Graphics::drawImageGetRect(const Image &image, float zDepth, UIVec pos, UIVec align, float scale, sf::Color color) {
+    scale *= image.defaultScale;
+    insertQuad(Quad(
+            zDepth,
+            pos + UIVec(image.textureSize) * UIVec(0., 0.) - (UIVec(image.textureSize) * scale) * align, image.texturePos,
+            pos + UIVec(image.textureSize) * UIVec(scale, 0.) - (UIVec(image.textureSize) * scale) * align, image.texturePos + sf::Vector2f(image.textureSize.x, 0.),
+            pos + UIVec(image.textureSize) * UIVec(scale, scale) - (UIVec(image.textureSize) * scale) * align, image.texturePos + image.textureSize,
+            pos + UIVec(image.textureSize) * UIVec(0., scale) - (UIVec(image.textureSize) * scale) * align, image.texturePos + sf::Vector2f(0., image.textureSize.y),
+            color
+    ));
+    UIRect rect(pos + UIVec(image.textureSize) * UIVec(0., 0.) - (UIVec(image.textureSize) * scale) * align,
+                (pos + UIVec(image.textureSize) * UIVec(scale, scale) - (UIVec(image.textureSize) * scale) * align) -
+                (pos + UIVec(image.textureSize) * UIVec(0., 0.) - (UIVec(image.textureSize) * scale) * align));
+    return rect;
+}
+
 void Graphics::appendWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color &color, const sf::Color &bgcolor) {
     wireframeVertexArray.append(sf::Vertex(v0.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
     wireframeVertexArray.append(sf::Vertex(v1.getVec2f() + sf::Vector2f(1., 1.), bgcolor));
@@ -236,14 +252,14 @@ void Graphics::renderQuads(sf::RenderWindow &window, sf::Texture &texture, UIRec
     outOfSightQuads = 0;
 
     for (auto &quad: quadsArray) {
-        if ((quad.v0.x<viewport.pos.x || quad.v0.x>(viewport.pos.x + viewport.size.x) ||
-             quad.v0.y<viewport.pos.y || quad.v0.y>(viewport.pos.y + viewport.size.y)) &&
-            (quad.v1.x<viewport.pos.x || quad.v1.x>(viewport.pos.x + viewport.size.x) ||
-             quad.v1.y<viewport.pos.y || quad.v1.y>(viewport.pos.y + viewport.size.y)) &&
-            (quad.v2.x<viewport.pos.x || quad.v2.x>(viewport.pos.x + viewport.size.x) ||
-             quad.v2.y<viewport.pos.y || quad.v2.y>(viewport.pos.y + viewport.size.y)) &&
-            (quad.v3.x<viewport.pos.x || quad.v3.x>(viewport.pos.x + viewport.size.x) ||
-             quad.v3.y<viewport.pos.y || quad.v3.y>(viewport.pos.y + viewport.size.y))) {
+        if ((quad.v0.x<(viewport.pos.x - viewport.size.x) || quad.v0.x>(viewport.pos.x + 2. * viewport.size.x) ||
+             quad.v0.y<(viewport.pos.y - viewport.size.y) || quad.v0.y>(viewport.pos.y + 2. * viewport.size.y)) &&
+            (quad.v1.x<(viewport.pos.x - viewport.size.x) || quad.v1.x>(viewport.pos.x + 2. * viewport.size.x) ||
+             quad.v1.y<(viewport.pos.y - viewport.size.y) || quad.v1.y>(viewport.pos.y + 2. * viewport.size.y)) &&
+            (quad.v2.x<(viewport.pos.x - viewport.size.x) || quad.v2.x>(viewport.pos.x + 2. * viewport.size.x) ||
+             quad.v2.y<(viewport.pos.y - viewport.size.y) || quad.v2.y>(viewport.pos.y + 2. * viewport.size.y)) &&
+            (quad.v3.x<(viewport.pos.x - viewport.size.x) || quad.v3.x>(viewport.pos.x + 2. * viewport.size.x) ||
+             quad.v3.y<(viewport.pos.y - viewport.size.y) || quad.v3.y>(viewport.pos.y + 2. * viewport.size.y))) {
             if (debugOutOfSight) {
                 UIVec center = (quad.v0 + quad.v1 + quad.v2 + quad.v3) / 4.;
                 center.x = std::min(std::max(center.x, (float) 5.), viewport.size.x - (float) 5.);
@@ -255,7 +271,8 @@ void Graphics::renderQuads(sf::RenderWindow &window, sf::Texture &texture, UIRec
                                 sf::Color::Yellow, sf::Color::Black);
             }
             outOfSightQuads++;
-        } else {
+        }
+        else {
             vertexArray.append(sf::Vertex(quad.v0.getVec2f(), quad.c0, quad.t0));
             vertexArray.append(sf::Vertex(quad.v1.getVec2f(), quad.c1, quad.t1));
             vertexArray.append(sf::Vertex(quad.v2.getVec2f(), quad.c2, quad.t2));

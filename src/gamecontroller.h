@@ -4,9 +4,10 @@
 
 #include "timer.h"
 
-#define DAY_LENGTH 30.
+#define DAY_LENGTH 90.
 #define DAY_START_CUTSCENE_LENGTH 2.
-#define DAY_END_CUTSCENE_LENGTH 5.
+#define DAY_END_CUTSCENE_LENGTH 0. // TODO: end screen
+
 class Game;
 
 class GameController {

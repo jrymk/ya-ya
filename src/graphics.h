@@ -58,8 +58,8 @@ struct UIVec { // pixel space
     inline float angle(const UIVec r) { return std::acos(float(r.x - x) / len(r)) * ((r.y - y >= 0) ? float(1) : float(-1)); }
 
     constexpr static auto properties = std::make_tuple(
-        SaveUtilities::property(&UIVec::x, "Uv.xx"),
-        SaveUtilities::property(&UIVec::y, "Uv.yy")
+            SaveUtilities::property(&UIVec::x, "Uv.xx"),
+            SaveUtilities::property(&UIVec::y, "Uv.yy")
     );
 };
 
@@ -194,6 +194,8 @@ public:
     static void drawTextBatch(sf::VertexArray &va, const std::string &str, const sf::Color &fillColor, int size, UIVec pos, float align = 0.);
 
     static void drawImage(const Image &image, float zDepth, UIVec pos, UIVec align, float scale = 1., sf::Color color = sf::Color::White);
+
+    static UIRect drawImageGetRect(const Image &image, float zDepth, UIVec pos, UIVec align, float scale = 1., sf::Color color = sf::Color::White);
 
     static void appendWireframe(UIVec v0, UIVec v1, UIVec v2, UIVec v3, const sf::Color &color = sf::Color::Black, const sf::Color &bgcolor = sf::Color::White);
 
