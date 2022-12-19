@@ -243,13 +243,13 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
             break;
         }
         case DUCK_FINISH_SEX: {
-            duckAudio.playSound(1);
+            std::srand(std::time(0));
+            duckAudio.playSound(std::rand() % 2);
             if (!genderIsMale) {
                 if (getRand() < .9) // 90% success sex
                     fertilized = true;
             }
             else {
-                duckAudio.playSound(0);
                 // happy
             }
             break;

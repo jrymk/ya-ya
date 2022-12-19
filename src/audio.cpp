@@ -42,12 +42,14 @@ void Audio::playBGM() {
 
 void Audio::muteSound() {
     for(auto i : index(soundVec)) {
-        if(i.second.getVolume() != 0.)
+        if(i.second.getVolume() != 0. && i.first != BGM_ID)
             i.second.setVolume(0);
         else if(i.second.getVolume() == 0. && i.first != BGM_ID)
             i.second.setVolume(100);
-        else if(i.second.getVolume() == 0. && i.first == BGM_ID)
-            i.second.setVolume(5);
+        else if(i.second.getStatus() == sf::SoundSource::Status::Stopped && i.first == BGM_ID)
+            i.second.play();
+        else if(i.second.getStatus() == sf::SoundSource::Status::Playing && i.first == BGM_ID)
+            i.second.stop();
     }
 }
 
