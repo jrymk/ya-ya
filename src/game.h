@@ -46,6 +46,8 @@ public:
 
     void setPlayer(std::shared_ptr<Player> &player);
     void setTruck(std::shared_ptr<Truck> &truck);
+    
+    void addRandomDuck();
 
     void processCollisions();
 

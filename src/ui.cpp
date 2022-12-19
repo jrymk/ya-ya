@@ -163,14 +163,14 @@ void UserInterface::renderOverlay() {
             Graphics::setFont(0);
             Graphics::fillRect(sf::Color(61, 156, 81, 255), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
             Graphics::drawText(L"鴨鴨！", sf::Color(255, 255, 255, 255), displayScaling * 150, Camera::getViewport() * UIVec(.5, .5), .5);
-            Graphics::drawText(L"按F9啦", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
-
+            Graphics::drawText(L"F9  返回舊有農場", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
+            Graphics::drawText(L"F10  購買全新農場", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .8), .5);
             break;
         case GameController::DAY_END_SCENE: {
             double time = game->controller.startOfDayTp.elapsed() - DAY_LENGTH;
             int opacity = time < .5 ? (time / .5 * 255) : 255;
             Graphics::setFont(0);
-            Graphics::fillRect(sf::Color(62, 88, 122, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
+            Graphics::fillRect(sf::Color(61, 156, 81, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
             Graphics::drawText(L"銷貨收入：$ " + toWStr(game->controller.goodsAvailableForSale) + L" !", sf::Color(255, 180, 85, opacity), displayScaling * 120,
                                Camera::getViewport() * UIVec(.5, .2), .5);
             Graphics::drawText(L"明細：", sf::Color(255, 255, 255, 255), displayScaling * 36, Camera::getViewport() * UIVec(.5, .4), .4);

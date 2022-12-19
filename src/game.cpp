@@ -36,6 +36,7 @@ void Game::update() {
         player->slideVelocity = coord();
 
     player->heading = player->position.angle(Camera::getMouseCoord());
+    addRandomDuck();
 
     neighborsFinder.update();
     mapUpdate();
@@ -402,4 +403,20 @@ void Game::initTruckCollisionBoxes(int baseX, int baseY) {
 
 void Game::setTruck(std::shared_ptr<Truck> &truck) {
     this->truck = truck;
+}
+
+void Game::addRandomDuck() {
+    if(getRand() > 1 / 900.) return;  // a duck most averagely dies after 300 secs, natural spawn rate 15 secs 
+
+    std::shared_ptr<Egg> egg = std::make_shared<Egg>(this);
+    egg->id = newId(EGG);
+    egg->opacity = 1.;
+
+    double radius = 20. + 20. * getRand(), theta = 2. * M_PI * getRand();
+    egg->underlyingPos.x = player->underlyingPos.x + radius * cos(theta);
+    egg->underlyingPos.y = player->underlyingPos.y + radius * sin(theta);
+
+    egg->genderIsMale = (getRand() > 0.5);
+    egg->fertilized = true;
+    insertEntity(egg);
 }
