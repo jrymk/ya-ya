@@ -10,7 +10,7 @@
 #include "gamecontroller.h"
 
 void UserInterface::renderUI() {
-    if(game->controller.gameState == GameController::TITLE_SCREEN) return;  // no render on title
+    if (game->controller.gameState == GameController::TITLE_SCREEN) return;  // no render on title
     Graphics::setFont(0);
     const float totalHeight = 140. * displayScaling;
     const float bottomPadding = 8. * displayScaling;
@@ -163,7 +163,7 @@ void UserInterface::renderOverlay() {
             Graphics::setFont(0);
             Graphics::fillRect(sf::Color(62, 88, 122, 255), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
             Graphics::drawText(L"鴨鴨！", sf::Color(255, 255, 255, 255), displayScaling * 150, Camera::getViewport() * UIVec(.5, .5), .5);
-            Graphics::drawText(L"按F10啦", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
+            Graphics::drawText(L"按F9啦", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
 
             break;
 

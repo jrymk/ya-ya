@@ -72,24 +72,25 @@ int main() {
                     if (event.key.code == sf::Keyboard::F10) {
                         game.controller.loadTestWorld();  // TBD
                         game.initTruckCollisionBoxes(3, -2);
-                        if (event.key.code == sf::Keyboard::F9) {
-                            game.controller.loadToSaveFile();
-                            game.initTruckCollisionBoxes(3, -2);
-                            game.controller.handleAction(GameController::BTN_START_LOAD_GAME);
-                        }
-                        case sf::Event::KeyReleased:
-                            game.controls.handleKeyPress(event);
-                        game.controls.handleSoundOnAction(event, audio);
-                        break;
-                        case sf::Event::MouseButtonPressed:
-                        case sf::Event::MouseButtonReleased:
-                            game.controls.handleMousePress(event);
-                        game.controls.handleSoundOnAction(event, audio);
-                        break;
-                        case sf::Event::MouseWheelMoved:
-                            game.controls.handleMouseScroll(event);
-                        break;
                     }
+                    if (event.key.code == sf::Keyboard::F9) {
+                        game.controller.loadToSaveFile();
+                        game.initTruckCollisionBoxes(3, -2);
+                        game.controller.handleAction(GameController::BTN_START_LOAD_GAME);
+                    }
+                    break;
+                case sf::Event::KeyReleased:
+                    game.controls.handleKeyPress(event);
+                    game.controls.handleSoundOnAction(event, audio);
+                    break;
+                case sf::Event::MouseButtonPressed:
+                case sf::Event::MouseButtonReleased:
+                    game.controls.handleMousePress(event);
+                    game.controls.handleSoundOnAction(event, audio);
+                    break;
+                case sf::Event::MouseWheelMoved:
+                    game.controls.handleMouseScroll(event);
+                    break;
             }
 
             window.clear(sf::Color(129, 214, 131));
@@ -126,12 +127,12 @@ int main() {
 
             window.display();
         }
+    }
 
-        game.controller.saveToSaveFile();
+    game.controller.saveToSaveFile();
 
 #ifdef SUSPEND_CMD
-        getchar();  // for testing with cmd
+    getchar();  // for testing with cmd
 #endif
-        return 0;
-    }
+    return 0;
 }
