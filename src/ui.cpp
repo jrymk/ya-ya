@@ -6,9 +6,10 @@
 #include "player.h"
 #include "localization.h"
 #include "model.h"
+#include "gamecontroller.h"
 
 void UserInterface::renderUI() {
-    Graphics::setFont(4);
+    Graphics::setFont(0);
     const float totalHeight = 90. * displayScaling;
     const float bottomPadding = 8. * displayScaling;
     const float padding = 12. * displayScaling;
@@ -118,5 +119,29 @@ void UserInterface::renderUI() {
             Graphics::drawText(game->player->inventory[Player::InventorySlots::LEFT_HAND]->id, sf::Color(255, 255, 255, 255), 22. * displayScaling,
                                nameRect * UIVec(1., 0.) + UIVec(-textLRPadding, 14. * displayScaling + 22. * textYOffsetRatio), 1.);
     } /// INFO
+}
+
+void UserInterface::renderOverlay() {
+    /// OVERLAY
+    {
+        switch (game->controller.gameState) {
+            case GameController::TITLE_SCREEN:
+                Graphics::setFont(0);
+                Graphics::fillRect(sf::Color(62, 88, 122, 255), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
+                Graphics::drawText(L"烤鴨鴨", sf::Color(255, 255, 255, 255), displayScaling * 150, Camera::getViewport() * UIVec(.5, .5), .5);
+
+                break;
+
+            case GameController::DAY_START_SCENE:
+                double time = -game->controller.startOfDayTp.elapsed();
+                int opacity = time < .5 ? (time / .5 * 255) : 255;
+                Graphics::setFont(0);
+                Graphics::fillRect(sf::Color(62, 88, 122, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
+                Graphics::drawText(L"第" + toWStr(game->controller.dayCount) + L"天", sf::Color(255, 255, 255, opacity), displayScaling * 120, Camera::getViewport() * UIVec(.5, .5), .5);
+                /// TODO: change animation
+                break;
+
+        }
+    } /// OVERLAY
 
 }

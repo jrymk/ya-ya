@@ -13,6 +13,8 @@ std::string toStr(int a);
 
 std::string toStr(double a, const int digits = -1);
 
+std::wstring toWStr(int a);
+
 std::pair<std::string, std::string> splitId(std::string id);
 
 class FramerateCounter {

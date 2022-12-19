@@ -3,6 +3,7 @@
 #define YAYA_DUCK_H
 
 #include "entity.h"
+#include "audio.h"
 
 class Duck : public Entity {
 public:
@@ -14,6 +15,8 @@ public:
     void loadModel() override;
 
     Game* game;
+
+    Audio duckAudio;
 
     Duck();
 
@@ -40,7 +43,7 @@ public:
     constexpr static auto properties = std::tuple_cat(Entity::properties, std::make_tuple(
             SaveUtilities::property(&Duck::genderIsMale, "Dk.gd"),
             SaveUtilities::property(&Duck::fertilized, "Dk.fr")
-    ));  // reminder: set game*     
+    ));  // reminder: set game*
 };
 
 #endif

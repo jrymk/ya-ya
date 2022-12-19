@@ -1,3 +1,4 @@
+#pragma once
 #ifndef YAYA_TRUCK_H
 #define YAYA_TRUCK_H
 

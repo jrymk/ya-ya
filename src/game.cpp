@@ -10,12 +10,30 @@
 #include "serializationExtended.h"
 
 Game::Game() :
+        controller(this),
         neighborsFinder(this),
         controls(this),
         ui(this) {}
 
 void Game::update() {
     Timer updateTimer;
+
+    // control player movement
+    UIVec moveVec; // on screen vec
+    if (controls.dirPadPress & 0b0001)
+        moveVec.y -= 1.;
+    if (controls.dirPadPress & 0b0010)
+        moveVec.y += 1.;
+    if (controls.dirPadPress & 0b0100)
+        moveVec.x -= 1.;
+    if (controls.dirPadPress & 0b1000)
+        moveVec.x += 1.;
+    if (moveVec.len(UIVec()) > .1)
+        player->slideVelocity = coord(Camera::getTransform().getInverse().transformPoint((moveVec).getVec2f())).unit() * 4.;
+    else
+        player->slideVelocity = coord();
+
+    player->heading = player->position.angle(Camera::getMouseCoord());
 
     neighborsFinder.update();
     mapUpdate();
@@ -246,12 +264,29 @@ void Game::destroyEntity(std::string id) {
 }
 
 void Game::render() {
-
     renderMap();
 
     for (auto entity: entities) {
         entity.second->pushQuads();
     }
+
+    // player target location indicator
+    Graphics::insertUserWireframe(
+            Camera::getScreenPos(player->underlyingPos) + UIVec(5, 0),
+            Camera::getScreenPos(player->underlyingPos) + UIVec(0, 5),
+            Camera::getScreenPos(player->underlyingPos) + UIVec(-5, 0),
+            Camera::getScreenPos(player->underlyingPos) + UIVec(0, -5),
+            sf::Color(100, 255, 255, int(std::max(std::min((player->underlyingPos.len(player->position) - .5) * 255., 255.), 0.))),
+            sf::Color(0, 0, 0, int(std::max(std::min((player->underlyingPos.len(player->position) - .5) * 255., 255.), 0.)))
+    );
+    Graphics::insertUserWireframe(
+            Camera::getScreenPos(player->underlyingPos) + UIVec(3, 0),
+            Camera::getScreenPos(player->underlyingPos) + UIVec(0, 3),
+            Camera::getScreenPos(player->underlyingPos) + UIVec(-3, 0),
+            Camera::getScreenPos(player->underlyingPos) + UIVec(0, -3),
+            sf::Color(0, 0, 0, int(std::max(std::min((player->underlyingPos.len(player->position) - .5) * 255., 255.), 0.))),
+            sf::Color(100, 255, 255, int(std::max(std::min((player->underlyingPos.len(player->position) - .5) * 255., 255.), 0.)))
+    );
 }
 
 void Game::renderMap() {
@@ -323,6 +358,18 @@ void Game::load(const char* filepath) {
     debug << "game successfully loaded\n";
 }
 
-void Game::setPlayer(std::shared_ptr<Entity> &player) {
+void Game::setPlayer(std::shared_ptr<Player> &player) {
     this->player = player;
+}
+
+void Game::initTruckCollisionBoxes(int baseX, int baseY) {
+    // even loading from file needs this because we don't have map serialization and deserialization, right?
+    for (int x = baseX; x < 10; x++) {  // truck collision
+        for (int y = baseY; y < 2; y++)
+            map.getTile(x, y).setTileType(Map::Tile::TRUCK); // for collision, because I don't want to make collision boxes work with entities
+    }
+}
+
+void Game::setTruck(std::shared_ptr<Truck> &truck) {
+    this->truck = truck;
 }

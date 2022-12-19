@@ -7,6 +7,7 @@
 #include "entity.h"
 #include "camera.h"
 #include "neighborsfinder.h"
+#include "audio.h"
 
 class Game;
 
@@ -54,12 +55,13 @@ public:
 
     void update();
 
-
     void handleKeyPress(sf::Event &event);
 
     void handleMousePress(sf::Event &event);
 
-    void handleSoundOnAction(sf::Event &event);
+    void handleMouseScroll(sf::Event &event);
+
+    void handleSoundOnAction(sf::Event &event, Audio &audio);
 };
 
 #endif

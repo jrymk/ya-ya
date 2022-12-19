@@ -22,7 +22,7 @@ public:
 
     void renderUI();
 
-
+    void renderOverlay();
 };
 
 #endif //YAYA_UI_H
