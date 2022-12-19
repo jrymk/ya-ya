@@ -10,8 +10,6 @@
 #include "truck.h"
 #include "audio.h"
 
-#define TESTSAVE
-//#define TESTLOAD
 //#define SUSPEND_CMD
 
 /**
@@ -71,8 +69,14 @@ int main() {
                     Graphics::resizeView(event.size.width, event.size.height);
                     break;
                 case sf::Event::KeyPressed:
-                    if (event.key.code == sf::Keyboard::F10)
-                        game.controller.handleAction(GameController::BTN_START_NEW_GAME);
+                    if (event.key.code == sf::Keyboard::F10) {
+                        game.controller.loadTestWorld();  // TBD
+                        game.initTruckCollisionBoxes(3, -2);
+                    if (event.key.code == sf::Keyboard::F9) {
+                        game.controller.loadToSaveFile();
+                        game.initTruckCollisionBoxes(3, -2);
+                        game.controller.handleAction(GameController::BTN_START_LOAD_GAME);
+                    }
                 case sf::Event::KeyReleased:
                     game.controls.handleKeyPress(event);
                     game.controls.handleSoundOnAction(event, audio);
@@ -93,7 +97,8 @@ int main() {
         Camera::setViewport(rectWindow);
 
         /// render pass 1
-        Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.1); /// TODO: decide underlying pos or pos
+        if(game.controller.gameState != GameController::TITLE_SCREEN)
+            Camera::setCenter(Camera::getCenter() + (game.player->position - Camera::getCenter()) * 0.1); /// TODO: decide underlying pos or pos
         Graphics::clearQuadsArray();
 
         game.controller.update();
@@ -122,11 +127,10 @@ int main() {
         window.display();
     }
 
-#ifdef TESTSAVE
     game.controller.saveToSaveFile();
-#endif
-#ifdef SUSPEND_CMD
-    getchar();  // for testing with cmd
-#endif
+
+    #ifdef SUSPEND_CMD
+        getchar();  // for testing with cmd
+    #endif
     return 0;
 }

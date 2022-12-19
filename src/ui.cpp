@@ -10,6 +10,7 @@
 #include "gamecontroller.h"
 
 void UserInterface::renderUI() {
+    if(game->controller.gameState == GameController::TITLE_SCREEN) return;  // no render on title
     Graphics::setFont(0);
     const float totalHeight = 140. * displayScaling;
     const float bottomPadding = 8. * displayScaling;
