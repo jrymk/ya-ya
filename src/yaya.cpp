@@ -33,7 +33,7 @@ int main() {
     Graphics::setRenderWindow(window);
     Graphics::createWindow(false);
     Graphics::loadFont(0, "./res/SourceHanSansTC-Bold.otf");
-    Graphics::loadFont(1, "./res/PlusJakartaSans-ExtraBold.ttf");
+//    Graphics::loadFont(1, "./res/PlusJakartaSans-ExtraBold.ttf");
     sf::Texture tilemap;
     if (!tilemap.loadFromFile("./res/tilemap.png"))
         debug << "failed to load tilemap.png";
