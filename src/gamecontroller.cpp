@@ -5,7 +5,7 @@
 #include "truck.h"
 #include "duck.h"
 
-GameController::GameController(Game* game) : game(game) {}
+GameController::GameController(Game* game) : game(game), goodsSold(G_CNT) {}
 
 void GameController::setGame(Game* game) {
     this->game = game;
@@ -30,13 +30,10 @@ void GameController::handleAction(GameController::GameActions action) {
 void GameController::update() {
     switch (gameState) {
         case DAY_START_SCENE:
-
             if (startOfDayTp.elapsed() >= 0.)
                 gameState = GAMEPLAY;
             break;
         case GAMEPLAY:
-
-
             if (startOfDayTp.elapsed() >= DAY_LENGTH) {
                 gameState = DAY_END_SCENE;
                 endDaySequence();
@@ -146,7 +143,8 @@ void GameController::startDaySequence() {
 }
 
 void GameController::endDaySequence() {
-    double goodsAvailableForSale = 0.;
+    goodsAvailableForSale = 0.;
+    std::fill(std::begin(goodsSold), std::end(goodsSold), 0);
     debug << game->truck->id << ", " << game->truck->inventory.size() << "\n";
     for (int slot = Truck::InventorySlots::TRUCK_A0; slot <= Truck::InventorySlots::TRUCK_D3; slot++) {
         std::shared_ptr<Entity> e = game->truck->inventory[slot];
@@ -160,12 +158,15 @@ void GameController::endDaySequence() {
                 switch (duck->growStage) {
                     case Duck::DUCKLING:
                         goodsAvailableForSale += 50. + 10. * getRand();
+                        goodsSold[G_DUCKLING]++;
                         break;
                     case Duck::CHILD:
                         goodsAvailableForSale += 90. + 30. * getRand();
+                        goodsSold[G_CHILD]++;
                         break;
                     case Duck::GROWN:
                         goodsAvailableForSale += 800. + 200. * getRand();
+                        goodsSold[G_GROWN]++;
                         break;
                 }
                 Action a(Timer::getNow(), GLOBAL_DESTROY);
@@ -179,10 +180,14 @@ void GameController::endDaySequence() {
                         std::shared_ptr<Egg> egg = std::dynamic_pointer_cast<Egg>(e->inventory[eslot]);
                         if (!egg)
                             break;
-                        if (egg->fertilized)
+                        if (egg->fertilized) {
                             goodsAvailableForSale += 0.; // can you sell fertilized eggs?
-                        else
+                            goodsSold[G_FERTILIZED_EGG]++;
+                        }
+                        else {
                             goodsAvailableForSale += 10. + 2. * getRand(); // can you sell fertilized eggs?
+                            goodsSold[G_UNFERTILIZED_EGG]++;
+                        }
 
                         Action a(Timer::getNow(), GLOBAL_DESTROY);
                         a.argEntity[0] = e->inventory[eslot];

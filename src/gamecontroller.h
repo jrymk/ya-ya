@@ -6,7 +6,7 @@
 
 #define DAY_LENGTH 90.
 #define DAY_START_CUTSCENE_LENGTH 2.
-#define DAY_END_CUTSCENE_LENGTH 0. // TODO: end screen
+#define DAY_END_CUTSCENE_LENGTH 5.
 
 class Game;
 
@@ -29,7 +29,18 @@ public:
 
     };
 
+    enum GoodType {
+        G_GROWN,
+        G_CHILD,
+        G_DUCKLING,
+        G_UNFERTILIZED_EGG,
+        G_FERTILIZED_EGG,
+        G_CNT
+    };
+
     double cash = 0.;
+    double goodsAvailableForSale = 0.;
+    std::vector<int> goodsSold;
     int dayCount = 0; // 1 is first day. no question asked
     Timer startOfDayTp;
 

@@ -166,10 +166,25 @@ void UserInterface::renderOverlay() {
             Graphics::drawText(L"按F9啦", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
 
             break;
-
+        case GameController::DAY_END_SCENE: {
+            double time = game->controller.startOfDayTp.elapsed() - DAY_LENGTH;
+            int opacity = time < .5 ? (time / .5 * 255) : 255;
+            Graphics::setFont(0);
+            Graphics::fillRect(sf::Color(62, 88, 122, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
+            Graphics::drawText(L"銷貨收入：$ " + toWStr(game->controller.goodsAvailableForSale) + L" !", sf::Color(255, 180, 85, opacity), displayScaling * 120,
+                               Camera::getViewport() * UIVec(.5, .2), .5);
+            Graphics::drawText(L"明細：", sf::Color(255, 255, 255, 255), displayScaling * 36, Camera::getViewport() * UIVec(.5, .4), .4);
+            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_GROWN]) + L" 隻大鴨", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .5), .5);
+            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_CHILD]) + L" 隻小鴨", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .6), .5);
+            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_DUCKLING]) + L" 隻幼鴨", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
+            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_UNFERTILIZED_EGG]) + L" 顆鴨蛋", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .8), .5);
+            if(game->controller.goodsSold[GameController::G_FERTILIZED_EGG])
+                Graphics::drawText(L"還有 " + toWStr(game->controller.goodsSold[GameController::G_GROWN]) + L" 顆沒人想吃的鴨仔蛋 :)", sf::Color(250, 185, 185, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .9), .5);
+            break;
+        }
         case GameController::DAY_START_SCENE: {
             double time = -game->controller.startOfDayTp.elapsed();
-            int opacity = time < .5 ? (time / .5 * 255) : 255;
+            int opacity = time < .5 ? std::max(.0, (time / .5 * 255)) : 255;
             Graphics::setFont(0);
             Graphics::fillRect(sf::Color(62, 88, 122, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
             Graphics::drawText(L"第" + toWStr(game->controller.dayCount) + L"天", sf::Color(255, 255, 255, opacity), displayScaling * 120,
