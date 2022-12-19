@@ -12,26 +12,28 @@
 
 class Audio {
 private :
-    inline static int samples;
-    inline static sf::SoundBuffer buffer;
-    inline static std::vector<sf::SoundBuffer> bufferVec;
-    inline static sf::Sound sound;
-    inline static std::vector<sf::Sound> soundVec;
-    inline static std::vector<bool> loop;
+    int samples = 0;
+    sf::SoundBuffer buffer;
+    std::vector<sf::SoundBuffer> bufferVec;
+    sf::Sound sound;
+    std::vector<sf::Sound> soundVec;
+    std::vector<bool> loop;
 public :
     inline Audio() = default;
 
     inline ~Audio() = default;
 
-    static void loadSound(std::string fileName);
+    void loadSound(std::string fileName);
 
-    static void playSound(int id);
+    void playSound(int id);
 
-    static void playBGM();
+    void playBGM();
 
-    static void muteSound();
+    void muteSound();
 
-    static void setLoop(int id, bool set);
+    void setLoop(int id, bool set);
+
+    void setVolume(int vol);
 };
 
 template <typename T>

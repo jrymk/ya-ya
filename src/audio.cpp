@@ -31,7 +31,7 @@ void Audio::playBGM() {
         soundVec[BGM_ID].setBuffer(bufferVec[BGM_ID]);
         loop[BGM_ID] = true;
         soundVec[BGM_ID].setLoop(loop[BGM_ID]);
-        soundVec[BGM_ID].setVolume(5);
+        soundVec[BGM_ID].setVolume(1);
         soundVec[BGM_ID].play();
     }
     catch(...){
@@ -56,4 +56,8 @@ void Audio::setLoop(int id, bool set) {
         loop[id] = true;
     else
         loop[id] = false;
+}
+
+void Audio::setVolume(int vol) {
+    this->sound.setVolume(vol);
 }
