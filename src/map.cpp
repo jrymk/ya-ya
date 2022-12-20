@@ -92,6 +92,22 @@ void Map::Tile::pushQuads(float zDepthOffset, sf::Color color, sf::Color grassCo
             _pushQuads(&grassSubTile, zDepthOffset, grassColor);
             _pushQuads(&modelMoai, zDepthOffset, color);
             break;
+        case FENCE: {
+            _pushQuads(&grassSubTile, zDepthOffset, grassColor);
+            std::vector<Graphics::Quad> fenceSubTile;
+            fenceSubTile.push_back(modelFence[0]);
+            if (map->exists(x + 1, y) && map->getTile(x + 1, y).tileType == FENCE)
+                fenceSubTile.push_back(modelFence[1]);
+            if (map->exists(x - 1, y) && map->getTile(x - 1, y).tileType == FENCE)
+                fenceSubTile.push_back(modelFence[2]);
+            if (map->exists(x, y - 1) && map->getTile(x, y - 1).tileType == FENCE)
+                fenceSubTile.push_back(modelFence[3]);
+            if (map->exists(x, y + 1) && map->getTile(x, y + 1).tileType == FENCE)
+                fenceSubTile.push_back(modelFence[4]);
+
+            _pushQuads(&fenceSubTile, zDepthOffset, color);
+            break;
+        }
         case TRUCK:
             _pushQuads(&grassSubTile, zDepthOffset, color);
             break;
@@ -111,14 +127,17 @@ void Map::Tile::neighborUpdate() { // for adapting to neighbor tiles and so on
             break;
         case MOAI:
             collideBoxes = {CollideBox({.5, .5}, {.6, .6}, true)};
-            if (map->exists(x - 1, y) && map->getTile(x - 1, y).tileType == MOAI)
-                collideBoxes.push_back(CollideBox({.1, .5}, {.2, .4}, false));
-            if (map->exists(x + 1, y) && map->getTile(x + 1, y).tileType == MOAI)
-                collideBoxes.push_back(CollideBox({.9, .5}, {.2, .4}, false));
-            if (map->exists(x, y - 1) && map->getTile(x, y - 1).tileType == MOAI)
-                collideBoxes.push_back(CollideBox({.5, .1}, {.4, .2}, false));
-            if (map->exists(x, y + 1) && map->getTile(x, y + 1).tileType == MOAI)
-                collideBoxes.push_back(CollideBox({.5, .9}, {.4, .2}, false));
+            break;
+        case FENCE:
+            collideBoxes = {CollideBox({.5, .5}, {.2, .2}, false)};
+            if (map->exists(x - 1, y) && map->getTile(x - 1, y).tileType == FENCE)
+                collideBoxes.push_back(CollideBox({.2, .5}, {.4, .13}, false));
+            if (map->exists(x + 1, y) && map->getTile(x + 1, y).tileType == FENCE)
+                collideBoxes.push_back(CollideBox({.8, .5}, {.4, .13}, false));
+            if (map->exists(x, y - 1) && map->getTile(x, y - 1).tileType == FENCE)
+                collideBoxes.push_back(CollideBox({.5, .2}, {.13, .4}, false));
+            if (map->exists(x, y + 1) && map->getTile(x, y + 1).tileType == FENCE)
+                collideBoxes.push_back(CollideBox({.5, .8}, {.13, .4}, false));
             break;
         case TRUCK:
             collideBoxes = {CollideBox({.5, .5}, {.6, .6}, false)};

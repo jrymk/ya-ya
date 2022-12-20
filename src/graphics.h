@@ -118,6 +118,7 @@ public:
         sf::Color c2 = sf::Color::White;
         sf::Color c3 = sf::Color::White;
         float zPosScale = 1.;
+        float opacityOverride = 1.;
 
         inline Quad(float zDepth, UIVec v0, sf::Vector2f t0, UIVec v1, sf::Vector2f t1, UIVec v2, sf::Vector2f t2, UIVec v3, sf::Vector2f t3)
                 : zDepth(zDepth), v0(v0), t0(t0), v1(v1), t1(t1), v2(v2), t2(t2), v3(v3), t3(t3) {}

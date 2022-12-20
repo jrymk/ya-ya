@@ -9,7 +9,8 @@
 #include "neighborsfinder.h"
 #include "audio.h"
 
-#define MOAI_COST 400.
+#define FENCE_COST 100.
+#define MOAI_COST 2000.
 
 class Game;
 
@@ -45,6 +46,7 @@ public:
     enum UIButtons {
         NONE,
         BUILD_MOAI,
+        BUILD_FENCE,
     };
     UIButtons onHoverButton = NONE;
     UIButtons onMouseClickButton = NONE;

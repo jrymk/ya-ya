@@ -4,7 +4,7 @@
 
 #include "timer.h"
 
-#define DAY_LENGTH 10.
+#define DAY_LENGTH 120.
 #define DAY_START_CUTSCENE_LENGTH 2.
 #define DAY_END_CUTSCENE_LENGTH 5.
 

@@ -88,7 +88,15 @@ const std::vector<Graphics::Quad> modelTruck = {
                 UIVec(4.5, 7), TILEMAP_COORD(12, 6),
                 UIVec(4.5, -2), TILEMAP_COORD(12, 15),
                 UIVec(-3.5, -2), TILEMAP_COORD(4, 15)
-        )
+        ),
+        Graphics::Quad(
+                ZDEPTH_ABOVE_GROUND + .3,
+                UIVec(-3.5, 5), TILEMAP_COORD(-2, 11),
+                UIVec(1.5, 5), TILEMAP_COORD(3, 11),
+                UIVec(1.5, -1), TILEMAP_COORD(3, 17),
+                UIVec(-3.5, -1), TILEMAP_COORD(-2, 17)
+        ),
+
 };
 
 const std::vector<Graphics::Quad> modelEgg[3] = {
@@ -181,6 +189,44 @@ const std::vector<Graphics::Quad> modelMoai = {
         )
 };
 
+const std::vector<Graphics::Quad> modelFence = {
+        Graphics::Quad(
+                ZDEPTH_ABOVE_GROUND,
+                UIVec(0., 2.), TILEMAP_COORD(1, 4),
+                UIVec(1., 2.), TILEMAP_COORD(2, 4),
+                UIVec(1., 0.), TILEMAP_COORD(2, 6),
+                UIVec(0., 0.), TILEMAP_COORD(1, 6)
+        ),
+        Graphics::Quad(
+                ZDEPTH_ABOVE_GROUND - ZDEPTH_LAYER,
+                UIVec(0., 2.), TILEMAP_COORD(2, 4),
+                UIVec(2., 2.), TILEMAP_COORD(4, 4),
+                UIVec(2., 0.), TILEMAP_COORD(4, 6),
+                UIVec(0., 0.), TILEMAP_COORD(2, 6)
+        ),
+        Graphics::Quad(
+                ZDEPTH_ABOVE_GROUND + ZDEPTH_LAYER,
+                UIVec(0., 2.), TILEMAP_COORD(4, 4),
+                UIVec(1., 2.), TILEMAP_COORD(5, 4),
+                UIVec(1., 0.), TILEMAP_COORD(5, 6),
+                UIVec(0., 0.), TILEMAP_COORD(4, 6)
+        ),
+        Graphics::Quad(
+                ZDEPTH_ABOVE_GROUND + ZDEPTH_LAYER,
+                UIVec(0., 2.), TILEMAP_COORD(5, 4),
+                UIVec(1., 2.), TILEMAP_COORD(6, 4),
+                UIVec(1., 0.), TILEMAP_COORD(6, 6),
+                UIVec(0., 0.), TILEMAP_COORD(5, 6)
+        ),
+        Graphics::Quad(
+                ZDEPTH_ABOVE_GROUND - ZDEPTH_LAYER,
+                UIVec(0., 2.), TILEMAP_COORD(6, 4),
+                UIVec(1., 2.), TILEMAP_COORD(7, 4),
+                UIVec(1., 0.), TILEMAP_COORD(7, 6),
+                UIVec(0., 0.), TILEMAP_COORD(6, 6)
+        )
+};
+
 
 /// IMAGES
 const Graphics::Image imageAltKey(sf::Vector2f(0, 7932), sf::Vector2f(260, 260), 24. / 256.); // actual size 256*256
@@ -194,6 +240,7 @@ const Graphics::Image imageItemButtonBackground(sf::Vector2f(0, 7400), sf::Vecto
 const Graphics::Image imageItemButtonFertilizedEgg(sf::Vector2f(512, 7400), sf::Vector2f(512, 512), 64. / 512.);
 const Graphics::Image imageItemButtonEggCarton(sf::Vector2f(1024, 7400), sf::Vector2f(512, 512), 64. / 512.);
 const Graphics::Image imageItemButtonMoai(sf::Vector2f(1536, 7400), sf::Vector2f(512, 512), 64. / 512.);
+const Graphics::Image imageItemButtonFence(sf::Vector2f(2048, 7400), sf::Vector2f(512, 512), 64. / 512.);
 
 
 #endif //YAYA_MODEL_H

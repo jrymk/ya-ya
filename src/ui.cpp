@@ -119,20 +119,38 @@ void UserInterface::renderUI() {
         /// INVENTORY (SHOP)
 
         game->controls.onHoverButton = Controls::UIButtons::NONE;
-        if (game->controller.cash >= MOAI_COST) {
+        int itemCount = 0;
+        if (game->controller.cash >= FENCE_COST)
+            itemCount++;
+        if (game->controller.cash >= MOAI_COST)
+            itemCount++;
+
+        for (int i = 0; i < itemCount; i++) {
+            UIVec posOffset(72. * displayScaling * (-float(itemCount - 1) / 2. + i), rowHeight * 3.7);
+
             UIRect buttonRect = Graphics::drawImageGetRect(imageItemButtonBackground, 1.,
-                                                           bottomBarRect * UIVec(.5, 0.) + UIVec(0., rowHeight * 3.7), UIVec(.5, .5), 1. * displayScaling,
+                                                           bottomBarRect * UIVec(.5, 0.) + posOffset, UIVec(.5, .5), 1. * displayScaling,
                                                            sf::Color(255, 255, 255, 40));
+            bool buttonHover = false;
             if ((std::abs(((Camera::getMousePos() - buttonRect.pos).x / buttonRect.size.x) - 0.5)) <= 0.5 &&
                 (std::abs(((Camera::getMousePos() - buttonRect.pos).y / buttonRect.size.y) - 0.5)) <= 0.5) {
-                game->controls.onHoverButton = Controls::UIButtons::BUILD_MOAI;
-
-                Graphics::drawImage(imageItemButtonMoai, 1. + ZDEPTH_LAYER, bottomBarRect * UIVec(.5, 0.) + UIVec(0., rowHeight * 3.7), UIVec(.5, .5), 1.15 * displayScaling,
-                                    sf::Color(255, 255, 255, 255));
+                buttonHover = true;
             }
-            else
-                Graphics::drawImage(imageItemButtonMoai, 1. + ZDEPTH_LAYER, bottomBarRect * UIVec(.5, 0.) + UIVec(0., rowHeight * 3.7), UIVec(.5, .5), 1. * displayScaling,
-                                    sf::Color(255, 255, 255, 255));
+            if (i == 0) {
+                if (buttonHover)
+                    game->controls.onHoverButton = Controls::UIButtons::BUILD_FENCE;
+                Graphics::drawImage(imageItemButtonFence, 1. + ZDEPTH_LAYER, bottomBarRect * UIVec(.5, 0.) + posOffset, UIVec(.5, .5),
+                                    (buttonHover ? 1.15 : 1.) * displayScaling, sf::Color(255, 255, 255, 255));
+            }
+            if (i == 1) {
+                if (buttonHover)
+                    game->controls.onHoverButton = Controls::UIButtons::BUILD_MOAI; // I don't care
+                Graphics::drawImage(imageItemButtonMoai, 1. + ZDEPTH_LAYER, bottomBarRect * UIVec(.5, 0.) + posOffset, UIVec(.5, .5),
+                                    (buttonHover ? 1.15 : 1.) * displayScaling, sf::Color(255, 255, 255, 255));
+            }
+        }
+
+        if (game->controller.cash >= MOAI_COST) {
 
         }
     }
@@ -174,12 +192,17 @@ void UserInterface::renderOverlay() {
             Graphics::drawText(L"銷貨收入：$ " + toWStr(game->controller.goodsAvailableForSale) + L" !", sf::Color(255, 180, 85, opacity), displayScaling * 120,
                                Camera::getViewport() * UIVec(.5, .2), .5);
             Graphics::drawText(L"明細：", sf::Color(255, 255, 255, 255), displayScaling * 36, Camera::getViewport() * UIVec(.5, .4), .4);
-            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_GROWN]) + L" 隻大鴨", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .5), .5);
-            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_CHILD]) + L" 隻小鴨", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .6), .5);
-            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_DUCKLING]) + L" 隻幼鴨", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
-            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_UNFERTILIZED_EGG]) + L" 顆鴨蛋", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .8), .5);
+            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_GROWN]) + L" 隻大鴨", sf::Color(255, 255, 255, 255), displayScaling * 32,
+                                Camera::getViewport() * UIVec(.5, .5), .5);
+            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_CHILD]) + L" 隻小鴨", sf::Color(255, 255, 255, 255), displayScaling * 32,
+                                Camera::getViewport() * UIVec(.5, .6), .5);
+            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_DUCKLING]) + L" 隻幼鴨", sf::Color(255, 255, 255, 255), displayScaling * 32,
+                                Camera::getViewport() * UIVec(.5, .7), .5);
+            Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_UNFERTILIZED_EGG]) + L" 顆鴨蛋", sf::Color(255, 255, 255, 255), displayScaling * 32,
+                                Camera::getViewport() * UIVec(.5, .8), .5);
             if(game->controller.goodsSold[GameController::G_FERTILIZED_EGG])
-                Graphics::drawText(L"還有 " + toWStr(game->controller.goodsSold[GameController::G_FERTILIZED_EGG]) + L" 顆沒人想吃的鴨仔蛋 :)", sf::Color(250, 185, 185, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .9), .5);
+                Graphics::drawText(L"還有 " + toWStr(game->controller.goodsSold[GameController::G_FERTILIZED_EGG]) + L" 顆沒人想吃的鴨仔蛋 :)", sf::Color(250, 185, 185, 255),
+                                    displayScaling * 32, Camera::getViewport() * UIVec(.5, .9), .5);
             break;
         }
         case GameController::DAY_START_SCENE: {
@@ -196,7 +219,7 @@ void UserInterface::renderOverlay() {
 
     }
 
-    if(game->controller.gameState == GameController::TITLE_SCREEN) return;  // no truck pos on title
+    if (game->controller.gameState == GameController::TITLE_SCREEN) return;  // no truck pos on title
     UIVec pos = Camera::getViewport() * UIVec(.5, .5) + (Camera::getScreenPos(game->truck->position) - Camera::getViewport() * UIVec(.5, .5)) * 1.;
     pos = pos.max(Camera::getViewport() * UIVec(0., 0.) + UIVec(36, 36) * displayScaling);
     pos = pos.min(Camera::getViewport() * UIVec(1., 1.) - UIVec(36, 36) * displayScaling);

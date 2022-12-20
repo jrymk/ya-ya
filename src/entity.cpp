@@ -121,7 +121,7 @@ void Entity::pushQuads() {
             quad.zDepth = zDepthOverride + quad.zDepthOffset;
 
         sf::Color myColor = Graphics::globalShadingColor;
-        myColor.a *= opacity;
+        myColor.a *= opacity * quad.opacityOverride;
         quad.c0 = myColor;
         quad.c1 = myColor;
         quad.c2 = myColor;

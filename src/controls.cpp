@@ -13,7 +13,7 @@ Controls::Controls(Game* game) :
 }
 
 void Controls::update() {
-    if(game->controller.gameState == GameController::TITLE_SCREEN) return;  // no update on title
+    if (game->controller.gameState == GameController::TITLE_SCREEN) return;  // no update on title
     facingEntity = getFacingEntity();
     facingTile = &getFacingTile();
 
@@ -116,8 +116,19 @@ void Controls::update() {
     }
 
     if (onMouseClickButton != NONE) {
+        if (onMouseClickButton == BUILD_FENCE) {
+            Map::Tile previewTile;
+            previewTile.setMap(&game->map); // so it doesn't go crashy crashy
+            previewTile.x = std::floor(Camera::getMouseCoord().x);
+            previewTile.y = std::floor(Camera::getMouseCoord().y);
+            previewTile.seed = game->map.getTile(previewTile.x, previewTile.y).seed;
+            previewTile.setTileType(Map::Tile::FENCE, true);
+            bool inReach = coord(0.5 + previewTile.x, 0.5 + previewTile.y).len(game->player->position) < 2.5;
+            previewTile.pushQuads(0.001, inReach ? sf::Color(255, 255, 255, 100) : sf::Color(255, 180, 180, 100));
+        }
         if (onMouseClickButton == BUILD_MOAI) {
             Map::Tile previewTile;
+            previewTile.setMap(&game->map);
             previewTile.x = std::floor(Camera::getMouseCoord().x);
             previewTile.y = std::floor(Camera::getMouseCoord().y);
             previewTile.seed = game->map.getTile(previewTile.x, previewTile.y).seed;
@@ -359,6 +370,15 @@ void Controls::handleMousePress(sf::Event &event) {
     }
     else if (event.type == sf::Event::MouseButtonReleased) {
         if (onMouseClickButton != NONE) {
+            if (onMouseClickButton == BUILD_FENCE) {
+                int x = std::floor(Camera::getMouseCoord().x);
+                int y = std::floor(Camera::getMouseCoord().y);
+                bool inReach = coord(0.5 + x, 0.5 + y).len(game->player->position) < 2.5;
+                if (inReach) {
+                    game->map.getTile(x, y).setTileType(Map::Tile::FENCE);
+                    game->controller.cash -= FENCE_COST;
+                }
+            }
             if (onMouseClickButton == BUILD_MOAI) {
                 int x = std::floor(Camera::getMouseCoord().x);
                 int y = std::floor(Camera::getMouseCoord().y);
