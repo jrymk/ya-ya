@@ -11,7 +11,8 @@ struct CollideBox {
     coord size;
     bool isCircle = false;
 
-    inline CollideBox(){}
+    inline CollideBox() {}
+
     inline CollideBox(coord center, coord size, bool isCircle = false) : center(center), size(size), isCircle(isCircle) {}
 
     coord collide(const CollideBox &rhs, coord myOffset, coord rhsOffset) const;
@@ -50,7 +51,7 @@ public:
 
         Tile();
 
-        void pushQuads(float zDepthOffset = 0., sf::Color color = sf::Color::White);
+        void pushQuads(float zDepthOffset = 0., sf::Color color = sf::Color::White, sf::Color grassColor = sf::Color::White);
 
         void neighborUpdate();
 
@@ -75,7 +76,8 @@ public:
 
         std::vector<Tile> tiles; // yyyyxxxx (x = lsb)
 
-        Chunk(){}
+        Chunk() {}
+
         Chunk(int bx, int by, Map* map);
 
         void setMap(Map* map);
@@ -92,6 +94,7 @@ public:
     bool exists(int x, int y);
 
     Tile &getTile(int x, int y);
+
     constexpr static auto properties = std::make_tuple(  // reminder: set map*
             SaveUtilities::property(&Map::tileData, "Mpp.td")
     );

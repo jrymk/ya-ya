@@ -18,6 +18,7 @@
 #define PI 3.14159265359
 
 class GameController;
+
 extern bool graphicsIsFullscreen;
 
 struct UIVec { // pixel space
@@ -172,6 +173,8 @@ public:
     inline static bool debugOutOfSight = false;
     inline static int outOfSightQuads = 0;
 
+    inline static sf::Color globalShadingColor = sf::Color::White;
+
     static sf::RenderWindow &getRenderWindow() { return *window; }
 
     static void setRenderWindow(sf::RenderWindow &_window) { window = &_window; }
@@ -218,7 +221,7 @@ public:
 
     static void createWindow(bool fullscreen);
 
-    static void noobFilter(sf::RenderWindow& window, GameController& controller);
+    static void noobFilter(sf::RenderWindow &window, GameController &controller);
 };
 
 #endif

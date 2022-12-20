@@ -120,10 +120,12 @@ void Entity::pushQuads() {
         if (zDepthOverride > -100.)
             quad.zDepth = zDepthOverride + quad.zDepthOffset;
 
-        quad.c0 = sf::Color(255, 255, 255, opacity * 255);
-        quad.c1 = sf::Color(255, 255, 255, opacity * 255);
-        quad.c2 = sf::Color(255, 255, 255, opacity * 255);
-        quad.c3 = sf::Color(255, 255, 255, opacity * 255);
+        sf::Color myColor = Graphics::globalShadingColor;
+        myColor.a *= opacity;
+        quad.c0 = myColor;
+        quad.c1 = myColor;
+        quad.c2 = myColor;
+        quad.c3 = myColor;
 
         Graphics::insertQuad(quad);
 

@@ -33,6 +33,8 @@ public:
 
 extern std::mt19937 rng;
 
+double cap(double d);
+
 double getRand();
 
 uint32_t getRandInt();

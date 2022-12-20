@@ -17,7 +17,7 @@ Game::Game() :
         ui(this) {}
 
 void Game::update() {
-    if(controller.gameState == GameController::TITLE_SCREEN) return;  // no update on title
+    if (controller.gameState == GameController::TITLE_SCREEN) return;  // no update on title
     Timer updateTimer;
 
     // control player movement
@@ -270,7 +270,7 @@ void Game::destroyEntity(std::string id) {
 }
 
 void Game::render() {
-    if(controller.gameState == GameController::TITLE_SCREEN) return;  // no render on title
+    if (controller.gameState == GameController::TITLE_SCREEN) return;  // no render on title
     renderMap();
 
     for (auto entity: entities) {
@@ -302,9 +302,28 @@ void Game::renderMap() {
     double minY = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(1., 1.)).y;
     double maxY = Camera::getCoord(Camera::getViewport().pos + Camera::getViewport().size * UIVec(0., 0.)).y;
 
+    // trial noob filter xD
+    double timeUntilEnd = DAY_LENGTH - controller.startOfDayTp.elapsed();
+    double duration = 7.;
+    double offset = 3.;
+    sf::Color beforeColor(255, 255, 255, 255);
+    sf::Color targetColor(255, 178, 77, 255);
+    if (timeUntilEnd < 3.) {
+        duration = 3.;
+        offset = 0.;
+        beforeColor = targetColor;
+        targetColor = sf::Color(0, 24, 79, 255);
+    }
+    sf::Color nowColor(beforeColor.r - (beforeColor.r - targetColor.r) * (1. - cap((timeUntilEnd - offset) / duration)),
+                       beforeColor.g - (beforeColor.g - targetColor.g) * (1. - cap((timeUntilEnd - offset) / duration)),
+                       beforeColor.b - (beforeColor.b - targetColor.b) * (1. - cap((timeUntilEnd - offset) / duration)),
+                       beforeColor.a - (beforeColor.a - targetColor.a) * (1. - cap((timeUntilEnd - offset) / duration)));
+
+    Graphics::globalShadingColor = nowColor;
+
     for (int x = std::floor(minX); x <= std::floor(maxX + 1.); x++) {
         for (int y = std::floor(minY); y <= std::floor(maxY + 1.); y++) {
-            map.getTile(x, y).pushQuads();
+            map.getTile(x, y).pushQuads(0., Graphics::globalShadingColor, Graphics::globalShadingColor);
         }
     }
 
@@ -318,13 +337,13 @@ void Game::renderMap() {
 static constexpr const char* defaultFilePath = ".\\save.ya";
 
 void Game::save() {
-    while(actionList.size()){  // process action list
+    while (actionList.size()) {  // process action list
         actionSaveList.emplace_back(actionList.top());
         actionList.pop();
     }
 
     Timer timerForSave;
-    for(Action& a : actionSaveList) a.time.saveTimer(timerForSave);
+    for (Action &a: actionSaveList) a.time.saveTimer(timerForSave);
 
     std::ofstream fout(defaultFilePath);
     if (!fout.is_open()) std::cerr << "file saving failed";
@@ -336,7 +355,7 @@ void Game::save() {
 
 void Game::load(const char* filepath) {
     entities.clear();
-    while(!actionList.empty()) actionList.pop();
+    while (!actionList.empty()) actionList.pop();
     std::ifstream fin(filepath);
     if (!fin.is_open()) std::cerr << "file loading failed";
 
@@ -378,15 +397,15 @@ void Game::load(const char* filepath) {
     }
 
     Timer timerForLoad;
-    for(Action& a : actionSaveList){  // process action list
+    for (Action &a: actionSaveList) {  // process action list
         a.time.loadTimer(timerForLoad);
         actionList.emplace(a);
     }
     actionSaveList.clear();
 
-    for(auto& p : map.tileData) {  // process map
+    for (auto &p: map.tileData) {  // process map
         p.second.setMap(&map);
-        for(auto& t : p.second.tiles)
+        for (auto &t: p.second.tiles)
             t.setMap(&map);
     }
 
@@ -412,7 +431,7 @@ void Game::setTruck(std::shared_ptr<Truck> &truck) {
 }
 
 void Game::addRandomDuck() {
-    if(getRand() > 1 / 900.) return;  // a duck most averagely dies after 300 secs, natural spawn rate 15 secs 
+    if (getRand() > 1 / 900.) return;  // a duck most averagely dies after 300 secs, natural spawn rate 15 secs
 
     std::shared_ptr<Egg> egg = std::make_shared<Egg>(this);
     egg->id = newId(EGG);

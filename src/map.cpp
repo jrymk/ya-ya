@@ -71,7 +71,7 @@ coord CollideBox::collide(const CollideBox &rhs, coord myOffset, coord rhsOffset
     return correctionVec;
 }
 
-void Map::Tile::pushQuads(float zDepthOffset, sf::Color color) {
+void Map::Tile::pushQuads(float zDepthOffset, sf::Color color, sf::Color grassColor) {
     std::vector<Graphics::Quad> grassSubTile;
     grassSubTile.push_back(modelGrass);
     UIVec xDelta = UIVec(grassSubTile[0].t2 - grassSubTile[0].t3) / 10.;
@@ -83,13 +83,13 @@ void Map::Tile::pushQuads(float zDepthOffset, sf::Color color) {
 
     switch (tileType) {
         case GRASS:
-            _pushQuads(&grassSubTile, zDepthOffset);
+            _pushQuads(&grassSubTile, zDepthOffset, grassColor);
             break;
         case DIRT:
-            _pushQuads(&modelDirt, zDepthOffset);
+            _pushQuads(&modelDirt, zDepthOffset, grassColor);
             break;
         case MOAI:
-            _pushQuads(&grassSubTile, zDepthOffset);
+            _pushQuads(&grassSubTile, zDepthOffset, grassColor);
             _pushQuads(&modelMoai, zDepthOffset, color);
             break;
         case TRUCK:

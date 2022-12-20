@@ -9,7 +9,7 @@
 #include "neighborsfinder.h"
 #include "audio.h"
 
-#define MOAI_COST 1000
+#define MOAI_COST 400.
 
 class Game;
 

@@ -73,3 +73,7 @@ std::string randomId() {
 std::string randomName() {
     return namesList[int(getRand() * 18239.)];
 }
+
+double cap(double d) {
+    return std::max(std::min(d, 1.), 0.);
+}
