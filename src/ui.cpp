@@ -117,7 +117,6 @@ void UserInterface::renderUI() {
         }
 
         /// INVENTORY (SHOP)
-
         game->controls.onHoverButton = Controls::UIButtons::NONE;
         int itemCount = 0;
         if (game->controller.cash >= FENCE_COST)
@@ -177,18 +176,36 @@ void UserInterface::renderOverlay() {
                        Camera::getViewport() * UIVec(1., 0.) + UIVec(-24 * displayScaling, 40. * displayScaling + 20. * textYOffsetRatio), 1.);
 
     switch (game->controller.gameState) {
-        case GameController::TITLE_SCREEN:
+        case GameController::TITLE_SCREEN: {
+            game->controls.onHoverButton = Controls::NONE;
             Graphics::setFont(0);
-            Graphics::fillRect(sf::Color(61, 156, 81, 255), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
+            Graphics::fillRect(sf::Color(49, 94, 61, 255), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
             Graphics::drawText(L"鴨鴨！", sf::Color(255, 255, 255, 255), displayScaling * 150, Camera::getViewport() * UIVec(.5, .5), .5);
-            Graphics::drawText(L"F9  返回舊有農場", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
-            Graphics::drawText(L"F10  購買全新農場", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .8), .5);
+            UIVec buttonSize(480. * displayScaling, 64. * displayScaling);
+            UIRect buttonRect(Camera::getViewport() * UIVec(.5, .8) - buttonSize * .5, buttonSize);
+            UIRect buttonRect2(Camera::getViewport() * UIVec(.5, .8) - buttonSize * .5 + UIVec(0., buttonSize.y + 16. * displayScaling), buttonSize);
+            if ((std::abs(((Camera::getMousePos() - buttonRect.pos).x / buttonRect.size.x) - 0.5)) <= 0.5 &&
+                (std::abs(((Camera::getMousePos() - buttonRect.pos).y / buttonRect.size.y) - 0.5)) <= 0.5) {
+                game->controls.onHoverButton = Controls::LOAD_GAME;
+            }
+            if ((std::abs(((Camera::getMousePos() - buttonRect2.pos).x / buttonRect2.size.x) - 0.5)) <= 0.5 &&
+                (std::abs(((Camera::getMousePos() - buttonRect2.pos).y / buttonRect2.size.y) - 0.5)) <= 0.5) {
+                game->controls.onHoverButton = Controls::START_NEW_GAME;
+            }
+
+            Graphics::fillRect(sf::Color(255, 255, 255, 100), buttonRect * UIVec(0., 0.), buttonRect * UIVec(1., 1.));
+            Graphics::drawText(L"回奶奶家農場", sf::Color(255, 255, 255, 255), displayScaling * 32 * (game->controls.onHoverButton == Controls::LOAD_GAME ? 1.1 : 1.),
+                               buttonRect * UIVec(.5, .5) + UIVec(0., textYOffsetRatio * 32.), .5);
+            Graphics::fillRect(sf::Color(255, 255, 255, 100), buttonRect2 * UIVec(0., 0.), buttonRect2 * UIVec(1., 1.));
+            Graphics::drawText(L"捨棄奶奶的農場", sf::Color(255, 255, 255, 255), displayScaling * 32 * (game->controls.onHoverButton == Controls::START_NEW_GAME ? 1.1 : 1.),
+                               buttonRect2 * UIVec(.5, .5) + UIVec(0., textYOffsetRatio * 32.), .5);
             break;
+        }
         case GameController::DAY_END_SCENE: {
             double time = game->controller.startOfDayTp.elapsed() - DAY_LENGTH;
             int opacity = time < .5 ? (time / .5 * 255) : 255;
             Graphics::setFont(0);
-            Graphics::fillRect(sf::Color(61, 156, 81, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
+            Graphics::fillRect(sf::Color(49, 94, 61, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
             Graphics::drawText(L"銷貨收入：$ " + toWStr(game->controller.goodsAvailableForSale) + L" !", sf::Color(255, 180, 85, opacity), displayScaling * 120,
                                Camera::getViewport() * UIVec(.5, .2), .5);
             Graphics::drawText(L"明細：", sf::Color(255, 255, 255, 255), displayScaling * 36, Camera::getViewport() * UIVec(.5, .4), .4);
@@ -209,7 +226,7 @@ void UserInterface::renderOverlay() {
             double time = -game->controller.startOfDayTp.elapsed();
             int opacity = time < .5 ? std::max(.0, (time / .5 * 255)) : 255;
             Graphics::setFont(0);
-            Graphics::fillRect(sf::Color(61, 156, 81, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
+            Graphics::fillRect(sf::Color(49, 94, 61, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
             Graphics::drawText(L"第" + toWStr(game->controller.dayCount) + L"天", sf::Color(255, 255, 255, opacity), displayScaling * 120,
                                Camera::getViewport() * UIVec(.5, .5), .5);
             /// TODO: change animation

@@ -47,6 +47,8 @@ public:
         NONE,
         BUILD_MOAI,
         BUILD_FENCE,
+        START_NEW_GAME,
+        LOAD_GAME,
     };
     UIButtons onHoverButton = NONE;
     UIButtons onMouseClickButton = NONE;
