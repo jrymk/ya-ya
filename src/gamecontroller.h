@@ -64,6 +64,7 @@ public:
     void loadTestWorld();
 
     constexpr static auto properties = std::make_tuple(  // remember to set game*
+            SaveUtilities::property(&GameController::gameState, "Gc.gst"),
             SaveUtilities::property(&GameController::cash, "Gc.ca"),
             SaveUtilities::property(&GameController::dayCount, "Gc.dc"),
             SaveUtilities::property(&GameController::startOfDayTp, "Gc.stp")

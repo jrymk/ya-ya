@@ -23,7 +23,8 @@ void GameController::handleAction(GameController::GameActions action) {
             break;
         case BTN_START_LOAD_GAME:
             startOfDayTp.loadTimer();
-            gameState = GAMEPLAY;  // TBD
+            // gameState = GAMEPLAY;
+            break;
     }
 }
 

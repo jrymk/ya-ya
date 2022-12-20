@@ -9,7 +9,7 @@ void Duck::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
         case ON_CREATION: { // actual creation
             followUpActions.emplace_back(action.entity, Timer::getNow() + 5. + getRand() * 25., DUCK_LOOP_WANDER);
-            double growUpTime = 40. + 120. * getRand();
+            double growUpTime = 45. + 120. * getRand();
             followUpActions.emplace_back(action.entity, Timer::getNow() + growUpTime * .2, DUCK_GROW);
             followUpActions.emplace_back(action.entity, Timer::getNow() + growUpTime, DUCK_GROW);
 
