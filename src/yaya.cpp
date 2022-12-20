@@ -38,7 +38,18 @@ int main() {
     if (!tilemap.loadFromFile("./res/tilemap.png"))
         debug << "failed to load tilemap.png";
     tilemap.setSmooth(true);
+    sf::Texture fakePpt;
+    if (!fakePpt.loadFromFile("./res/fake_ppt.png"))
+        debug << "failed to load tilemap.png";
+    fakePpt.setSmooth(true);
+    sf::Texture fakePptEnd;
+    if (!fakePptEnd.loadFromFile("./res/fake_ppt_end.png"))
+        debug << "failed to load tilemap.png";
+    fakePptEnd.setSmooth(true);
+
     FramerateCounter fc;
+
+    int fakeOverlayState = 0.;
 
     Audio audio;
     audio.loadSound("./res/walk.wav");
@@ -61,6 +72,11 @@ int main() {
                     Graphics::resizeView(event.size.width, event.size.height);
                     break;
                 case sf::Event::KeyPressed:
+                    if (event.key.code == sf::Keyboard::F4) {
+                        fakeOverlayState++;
+                        if (fakeOverlayState == 3)
+                            fakeOverlayState = 0;
+                    }
                 case sf::Event::KeyReleased:
                     game.controls.handleKeyPress(event);
                     game.controls.handleSoundOnAction(event, audio);
@@ -105,6 +121,27 @@ int main() {
         Graphics::clearQuadsArray();
         game.ui.renderOverlay();
         Graphics::renderQuads(window, tilemap, Camera::getViewport());
+
+        if (fakeOverlayState == 0) {
+            sf::VertexArray vertexArray;
+            vertexArray.clear();
+            vertexArray.setPrimitiveType(sf::PrimitiveType::Quads);
+            vertexArray.append(sf::Vertex((Camera::getViewport() * UIVec(0., 0.)).getVec2f(), sf::Color::White, sf::Vector2f(0., 0.)));
+            vertexArray.append(sf::Vertex((Camera::getViewport() * UIVec(1., 0.)).getVec2f(), sf::Color::White, sf::Vector2f(2560., 0.)));
+            vertexArray.append(sf::Vertex((Camera::getViewport() * UIVec(1., 1.)).getVec2f(), sf::Color::White, sf::Vector2f(2560., 1600.)));
+            vertexArray.append(sf::Vertex((Camera::getViewport() * UIVec(0., 1.)).getVec2f(), sf::Color::White, sf::Vector2f(0., 1600.)));
+            window.draw(vertexArray, &fakePpt);
+        }
+        if (fakeOverlayState == 2) {
+            sf::VertexArray vertexArray;
+            vertexArray.clear();
+            vertexArray.setPrimitiveType(sf::PrimitiveType::Quads);
+            vertexArray.append(sf::Vertex((Camera::getViewport() * UIVec(0., 0.)).getVec2f(), sf::Color::White, sf::Vector2f(0., 0.)));
+            vertexArray.append(sf::Vertex((Camera::getViewport() * UIVec(1., 0.)).getVec2f(), sf::Color::White, sf::Vector2f(2560., 0.)));
+            vertexArray.append(sf::Vertex((Camera::getViewport() * UIVec(1., 1.)).getVec2f(), sf::Color::White, sf::Vector2f(2560., 1600.)));
+            vertexArray.append(sf::Vertex((Camera::getViewport() * UIVec(0., 1.)).getVec2f(), sf::Color::White, sf::Vector2f(0., 1600.)));
+            window.draw(vertexArray, &fakePptEnd);
+        }
 
         window.display();
     }

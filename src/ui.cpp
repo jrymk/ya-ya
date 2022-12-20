@@ -199,6 +199,9 @@ void UserInterface::renderOverlay() {
             Graphics::fillRect(sf::Color(255, 255, 255, 100), buttonRect2 * UIVec(0., 0.), buttonRect2 * UIVec(1., 1.));
             Graphics::drawText(L"捨棄奶奶的農場", sf::Color(255, 255, 255, 255), displayScaling * 32 * (game->controls.onHoverButton == Controls::START_NEW_GAME ? 1.1 : 1.),
                                buttonRect2 * UIVec(.5, .5) + UIVec(0., textYOffsetRatio * 32.), .5);
+
+            Graphics::drawImage(imageCredit, 1.4, Camera::getViewport() * UIVec(1., 1.) + UIVec(-16., -16.) * displayScaling, UIVec(1., 1.), displayScaling,
+                                sf::Color(255, 255, 255, 150));
             break;
         }
         case GameController::DAY_END_SCENE: {

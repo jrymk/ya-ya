@@ -254,10 +254,6 @@ void Controls::handleKeyPress(sf::Event &event) {
             case sf::Keyboard::F3:
                 debugStream.str("");
                 break;
-            case sf::Keyboard::F4:
-                Graphics::debugOutOfSight = !Graphics::debugOutOfSight;
-                debug << "Toggled debug out of sight: " << Graphics::debugOutOfSight << "\n";
-                break;
             case sf::Keyboard::F6:
                 for (auto duck: game->entities) {
                     if (duck.second->type == DUCK) {

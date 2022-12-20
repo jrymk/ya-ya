@@ -235,6 +235,7 @@ const Graphics::Image imageMouseRightBtn(sf::Vector2f(520, 7932), sf::Vector2f(2
 const Graphics::Image imageMouseBase(sf::Vector2f(780, 7932), sf::Vector2f(260, 260), 24. / 256.);
 const Graphics::Image imagaInventorySlotIndicator(sf::Vector2f(1300, 8062), sf::Vector2f(81, 130), 34. / 130.);
 const Graphics::Image imageTruckIcon(sf::Vector2f(1618, 8084), sf::Vector2f(120, 91), 32. / 120.);
+const Graphics::Image imageCredit(sf::Vector2f(10737, 7982), sf::Vector2f(857, 179), 36. / 179.);
 
 const Graphics::Image imageItemButtonBackground(sf::Vector2f(0, 7400), sf::Vector2f(512, 512), 64. / 512.);
 const Graphics::Image imageItemButtonFertilizedEgg(sf::Vector2f(512, 7400), sf::Vector2f(512, 512), 64. / 512.);
