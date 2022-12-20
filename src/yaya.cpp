@@ -49,7 +49,7 @@ int main() {
 
     FramerateCounter fc;
 
-    int fakeOverlayState = 0.;
+    int fakeOverlayState = 1.;
 
     Audio audio;
     audio.loadSound("./res/walk.wav");
