@@ -179,7 +179,7 @@ void UserInterface::renderOverlay() {
             Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_DUCKLING]) + L" 隻幼鴨", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .7), .5);
             Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_UNFERTILIZED_EGG]) + L" 顆鴨蛋", sf::Color(255, 255, 255, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .8), .5);
             if(game->controller.goodsSold[GameController::G_FERTILIZED_EGG])
-                Graphics::drawText(L"還有 " + toWStr(game->controller.goodsSold[GameController::G_GROWN]) + L" 顆沒人想吃的鴨仔蛋 :)", sf::Color(250, 185, 185, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .9), .5);
+                Graphics::drawText(L"還有 " + toWStr(game->controller.goodsSold[GameController::G_FERTILIZED_EGG]) + L" 顆沒人想吃的鴨仔蛋 :)", sf::Color(250, 185, 185, 255), displayScaling * 32, Camera::getViewport() * UIVec(.5, .9), .5);
             break;
         }
         case GameController::DAY_START_SCENE: {
