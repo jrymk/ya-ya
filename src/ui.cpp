@@ -206,20 +206,20 @@ void UserInterface::renderOverlay() {
             int opacity = time < .5 ? (time / .5 * 255) : 255;
             Graphics::setFont(0);
             Graphics::fillRect(sf::Color(49, 94, 61, opacity), Camera::getViewport().pos, Camera::getViewport().pos + Camera::getViewport().size);
-            Graphics::drawText(L"銷貨收入：$ " + toWStr(game->controller.goodsAvailableForSale) + L" !", sf::Color(255, 180, 85, opacity), displayScaling * 120,
-                               Camera::getViewport() * UIVec(.5, .2), .5);
+            Graphics::drawText(L"銷貨收入：$ " + toWStr(game->controller.goodsAvailableForSale) + L" !", sf::Color(200, 225, 250, opacity), displayScaling * 60,
+                               Camera::getViewport() * UIVec(.5, .25), .5);
             Graphics::drawText(L"明細：", sf::Color(255, 255, 255, 255), displayScaling * 36, Camera::getViewport() * UIVec(.5, .4), .4);
             Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_GROWN]) + L" 隻大鴨", sf::Color(255, 255, 255, 255), displayScaling * 32,
                                 Camera::getViewport() * UIVec(.5, .5), .5);
             Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_CHILD]) + L" 隻小鴨", sf::Color(255, 255, 255, 255), displayScaling * 32,
-                                Camera::getViewport() * UIVec(.5, .6), .5);
+                                Camera::getViewport() * UIVec(.5, .575), .5);
             Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_DUCKLING]) + L" 隻幼鴨", sf::Color(255, 255, 255, 255), displayScaling * 32,
-                                Camera::getViewport() * UIVec(.5, .7), .5);
+                                Camera::getViewport() * UIVec(.5, .65), .5);
             Graphics::drawText(toWStr(game->controller.goodsSold[GameController::G_UNFERTILIZED_EGG]) + L" 顆鴨蛋", sf::Color(255, 255, 255, 255), displayScaling * 32,
-                                Camera::getViewport() * UIVec(.5, .8), .5);
+                                Camera::getViewport() * UIVec(.5, .725), .5);
             if(game->controller.goodsSold[GameController::G_FERTILIZED_EGG])
                 Graphics::drawText(L"還有 " + toWStr(game->controller.goodsSold[GameController::G_FERTILIZED_EGG]) + L" 顆沒人想吃的鴨仔蛋 :)", sf::Color(250, 185, 185, 255),
-                                    displayScaling * 32, Camera::getViewport() * UIVec(.5, .9), .5);
+                                    displayScaling * 32, Camera::getViewport() * UIVec(.5, .8), .5);
             break;
         }
         case GameController::DAY_START_SCENE: {
