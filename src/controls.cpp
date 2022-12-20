@@ -254,6 +254,17 @@ void Controls::handleKeyPress(sf::Event &event) {
             case sf::Keyboard::F3:
                 debugStream.str("");
                 break;
+            case sf::Keyboard::F8: {
+                std::shared_ptr<Egg> egg(new Egg(game));
+                egg->id = game->newId(EGG);
+                egg->opacity = 1.;
+                egg->genderIsMale = getRandInt() % 2;
+                egg->fertilized = true;
+                egg->position = Camera::getMouseCoord();
+                egg->underlyingPos = Camera::getMouseCoord();
+                auto eptr = game->insertEntity(egg);
+                break;
+            }
             case sf::Keyboard::F6:
                 for (auto duck: game->entities) {
                     if (duck.second->type == DUCK) {
@@ -266,14 +277,14 @@ void Controls::handleKeyPress(sf::Event &event) {
                 }
                 break;
             case sf::Keyboard::F7:
-                for (auto &e: game->entities) {
-                    if (e.second->type == EntityType::DUCK) {
-                        Action a(Timer::getNow(), GLOBAL_DESTROY);
-                        a.argEntity[0] = e.second;
-                        game->pushAction(a);
-                        //                game->destroyEntity(event.second->id);
-                    }
-                }
+//                for (auto &e: game->entities) {
+//                    if (e.second->type == EntityType::DUCK) {
+//                        Action a(Timer::getNow(), GLOBAL_DESTROY);
+//                        a.argEntity[0] = e.second;
+//                        game->pushAction(a);
+//                        //                game->destroyEntity(event.second->id);
+//                    }
+//                }
                 break;
             case sf::Keyboard::F11:
                 graphicsIsFullscreen = !graphicsIsFullscreen;

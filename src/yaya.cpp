@@ -21,7 +21,7 @@
  * F5: duckwalk to cursor
  * F6: toggle action list
  * F7: destroy all ducks
- * F8: show truck
+ * F8: new egg
  * F10: exit title screen
  * F11: toggle fullscreen
  */

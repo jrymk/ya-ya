@@ -107,30 +107,30 @@ void GameController::loadTestWorld() {
     auto tptr = game->insertEntity(truck);
     game->setTruck(truck);
 
-    {
-        std::shared_ptr<EggCarton> eggcarton(new EggCarton(game));
-        eggcarton->id = game->newId(EGG_CARTON);
-        eggcarton->opacity = 1.;
-        eggcarton->underlyingPos.x = 1.;
-        eggcarton->underlyingPos.y = 1.;
-        auto cptr = game->insertEntity(eggcarton);
-
-        for (int i = 0; i < 10; i++) {
-            std::shared_ptr<Egg> egg(new Egg(game));
-            egg->id = game->newId(EGG);
-            egg->opacity = 1.;
-            egg->genderIsMale = i & 0b1;
-            egg->fertilized = true;
-            auto eptr = game->insertEntity(egg);
-
-            {
-                Action a(eptr, Timer::getNow() + 1.5 + .2 * i, ENTITY_OWN_BY);
-                a.argEntity[0] = cptr;
-                a.argInt[0] = i;
-                game->pushAction(a);
-            }
-        }
-    }
+    //    {
+//        std::shared_ptr<EggCarton> eggcarton(new EggCarton(game));
+//        eggcarton->id = game->newId(EGG_CARTON);
+//        eggcarton->opacity = 1.;
+//        eggcarton->underlyingPos.x = 1.;
+//        eggcarton->underlyingPos.y = 1.;
+//        auto cptr = game->insertEntity(eggcarton);
+//
+//        for (int i = 0; i < 10; i++) {
+//            std::shared_ptr<Egg> egg(new Egg(game));
+//            egg->id = game->newId(EGG);
+//            egg->opacity = 1.;
+//            egg->genderIsMale = i & 0b1;
+//            egg->fertilized = true;
+//            auto eptr = game->insertEntity(egg);
+//
+//            {
+//                Action a(eptr, Timer::getNow(), ENTITY_OWN_BY);
+//                a.argEntity[0] = cptr;
+//                a.argInt[0] = i;
+//                game->pushAction(a);
+//            }
+//        }
+//    }
 }
 
 void GameController::saveToSaveFile() {
