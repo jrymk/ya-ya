@@ -11,6 +11,7 @@ public:
 
     void loadModel() override;
 
+    std::vector<Graphics::Quad> truckModel;
     Game* game;
 
     Truck();

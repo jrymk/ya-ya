@@ -8,7 +8,7 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
     switch (action.command) {
         case ON_CREATION:
             if (fertilized)
-                followUpActions.push_back(Action(action.entity, Timer::getNow() + 3. + getRand() * 10., EGG_FORM_EMBRYO));
+                followUpActions.push_back(Action(action.entity, Timer::getNow() + 3. + getRand() * 20., EGG_FORM_EMBRYO));
             break;
         case ON_UNOWNED: // pop out of duck's ass
             followUpActions.push_back(Action(action.entity, Timer::getNow(), ENTITY_HOP));
@@ -37,7 +37,7 @@ void Egg::runAction(Action &action, std::vector<Action> &followUpActions) {
                     followUpActions.push_back(a);
                 }
                 if (getRand() < .8) { // 80% success
-                    double t = 3. + 4. * getRand();
+                    double t = 5. + 20. * getRand();
                     followUpActions.emplace_back(duck_ptr, Timer::getNow() + t, ENTITY_UNOWN); // HATCH
                     followUpActions.emplace_back(duck_ptr, Timer::getNow() + t, ON_CREATION);
                     {

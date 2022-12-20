@@ -27,7 +27,9 @@ void Truck::runAction(Action &action, std::vector<Action> &followUpActions) {
 }
 
 void Truck::loadModel() {
-    model = &modelTruck;
+    truckModel = modelTruck;
+    truckModel[1].opacityOverride = ((game->controls.facingEntity != nullptr && game->controls.facingEntity->id == id) ? .6 : 1.);
+    model = &truckModel;
 }
 
 Truck::Truck() { objInit(); }
@@ -51,7 +53,7 @@ void Truck::setInventoryProps() {
     double truckZDepth = modelTruck[0].zDepth + (Camera::getScreenPos(position).y / Camera::getViewport().size.y - 0.5) / 100.;
 
     for (int slot = 0; slot < inventory.size(); slot++) {
-        inventoryPosition[slot] = {position + coord(-1.5 + 0.8 * (slot % 4 - 1.5), 0. + 0.8 * (slot / 4 - 1.5)), zPosition + 1.5};
+        inventoryPosition[slot] = {position + coord(-1.5 + 0.8 * (slot % 4 - 1.5), 0. + 0.8 * (slot / 4 - 1.5)), zPosition + 2.};
         if (!inventory[slot])
             continue;
         if (slot >= TRUCK_A0 && slot <= TRUCK_D3) {
