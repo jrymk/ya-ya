@@ -48,11 +48,11 @@ const std::wstring strDuck[LOC_ENTITY_CNT][LANG_COUNT] = {
 };
 const std::wstring strEgg[LOC_ENTITY_CNT][LANG_COUNT] = {
         L"the egg", L"蛋",
-        L"a duck egg", L"鴨蛋"
+        L"a duck egg", L"鴨蛋，有可能會孵化，也有可能已經孵化了"
 };
 const std::wstring strEggCarton[LOC_ENTITY_CNT][LANG_COUNT] = {
         L"the egg carton", L"蛋盒",
-        L"holds up to 10 eggs!", L"可以放十顆蛋！"
+        L"holds up to 10 eggs!", L"可以放十顆蛋！你沒聽錯，十顆！"
 };
 
 #endif //YAYA_LOCALIZATION_H

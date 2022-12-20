@@ -61,15 +61,6 @@ int main() {
                     Graphics::resizeView(event.size.width, event.size.height);
                     break;
                 case sf::Event::KeyPressed:
-                    if (event.key.code == sf::Keyboard::F10) {
-                        game.controller.loadTestWorld();  // TBD
-                        game.initTruckCollisionBoxes(3, -2);
-                        game.controller.handleAction(GameController::BTN_START_NEW_GAME);
-                    }
-                    if (event.key.code == sf::Keyboard::F9) {
-                        game.controller.loadToSaveFile();
-                        game.controller.handleAction(GameController::BTN_START_LOAD_GAME);
-                    }
                 case sf::Event::KeyReleased:
                     game.controls.handleKeyPress(event);
                     game.controls.handleSoundOnAction(event, audio);

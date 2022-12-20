@@ -364,8 +364,17 @@ void Controls::handleMousePress(sf::Event &event) {
             }
         }
         else {
-
             onMouseClickButton = onHoverButton;
+
+            if (onHoverButton == START_NEW_GAME) {
+                game->controller.loadTestWorld();  // TBD
+                game->initTruckCollisionBoxes(3, -2);
+                game->controller.handleAction(GameController::BTN_START_NEW_GAME);
+            }
+            if (onHoverButton == LOAD_GAME) {
+                game->controller.loadToSaveFile();
+                game->controller.handleAction(GameController::BTN_START_LOAD_GAME);
+            }
         }
     }
     else if (event.type == sf::Event::MouseButtonReleased) {

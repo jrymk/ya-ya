@@ -5,8 +5,8 @@
 #include "timer.h"
 
 #define DAY_LENGTH 120.
-#define DAY_START_CUTSCENE_LENGTH 2.
-#define DAY_END_CUTSCENE_LENGTH 5.
+#define DAY_START_CUTSCENE_LENGTH 1.5
+#define DAY_END_CUTSCENE_LENGTH 3.
 
 class Game;
 
