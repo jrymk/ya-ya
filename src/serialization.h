@@ -9,7 +9,7 @@
     2. every class must define properties like this:
         constexpr static auto properties = std::make_tuple(
             SaveUtilities::property(&Pos::x, "Ps.x"),
-            SaveUtilities::property(&Pos::y, "Ps.y")s
+            SaveUtilities::property(&Pos::y, "Ps.y")
         );
     3. NO ",:;[]{}" symbols in property ID (2nd arg)
     4. serialize usage:
